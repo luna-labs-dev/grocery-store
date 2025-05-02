@@ -1,9 +1,16 @@
 BACKLOG:
-  IMPROVEMENTS:     
-    ✔ @high refactor all the code to "react bulletproof" style @done(24-08-20 00:35)
+  IMPROVEMENTS:         
     ☐ only redirect to family if the backend error is family related (its important that a propper error is shown if something is wrong with the backend)
-    ☐ ensure all breadcrumbs are correctly working
-    ✔ remove the family uniqueness check @done(24-08-23 02:33)
+    ☐ redirect to login if unauthorized
+    ☐ ensure all breadcrumbs are correctly working 
+    Replace Google Auth for Clerk:
+      Backend:
+        ☐ Create a callback endpoint for the Clerk callback
+        ☐ Add clerk authorization
+      Frontend:
+        ☐ Add a login / landing page        ☐ 
+        ☐ Add clerk provider
+        ☐ use clerk provider instead of the Google auth provider
     Make family membership flow better:
       ☐ When someone joins the family using the invite code, the family owner must accept the invitation
       ☐ On the family view the invites should appear somewhere in the screen to be accepted
