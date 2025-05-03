@@ -1,12 +1,13 @@
-import { useFirebase } from '@/providers';
+import { useAuth } from '@clerk/clerk-react';
 import { protectedRoutes } from './protected-routes';
 import { publicRoutes } from './public-routes';
 
 export const useRoutes = () => {
-  const { context } = useFirebase();
+  const { isLoaded, isSignedIn } = useAuth();
+  console.log({ isLoaded, isSignedIn });
 
-  const routes = context.userLoggedIn ? protectedRoutes : publicRoutes;
+  const routes = isSignedIn ? protectedRoutes : publicRoutes;
   // const routes = publicRoutes;
 
-  return { routes };
+  return { routes, isLoaded };
 };
