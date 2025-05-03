@@ -3,7 +3,7 @@ import { Login } from '../pages';
 
 export const LoginRoutes: RouteObject[] = [
   {
-    path: '/login',
+    path: 'login',
     element: <Login />,
   },
 ];
