@@ -8,8 +8,8 @@ BACKLOG:
         ☐ Create a callback endpoint for the Clerk callback
         ☐ Add clerk authorization
       Frontend:
-        ☐ Add a login / landing page        ☐ 
-        ☐ Add clerk provider
+        ✔ Add a login / landing page        ☐ @done(25-05-03 12:26)
+        ✔ Add clerk provider @done(25-05-03 12:26)
         ☐ use clerk provider instead of the Google auth provider
     Make family membership flow better:
       ☐ When someone joins the family using the invite code, the family owner must accept the invitation
