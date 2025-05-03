@@ -9,6 +9,7 @@ const envVariables = z.object({
   VITE_appId: z.string(),
   VITE_measurementId: z.string(),
   VITE_backend_url: z.string(),
+  VITE_CLERK_PUBLISHABLE_KEY: z.string(),
 });
 
 const parsedVariables = envVariables.safeParse(import.meta.env);
@@ -26,12 +27,16 @@ const {
   VITE_projectId,
   VITE_storageBucket,
   VITE_backend_url,
+  VITE_CLERK_PUBLISHABLE_KEY,
 } = parsedVariables.data;
 
 export const env = {
   baseConfig: {},
   backend: {
     baseUrl: VITE_backend_url,
+  },
+  clerk: {
+    publishableKey: VITE_CLERK_PUBLISHABLE_KEY,
   },
   googleAuth: {
     apiKey: VITE_apiKey,

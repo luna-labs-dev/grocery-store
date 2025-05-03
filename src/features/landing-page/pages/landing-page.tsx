@@ -1,4 +1,5 @@
 import { Button, GroceryfyLogo } from '@/components';
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
 import { BarChart3, ShieldCheck, Users } from 'lucide-react';
 
 export const LandingPage = () => {
@@ -23,9 +24,17 @@ export const LandingPage = () => {
             {/* <Button variant="outline" size="sm">
               Começar
             </Button> */}
-            <Button size="sm" className="bg-violet-600 hover:bg-violet-700">
-              Experimente agora
-            </Button>
+
+            <SignedOut>
+              <SignInButton mode="modal">
+                <Button size="sm" className="bg-violet-600 hover:bg-violet-700">
+                  Experimente agora
+                </Button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton showName />
+            </SignedIn>
           </div>
         </div>
       </header>
@@ -36,7 +45,7 @@ export const LandingPage = () => {
           <div className="container max-w-3xl mx-auto text-center">
             <div className="space-y-6">
               <h1 className="text-4xl font-bold tracking-tight text-white md:text-5xl">
-                Controle suas compras de supermercado com facilidade
+                Controle suas compras de supermercado com facilidadeSignIn
               </h1>
               <p className="text-lg text-gray-400">
                 Economize tempo e dinheiro gerenciando suas compras em família de forma inteligente
