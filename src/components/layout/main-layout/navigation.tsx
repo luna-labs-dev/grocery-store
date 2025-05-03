@@ -11,14 +11,16 @@ import {
   DrawerTrigger,
 } from '@/components';
 import { getInitials } from '@/domain';
-import { useFirebase } from '@/providers/firebase';
+import { useAuth, useUser } from '@clerk/clerk-react';
 import { Icon } from '@iconify/react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export const Navigation = () => {
-  const { signOut, context } = useFirebase();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const { user } = useUser();
+  const { signOut } = useAuth();
 
   const navigationItems = (
     <div className="px-4">
@@ -73,22 +75,23 @@ export const Navigation = () => {
         </DrawerHeader>
         {navigationItems}
         <DrawerFooter className="flex flex-col gap-2">
-          <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-2">
             <Avatar>
-              <AvatarImage src={context.currentUser?.photoURL ?? undefined} />
+              <AvatarImage src={user?.imageUrl ?? ''} />
               <AvatarFallback>
                 {getInitials({
-                  fullName: context.currentUser?.displayName ?? '',
+                  fullName: user?.fullName ?? '',
                   initialsLength: 2,
                   upperCase: true,
                 })}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-              <p className="font-bold text-sm">{context.currentUser?.displayName}</p>
-              <p className="text-xs">{context.currentUser?.email}</p>
+              <p className="text-sm font-bold">{user?.fullName}</p>
+              <p className="text-xs">{user?.emailAddresses[0].emailAddress}</p>
             </div>
           </div>
+
           <Button
             variant={'outline'}
             className="flex gap-1"
