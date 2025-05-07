@@ -10,6 +10,7 @@ console.log(baseUrl);
 
 export const httpClient = axios.create({
   baseURL: baseUrl,
+  withCredentials: true,
 });
 
 httpClient.interceptors.response.use(undefined, (error: AxiosError<HttpError>) => {
