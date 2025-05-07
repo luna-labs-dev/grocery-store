@@ -3,6 +3,7 @@ BACKLOG:
     ☐ only redirect to family if the backend error is family related (its important that a propper error is shown if something is wrong with the backend)
     ☐ redirect to login if unauthorized
     ☐ ensure all breadcrumbs are correctly working 
+    ☐ recalculate totals when product are removed from the event
     Replace Google Auth for Clerk [COMPLETED]:
       Backend:
         ✔ Create a callback endpoint for the Clerk callback @done(25-05-06 23:33)
