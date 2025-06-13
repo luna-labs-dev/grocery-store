@@ -3,6 +3,7 @@ import axios, { AxiosError } from 'axios';
 
 import { env } from '@/config/env';
 import { history } from '@/domain/utils/history';
+import { useAuth } from '@clerk/clerk-react';
 
 const { baseUrl } = env.backend;
 
@@ -20,6 +21,10 @@ httpClient.interceptors.response.use(undefined, (error: AxiosError<HttpError>) =
   ) {
     history.navigate('/family/onboarding');
   }
+
+  const { signOut } = useAuth();
+
+  signOut();
 
   throw error;
 });

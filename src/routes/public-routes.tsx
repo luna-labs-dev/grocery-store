@@ -15,6 +15,6 @@ export const publicRoutes: RouteObject[] = [
 
   {
     path: '*',
-    element: <AppRedirectionHandler redirectTo="/app/login" />,
+    element: <AppRedirectionHandler redirectTo="/" />,
   },
 ];
