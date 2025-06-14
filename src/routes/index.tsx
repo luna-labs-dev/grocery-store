@@ -4,7 +4,6 @@ import { publicRoutes } from './public-routes';
 
 export const useRoutes = () => {
   const { isLoaded, isSignedIn } = useAuth();
-  console.log({ isLoaded, isSignedIn });
 
   const routes = isSignedIn ? protectedRoutes : publicRoutes;
   // const routes = publicRoutes;
