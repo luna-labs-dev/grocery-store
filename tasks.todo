@@ -15,31 +15,22 @@ BACKLOG:
         ✔ Adjust the remaining errors caused by the replacement of firebase @done(25-05-07 01:38)
           ✔ make sure pictures and users are loaded in family details @done(25-05-07 01:38)
           ✔ make the crown icon outlined (so the crown is actually visible) @done(25-05-07 01:38)
-    Make family membership flow better:
-      ☐ When someone joins the family using the invite code, the family owner must accept the invitation
-      ☐ On the family view the invites should appear somewhere in the screen to be accepted
-      ☐ The acceptance must have a confirmation dialog
-      ☐ While the acceptance is pending, the user must not be able to see the applications.
-        ☐ The family view will have a stepper saying he is in a awaiting state
-        ☐ The family view must have a button to cancel the acceptance flow
-        ☐ when the user cancels the join request, the user must be removed from the family list
-    Improve the event creation flow:
-      ☐ add a "create event" button on the event list page
-      ☐ on the market search page redirect the user to the market creation page (or open the side form) (if the market is not found)      
     
-    ☐ market list
+    Market list:
       ✔ make market visible by family (as the rest of the application) @done(24-08-23 02:33)
       ✔ remove the market uniqueness check @done(24-08-23 02:34)
       ☐ build an "empty list" view (for when there are no markets)
       ☐ add filter
       ☐ add table view (for desktop)
-    ☐ shopping event
+    shopping event:
+      ☐ add a "create event" button on the event list page
+      ☐ on the market search page redirect the user to the market creation page (or open the side form) (if the market is not found)      
       ☐ build an "empty list" view (for when there are no events)
       ☐ add filter
         ☐ by date
         ☐ by market
       ☐ add table view (for desktop)
-    ☐ shopping event details
+    shopping event details:
       ☐ fix totals at the top (always visible)
       ☐ product list
         ☐ build an "empty list" view (for when there are no products)
@@ -54,6 +45,14 @@ BACKLOG:
             ☐ total
             ☐ an icon or maybe a different color for wich is a wholesale product
           ☐ add / update form
+    family: 
+      ☐ When someone joins the family using the invite code, the family owner must accept the invitation
+      ☐ On the family view the invites should appear somewhere in the screen to be accepted
+      ☐ The acceptance must have a confirmation dialog
+      ☐ While the acceptance is pending, the user must not be able to see the applications.
+        ☐ The family view will have a stepper saying he is in a awaiting state
+        ☐ The family view must have a button to cancel the acceptance flow
+        ☐ when the user cancels the join request, the user must be removed from the family list
       
   FAMILY:
     FEATURES:
