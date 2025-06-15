@@ -1,8 +1,17 @@
-import { Avatar, AvatarFallback, AvatarImage, Button } from '@/components';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components';
 import { getInitials, unsecuredCopyToClipboard } from '@/domain';
 
+import { CardDescription } from '@/components';
 import { useGetFamilyQuery } from '@/features/family/infrastructure';
-import { useFirebase } from '@/providers/firebase';
 import { Icon } from '@iconify/react';
 import { useClipboard } from '@mantine/hooks';
 import { format } from 'date-fns';
@@ -12,13 +21,10 @@ import { RemoveFamilyMemberAlertDialog } from './remove-family-member-alert-dial
 
 export const FamilyDetails = () => {
   const { data, isLoading } = useGetFamilyQuery();
-  const { isFamilyOwner } = useFirebase();
 
   const { copy } = useClipboard({
     timeout: 1000,
   });
-
-  const loggedOwner = isFamilyOwner(data?.owner?.externalId);
 
   if (isLoading) {
     return <div>Carregando...</div>;
@@ -28,64 +34,74 @@ export const FamilyDetails = () => {
     return <div>Família não encontrada</div>;
   }
 
+  // const { userId } = useAuth();
+  // const loggedOwner = data.owner.externalId === userId;
+
   return (
-    <div className="w-fit pt-4">
-      <section className="flex flex-col gap-8 justify-between">
-        <div className="">
-          <h1 className="text-2xl font-bold">{data.name}</h1>
-          <p className="text-sm text-slate-600">{data.description}Descrição teste</p>
-        </div>
-
-        <div className="flex gap-2 items-start">
-          <Icon icon="mingcute:calendar-2-line" />
-          <div className="flex flex-col gap-0">
-            <span className="text-xs font-bold">criado em</span>
-            <p className="text-sm">
-              {format(data.createdAt, 'EEEEEE - dd/MM/yyyy HH:mm:ss ', { locale: ptBR })}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex gap-2 items-start">
-          <Icon icon="octicon:code-of-conduct-24" />
-          <div className="flex flex-col gap-1">
-            <span className="text-xs font-bold">codigo de convite</span>
-            <div className="flex gap-2 border w-fit p-2 rounded-lg">
-              <span className="tracking-wider">{data.inviteCode}</span>
-              <div className="flex gap-1 items-center">
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="h-6 w-6"
-                  onClick={async () => {
-                    if (window.isSecureContext) {
-                      copy(data.inviteCode);
-                    } else {
-                      unsecuredCopyToClipboard(data.inviteCode);
-                    }
-
-                    toast('Código de convite copiado para a área de transferência', {
-                      position: 'top-center',
-                      invert: true,
-                    });
-                  }}
-                >
-                  <Icon icon="gravity-ui:copy" />
-                </Button>
-
-                {/* <Button size="icon" variant="outline" className="h-6 w-6">
-                  <Icon icon="material-symbols:refresh" />
-                </Button> */}
+    <div className="w-full pt-4">
+      <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <Card className="">
+          <CardHeader>
+            <CardTitle>{data.name}</CardTitle>
+            <CardDescription>{data.description} teste</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col w-full gap-8">
+            <div className="flex items-start gap-2">
+              {/* <Icon icon="mingcute:calendar-2-line" /> */}
+              <div className="flex flex-col gap-0">
+                <span className="text-xs font-bold">criado em</span>
+                <p className="text-sm">
+                  {format(data.createdAt, 'EEEEEE - dd/MM/yyyy HH:mm:ss ', { locale: ptBR })}
+                </p>
               </div>
             </div>
-          </div>
-        </div>
+            <div className="flex items-start gap-2">
+              {/* <Icon icon="octicon:code-of-conduct-24" /> */}
 
-        <div className="flex gap-4 items-start">
-          <Icon icon="icon-park-outline:family" />
-          <div className="flex flex-col gap-2">
-            <span className="text-xs font-bold">membros</span>
-            <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1">
+                <span className="text-xs font-bold">codigo de convite</span>
+                <div className="flex gap-2 p-2 border rounded-lg w-fit">
+                  <span className="tracking-wider">{data.inviteCode}</span>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      className="w-6 h-6"
+                      onClick={async () => {
+                        if (window.isSecureContext) {
+                          copy(data.inviteCode);
+                        } else {
+                          unsecuredCopyToClipboard(data.inviteCode);
+                        }
+
+                        toast('Código de convite copiado para a área de transferência', {
+                          position: 'top-center',
+                          invert: true,
+                        });
+                      }}
+                    >
+                      <Icon icon="gravity-ui:copy" />
+                    </Button>
+
+                    {/* <Button size="icon" variant="outline" className="w-6 h-6">
+                  <Icon icon="material-symbols:refresh" />
+                </Button> */}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>
+              <div className="flex items-start gap-4">Membros</div>
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent>
+            <div className="flex flex-col gap-4">
               {data.members?.map((member) => (
                 <div
                   key={member.id}
@@ -104,8 +120,8 @@ export const FamilyDetails = () => {
                         </AvatarFallback>
                       </Avatar>
                       {member.id === data.owner.id && (
-                        <div className="bg-yellow-300 absolute -top-2 -right-2 rounded-full p-1 shadow-md">
-                          <Icon icon="ph:crown" fontSize=".7rem" />
+                        <div className="absolute p-1 border border-yellow-300 rounded-full shadow-md -top-3 -right-3">
+                          <Icon icon="ph:crown" fontSize=".7rem" className="text-yellow-300" />
                         </div>
                       )}
                     </div>
@@ -114,14 +130,15 @@ export const FamilyDetails = () => {
                       <p className="text-sm text-muted-foreground">{member.email}</p>
                     </div>
                   </div>
-                  {loggedOwner && member.id !== data.owner.id && (
+                  {/* Family owner validation goes here */}
+                  {member.id !== data.owner.id && (
                     <RemoveFamilyMemberAlertDialog memberId={member.id} />
                   )}
                 </div>
               ))}
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </section>
     </div>
   );
