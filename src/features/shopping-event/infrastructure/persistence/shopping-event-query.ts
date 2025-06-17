@@ -1,4 +1,4 @@
-import { HttpError, errorMapper, useQueryFactory } from '@/domain';
+import { HttpError, errorMapper } from '@/domain';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
@@ -21,19 +21,16 @@ import {
   FetchShoppingEventListParams,
   GetShoppingEventByIdParams,
   RemoveProductFromCartParams,
-  ShoppingEventListResponse,
   StartShoppingEventParams,
   StartShoppingEventResult,
   UpdateProductInCartParams,
 } from '@/features/shopping-event/domain';
 
 export const useGetShoppingEventListQuery = (params: FetchShoppingEventListParams) => {
-  const query = useQueryFactory<FetchShoppingEventListParams, ShoppingEventListResponse>({
-    queryKey: 'get-shopping-event-list',
-    queryFunction: {
-      fn: httpGetShoppingEventList,
-      params,
-    },
+  const query = useQuery({
+    queryKey: ['get-shopping-event-list', params],
+    queryFn: ({ queryKey }) =>
+      httpGetShoppingEventList(queryKey[1] as FetchShoppingEventListParams),
   });
 
   return { ...query };
