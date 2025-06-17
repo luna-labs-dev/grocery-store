@@ -26,6 +26,7 @@ export const useGetMarketListQuery = (params: FetchListParams) => {
       fn: httpGetMarketList,
       params,
     },
+    staleTime: 0,
   });
 
   return { ...query };

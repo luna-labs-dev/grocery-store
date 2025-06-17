@@ -16,7 +16,10 @@ httpClient.interceptors.response.use(undefined, async (error: AxiosError<HttpErr
   if (error.code === 'ERR_NETWORK' || !error.response) {
     const { code, message, name } = error;
     console.error({ code, message, name });
-    throw error;
+    throw {
+      code,
+      message,
+    };
   }
 
   const { data } = error.response;

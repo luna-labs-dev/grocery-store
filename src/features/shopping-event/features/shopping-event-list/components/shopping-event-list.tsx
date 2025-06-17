@@ -4,6 +4,7 @@ import { useGetShoppingEventListQuery } from '@/features/shopping-event/infrastr
 import { useState } from 'react';
 
 import { ShoppingEventItem } from './shopping-event-item';
+import { StartShoppingEvent } from './start-shopping-event';
 
 export const ShoppingEventList = () => {
   const [paginationParams, setPaginationParams] = useState<FetchShoppingEventListParams>({
@@ -20,15 +21,18 @@ export const ShoppingEventList = () => {
   }
 
   return (
-    <div>
-      <Pagination
-        paginationProps={{
-          paginationParams,
-          setPaginationParams,
-          listTotal: data?.total,
-          isFetching,
-        }}
-      />
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <StartShoppingEvent />
+        <Pagination
+          paginationProps={{
+            paginationParams,
+            setPaginationParams,
+            listTotal: data?.total,
+            isFetching,
+          }}
+        />
+      </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {data?.items.map((se) => (
           <ShoppingEventItem key={se.id} shoppingEvent={se} />
