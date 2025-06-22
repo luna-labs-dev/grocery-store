@@ -18,9 +18,9 @@ export const env = {
   baseConfig: {},
   backend: {
     baseUrl: VITE_backend_url,
-    domain: VITE_domain,
   },
   clerk: {
+    domain: VITE_domain,
     publishableKey: VITE_CLERK_PUBLISHABLE_KEY,
   },
 };
