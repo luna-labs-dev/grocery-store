@@ -14,8 +14,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     <ClerkProvider
       publishableKey={clerk.publishableKey}
       domain={clerk.domain}
-      isSatellite={true}
-      signInUrl={`https://${clerk.domain}`}
+      isSatellite={false}
+      // signInUrl={`https://${clerk.domain}`}
       appearance={{
         baseTheme: dark,
       }}
