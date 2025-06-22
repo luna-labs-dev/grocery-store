@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 const envVariables = z.object({
   VITE_backend_url: z.string(),
+  VITE_domain: z.string(),
   VITE_CLERK_PUBLISHABLE_KEY: z.string(),
 });
 
@@ -11,12 +12,13 @@ if (!parsedVariables.success) {
   throw new Error(parsedVariables.error.message);
 }
 
-const { VITE_backend_url, VITE_CLERK_PUBLISHABLE_KEY } = parsedVariables.data;
+const { VITE_domain, VITE_backend_url, VITE_CLERK_PUBLISHABLE_KEY } = parsedVariables.data;
 
 export const env = {
   baseConfig: {},
   backend: {
     baseUrl: VITE_backend_url,
+    domain: VITE_domain,
   },
   clerk: {
     publishableKey: VITE_CLERK_PUBLISHABLE_KEY,

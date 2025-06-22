@@ -7,12 +7,14 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-const { clerk } = env;
+const { clerk, backend } = env;
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   return (
     <ClerkProvider
       publishableKey={clerk.publishableKey}
+      domain={backend.domain}
+      isSatellite={true}
       appearance={{
         baseTheme: dark,
       }}
