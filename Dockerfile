@@ -4,7 +4,7 @@ WORKDIR /app
 COPY . .
 
 ARG VITE_CLERK_PUBLISHABLE_KEY
-ARG VITE_backend_url
+ARG VITE_BACKEND_URL
 
 RUN yarn && yarn build
 

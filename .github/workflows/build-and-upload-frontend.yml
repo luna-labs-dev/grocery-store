@@ -27,7 +27,7 @@ jobs:
         run: |
           docker build \
             --build-arg VITE_CLERK_PUBLISHABLE_KEY=${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }} \
-            --build-arg VITE_backend_url=${{ vars.VITE_backend_url }} \            
+            --build-arg VITE_BACKEND_URL=${{ vars.VITE_BACKEND_URL }} \            
             -t ${{ vars.DOCKER_REGISTRY }}/grocery-store-frontend:${{ steps.tag.outputs.tag }} .
 
           docker tag ${{ vars.DOCKER_REGISTRY }}/grocery-store-frontend:${{ steps.tag.outputs.tag }} ${{ vars.DOCKER_REGISTRY }}/grocery-store-frontend:latest
