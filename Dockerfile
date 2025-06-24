@@ -1,19 +1,24 @@
-# Stage 1
-ARG VITE_backend_url=${VITE_backend_url}
-ARG VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}
+FROM node:20-alpine AS builder
 
-FROM node:20-alpine AS react-build
 WORKDIR /app
-COPY . ./
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+COPY . .
+
 ARG VITE_CLERK_PUBLISHABLE_KEY
 ARG VITE_backend_url
-RUN yarn
-RUN yarn build
 
-# Stage 2 - the production environment
+RUN yarn && yarn build
+
+# Etapa 2: imagem final com Nginx
 FROM nginx:alpine
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=react-build /app/dist /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+
+RUN apk add --no-cache bash curl gettext
+
+# Copia nginx/template e script de substituição
+COPY proxy/nginx.template.conf /nginx.template.conf
+COPY proxy/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Copia os arquivos estáticos da UI
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+ENTRYPOINT ["/entrypoint.sh"]

@@ -1,0 +1,43 @@
+name: Build and Upload Frontend to MinIO
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get Git tag
+        id: tag
+        run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT   
+
+
+      - name: Log in to Docker registry        
+        run: docker login ${{vars.DOCKER_REGISTRY}} -u "${{ secrets.DOCKER_USERNAME }}" -p "${{secrets.DOCKER_PASSWORD}}"
+
+      - name: Build and push image
+        run: |
+          docker build \
+            --build-arg VITE_CLERK_PUBLISHABLE_KEY=${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }} \
+            --build-arg VITE_backend_url=${{ vars.VITE_backend_url }} \            
+            -t ${{ vars.DOCKER_REGISTRY }}/grocery-store-frontend:${{ steps.tag.outputs.tag }} .
+
+          docker tag ${{ vars.DOCKER_REGISTRY }}/grocery-store-frontend:${{ steps.tag.outputs.tag }} ${{ vars.DOCKER_REGISTRY }}/grocery-store-frontend:latest
+
+      - name: Push image to Docker registry
+        run: |
+          docker push ${{ vars.DOCKER_REGISTRY }}/grocery-store-frontend:${{ steps.tag.outputs.tag }}
+          docker push ${{ vars.DOCKER_REGISTRY }}/grocery-store-frontend:latest
+
+
+      - name: Trigger Proxy Refresh (optional)
+        run: |
+          curl https://lunalabs.com.br/api/deploy/compose/fjDOWSSZHXxvWkRjRzkjF
