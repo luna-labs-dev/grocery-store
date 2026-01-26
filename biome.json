@@ -7,7 +7,13 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!node_modules/", "!dist/", "!.vscode/"]
+    "includes": [
+      "**",
+      "!node_modules/",
+      "!dist/",
+      "!.vscode/",
+      "!src/routeTree.gen.ts"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -35,7 +41,8 @@
         "noUnusedImports": "error",
         "useExhaustiveDependencies": "off"
       }
-    }
+    },
+    "includes": ["**", "!src/routeTree.gen.ts"]
   },
   "javascript": {
     "formatter": {
