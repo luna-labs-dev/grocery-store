@@ -8,70 +8,252 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as rootRouteImport } from './routes/__root';
+import { Route as ProtectedAppFamilyIndexRouteImport } from './routes/_protected/app/family/index';
+import { Route as ProtectedAppIndexRouteImport } from './routes/_protected/app/index';
+import { Route as ProtectedAppLayoutRouteImport } from './routes/_protected/app/layout';
+import { Route as ProtectedAppMarketIndexRouteImport } from './routes/_protected/app/market/index';
+import { Route as ProtectedAppMarketNewMarketRouteImport } from './routes/_protected/app/market/new-market';
+import { Route as ProtectedAppMarketUpdateMarketIdRouteImport } from './routes/_protected/app/market/update/$marketId';
+import { Route as ProtectedAppShoppingEventShoppingEventIdRouteImport } from './routes/_protected/app/shopping-event/$shoppingEventId';
+import { Route as ProtectedAppShoppingEventIndexRouteImport } from './routes/_protected/app/shopping-event/index';
+import { Route as ProtectedAppShoppingEventStartShoppingEventRouteImport } from './routes/_protected/app/shopping-event/start-shopping-event';
+import { Route as PublicIndexRouteImport } from './routes/_public/index';
 
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
+const PublicIndexRoute = PublicIndexRouteImport.update({
+  id: '/_public/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
+const ProtectedAppIndexRoute = ProtectedAppIndexRouteImport.update({
+  id: '/_protected/app/',
+  path: '/app/',
+  getParentRoute: () => rootRouteImport,
+} as any);
+const ProtectedAppLayoutRoute = ProtectedAppLayoutRouteImport.update({
+  id: '/_protected/app/layout',
+  path: '/app/layout',
+  getParentRoute: () => rootRouteImport,
+} as any);
+const ProtectedAppShoppingEventIndexRoute =
+  ProtectedAppShoppingEventIndexRouteImport.update({
+    id: '/_protected/app/shopping-event/',
+    path: '/app/shopping-event/',
+    getParentRoute: () => rootRouteImport,
+  } as any);
+const ProtectedAppMarketIndexRoute = ProtectedAppMarketIndexRouteImport.update({
+  id: '/_protected/app/market/',
+  path: '/app/market/',
+  getParentRoute: () => rootRouteImport,
+} as any);
+const ProtectedAppFamilyIndexRoute = ProtectedAppFamilyIndexRouteImport.update({
+  id: '/_protected/app/family/',
+  path: '/app/family/',
+  getParentRoute: () => rootRouteImport,
+} as any);
+const ProtectedAppShoppingEventStartShoppingEventRoute =
+  ProtectedAppShoppingEventStartShoppingEventRouteImport.update({
+    id: '/_protected/app/shopping-event/start-shopping-event',
+    path: '/app/shopping-event/start-shopping-event',
+    getParentRoute: () => rootRouteImport,
+  } as any);
+const ProtectedAppShoppingEventShoppingEventIdRoute =
+  ProtectedAppShoppingEventShoppingEventIdRouteImport.update({
+    id: '/_protected/app/shopping-event/$shoppingEventId',
+    path: '/app/shopping-event/$shoppingEventId',
+    getParentRoute: () => rootRouteImport,
+  } as any);
+const ProtectedAppMarketNewMarketRoute =
+  ProtectedAppMarketNewMarketRouteImport.update({
+    id: '/_protected/app/market/new-market',
+    path: '/app/market/new-market',
+    getParentRoute: () => rootRouteImport,
+  } as any);
+const ProtectedAppMarketUpdateMarketIdRoute =
+  ProtectedAppMarketUpdateMarketIdRouteImport.update({
+    id: '/_protected/app/market/update/$marketId',
+    path: '/app/market/update/$marketId',
+    getParentRoute: () => rootRouteImport,
+  } as any);
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/': typeof PublicIndexRoute;
+  '/app/layout': typeof ProtectedAppLayoutRoute;
+  '/app/': typeof ProtectedAppIndexRoute;
+  '/app/market/new-market': typeof ProtectedAppMarketNewMarketRoute;
+  '/app/shopping-event/$shoppingEventId': typeof ProtectedAppShoppingEventShoppingEventIdRoute;
+  '/app/shopping-event/start-shopping-event': typeof ProtectedAppShoppingEventStartShoppingEventRoute;
+  '/app/family/': typeof ProtectedAppFamilyIndexRoute;
+  '/app/market/': typeof ProtectedAppMarketIndexRoute;
+  '/app/shopping-event/': typeof ProtectedAppShoppingEventIndexRoute;
+  '/app/market/update/$marketId': typeof ProtectedAppMarketUpdateMarketIdRoute;
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/': typeof PublicIndexRoute;
+  '/app/layout': typeof ProtectedAppLayoutRoute;
+  '/app': typeof ProtectedAppIndexRoute;
+  '/app/market/new-market': typeof ProtectedAppMarketNewMarketRoute;
+  '/app/shopping-event/$shoppingEventId': typeof ProtectedAppShoppingEventShoppingEventIdRoute;
+  '/app/shopping-event/start-shopping-event': typeof ProtectedAppShoppingEventStartShoppingEventRoute;
+  '/app/family': typeof ProtectedAppFamilyIndexRoute;
+  '/app/market': typeof ProtectedAppMarketIndexRoute;
+  '/app/shopping-event': typeof ProtectedAppShoppingEventIndexRoute;
+  '/app/market/update/$marketId': typeof ProtectedAppMarketUpdateMarketIdRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  __root__: typeof rootRouteImport;
+  '/_public/': typeof PublicIndexRoute;
+  '/_protected/app/layout': typeof ProtectedAppLayoutRoute;
+  '/_protected/app/': typeof ProtectedAppIndexRoute;
+  '/_protected/app/market/new-market': typeof ProtectedAppMarketNewMarketRoute;
+  '/_protected/app/shopping-event/$shoppingEventId': typeof ProtectedAppShoppingEventShoppingEventIdRoute;
+  '/_protected/app/shopping-event/start-shopping-event': typeof ProtectedAppShoppingEventStartShoppingEventRoute;
+  '/_protected/app/family/': typeof ProtectedAppFamilyIndexRoute;
+  '/_protected/app/market/': typeof ProtectedAppMarketIndexRoute;
+  '/_protected/app/shopping-event/': typeof ProtectedAppShoppingEventIndexRoute;
+  '/_protected/app/market/update/$marketId': typeof ProtectedAppMarketUpdateMarketIdRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about'
-  id: '__root__' | '/' | '/about'
-  fileRoutesById: FileRoutesById
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths:
+    | '/'
+    | '/app/layout'
+    | '/app/'
+    | '/app/market/new-market'
+    | '/app/shopping-event/$shoppingEventId'
+    | '/app/shopping-event/start-shopping-event'
+    | '/app/family/'
+    | '/app/market/'
+    | '/app/shopping-event/'
+    | '/app/market/update/$marketId';
+  fileRoutesByTo: FileRoutesByTo;
+  to:
+    | '/'
+    | '/app/layout'
+    | '/app'
+    | '/app/market/new-market'
+    | '/app/shopping-event/$shoppingEventId'
+    | '/app/shopping-event/start-shopping-event'
+    | '/app/family'
+    | '/app/market'
+    | '/app/shopping-event'
+    | '/app/market/update/$marketId';
+  id:
+    | '__root__'
+    | '/_public/'
+    | '/_protected/app/layout'
+    | '/_protected/app/'
+    | '/_protected/app/market/new-market'
+    | '/_protected/app/shopping-event/$shoppingEventId'
+    | '/_protected/app/shopping-event/start-shopping-event'
+    | '/_protected/app/family/'
+    | '/_protected/app/market/'
+    | '/_protected/app/shopping-event/'
+    | '/_protected/app/market/update/$marketId';
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
+  PublicIndexRoute: typeof PublicIndexRoute;
+  ProtectedAppLayoutRoute: typeof ProtectedAppLayoutRoute;
+  ProtectedAppIndexRoute: typeof ProtectedAppIndexRoute;
+  ProtectedAppMarketNewMarketRoute: typeof ProtectedAppMarketNewMarketRoute;
+  ProtectedAppShoppingEventShoppingEventIdRoute: typeof ProtectedAppShoppingEventShoppingEventIdRoute;
+  ProtectedAppShoppingEventStartShoppingEventRoute: typeof ProtectedAppShoppingEventStartShoppingEventRoute;
+  ProtectedAppFamilyIndexRoute: typeof ProtectedAppFamilyIndexRoute;
+  ProtectedAppMarketIndexRoute: typeof ProtectedAppMarketIndexRoute;
+  ProtectedAppShoppingEventIndexRoute: typeof ProtectedAppShoppingEventIndexRoute;
+  ProtectedAppMarketUpdateMarketIdRoute: typeof ProtectedAppMarketUpdateMarketIdRoute;
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+    '/_public/': {
+      id: '/_public/';
+      path: '/';
+      fullPath: '/';
+      preLoaderRoute: typeof PublicIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    '/_protected/app/': {
+      id: '/_protected/app/';
+      path: '/app';
+      fullPath: '/app/';
+      preLoaderRoute: typeof ProtectedAppIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    '/_protected/app/layout': {
+      id: '/_protected/app/layout';
+      path: '/app/layout';
+      fullPath: '/app/layout';
+      preLoaderRoute: typeof ProtectedAppLayoutRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    '/_protected/app/shopping-event/': {
+      id: '/_protected/app/shopping-event/';
+      path: '/app/shopping-event';
+      fullPath: '/app/shopping-event/';
+      preLoaderRoute: typeof ProtectedAppShoppingEventIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    '/_protected/app/market/': {
+      id: '/_protected/app/market/';
+      path: '/app/market';
+      fullPath: '/app/market/';
+      preLoaderRoute: typeof ProtectedAppMarketIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    '/_protected/app/family/': {
+      id: '/_protected/app/family/';
+      path: '/app/family';
+      fullPath: '/app/family/';
+      preLoaderRoute: typeof ProtectedAppFamilyIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    '/_protected/app/shopping-event/start-shopping-event': {
+      id: '/_protected/app/shopping-event/start-shopping-event';
+      path: '/app/shopping-event/start-shopping-event';
+      fullPath: '/app/shopping-event/start-shopping-event';
+      preLoaderRoute: typeof ProtectedAppShoppingEventStartShoppingEventRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    '/_protected/app/shopping-event/$shoppingEventId': {
+      id: '/_protected/app/shopping-event/$shoppingEventId';
+      path: '/app/shopping-event/$shoppingEventId';
+      fullPath: '/app/shopping-event/$shoppingEventId';
+      preLoaderRoute: typeof ProtectedAppShoppingEventShoppingEventIdRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    '/_protected/app/market/new-market': {
+      id: '/_protected/app/market/new-market';
+      path: '/app/market/new-market';
+      fullPath: '/app/market/new-market';
+      preLoaderRoute: typeof ProtectedAppMarketNewMarketRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    '/_protected/app/market/update/$marketId': {
+      id: '/_protected/app/market/update/$marketId';
+      path: '/app/market/update/$marketId';
+      fullPath: '/app/market/update/$marketId';
+      preLoaderRoute: typeof ProtectedAppMarketUpdateMarketIdRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
-}
+  PublicIndexRoute: PublicIndexRoute,
+  ProtectedAppLayoutRoute: ProtectedAppLayoutRoute,
+  ProtectedAppIndexRoute: ProtectedAppIndexRoute,
+  ProtectedAppMarketNewMarketRoute: ProtectedAppMarketNewMarketRoute,
+  ProtectedAppShoppingEventShoppingEventIdRoute:
+    ProtectedAppShoppingEventShoppingEventIdRoute,
+  ProtectedAppShoppingEventStartShoppingEventRoute:
+    ProtectedAppShoppingEventStartShoppingEventRoute,
+  ProtectedAppFamilyIndexRoute: ProtectedAppFamilyIndexRoute,
+  ProtectedAppMarketIndexRoute: ProtectedAppMarketIndexRoute,
+  ProtectedAppShoppingEventIndexRoute: ProtectedAppShoppingEventIndexRoute,
+  ProtectedAppMarketUpdateMarketIdRoute: ProtectedAppMarketUpdateMarketIdRoute,
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();

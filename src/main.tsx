@@ -2,10 +2,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import './index.css';
-import { createRouter, RouterProvider } from '@tanstack/react-router';
-import { routeTree } from './routeTree.gen.ts';
 
-const router = createRouter({ routeTree });
+import { Providers, type router } from '@/providers';
 
 declare module '@tanstack/react-router' {
   interface Register {
@@ -17,7 +15,7 @@ const root = document.getElementById('root');
 if (root) {
   createRoot(root).render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <Providers />
     </StrictMode>,
   );
 }
