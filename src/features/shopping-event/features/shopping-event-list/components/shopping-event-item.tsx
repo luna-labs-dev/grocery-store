@@ -29,7 +29,7 @@ export const ShoppingEventItem = ({
     <Card
       onClick={() => {
         navigate({
-          to: '/app/shopping-event/$shoppingEventId',
+          to: '/shopping-event/$shoppingEventId',
           params: { shoppingEventId: shoppingEvent.id },
           replace: true,
         });

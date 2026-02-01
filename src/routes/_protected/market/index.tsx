@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { MarketPage } from '@/features/market/features';
 import { useBreadCrumbs } from '@/hooks';
 
-export const Route = createFileRoute('/_protected/app/market/')({
+export const Route = createFileRoute('/_protected/market/')({
   component: RouteComponent,
 });
 
@@ -14,7 +14,7 @@ function RouteComponent() {
       [
         {
           label: 'Mercado',
-          to: '/app/market',
+          to: '/market',
         },
       ],
       {

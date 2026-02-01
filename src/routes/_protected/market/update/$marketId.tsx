@@ -3,11 +3,9 @@ import { useEffect } from 'react';
 import { UpdateMarketPage } from '@/features/market/features';
 import { useBreadCrumbs } from '@/hooks';
 
-export const Route = createFileRoute('/_protected/app/market/update/$marketId')(
-  {
-    component: RouteComponent,
-  },
-);
+export const Route = createFileRoute('/_protected/market/update/$marketId')({
+  component: RouteComponent,
+});
 
 function RouteComponent() {
   const { marketId } = Route.useParams();
@@ -17,11 +15,11 @@ function RouteComponent() {
       [
         {
           label: 'Mercado',
-          to: '/app/market',
+          to: '/market',
         },
         {
           label: 'Editar Mercado',
-          to: `/app/market/update/$marketId`,
+          to: '/market/update/$marketId',
         },
       ],
       {

@@ -2,11 +2,13 @@ import { Icon } from '@iconify/react';
 import { useClipboard } from '@mantine/hooks';
 import { Link, type LinkProps } from '@tanstack/react-router';
 import { toast } from 'sonner';
+import { SidebarUser } from './sidebar-user';
 import {
   Button,
   GroceryfyLogo,
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -43,7 +45,7 @@ export const AppSidebar = () => {
   const dashboards: MenuItem[] = [
     {
       title: 'Dashboard',
-      to: '/app',
+      to: '/dashboard',
       icon: 'ri:dashboard-line',
     },
   ];
@@ -51,17 +53,17 @@ export const AppSidebar = () => {
   const pages: MenuItem[] = [
     {
       title: 'Family',
-      to: '/app/family',
+      to: '/family',
       icon: 'material-symbols-light:family-group',
     },
     {
       title: 'Market',
-      to: '/app/market',
+      to: '/market',
       icon: 'lsicon:marketplace-outline',
     },
     {
       title: 'Shopping Event',
-      to: '/app/shopping-event',
+      to: '/shopping-event',
       icon: 'tabler:calendar-event',
     },
   ];
@@ -87,7 +89,7 @@ export const AppSidebar = () => {
               className="data-[slot=sidebar-menu-button]:p-2!"
             >
               <Link
-                to="/app"
+                to="/dashboard"
                 className="flex flex-col justify-center gap-2 transition-all duration-300 ease-in-out h-fit"
               >
                 <GroceryfyLogo iconOnly={!open} />
@@ -145,6 +147,9 @@ export const AppSidebar = () => {
           </SidebarGroup>
         ))}
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarUser />
+      </SidebarFooter>
     </Sidebar>
   );
 };

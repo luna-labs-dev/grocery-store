@@ -20,6 +20,7 @@ export const EndShoppingEventForm = ({
 }: EndShoppingEventFormProps) => {
   const form = useForm<FormInput>({
     resolver: zodResolver(FormInputSchema),
+    mode: 'onChange',
     defaultValues: {
       totalPaid: 0,
     },

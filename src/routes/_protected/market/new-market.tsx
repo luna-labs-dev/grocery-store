@@ -1,8 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect } from 'react';
+import { NewMarketPage } from '@/features/market/features';
 import { useBreadCrumbs } from '@/hooks';
 
-export const Route = createFileRoute('/_protected/app/')({
+export const Route = createFileRoute('/_protected/market/new-market')({
   component: RouteComponent,
 });
 
@@ -12,15 +13,18 @@ function RouteComponent() {
     addBreadcrumbs(
       [
         {
-          label: 'Dashboard',
-          to: '/app',
+          label: 'Mercado',
+          to: '/market',
+        },
+        {
+          label: 'Novo Mercado',
+          to: '/market/new-market',
         },
       ],
       {
-        title: 'Dashboard',
-        subTitle: 'Dashboard do projeto',
+        title: 'Novo Mercado',
       },
     );
   }, []);
-  return <div>Hello "/_authenticated/dashboard"!</div>;
+  return <NewMarketPage />;
 }

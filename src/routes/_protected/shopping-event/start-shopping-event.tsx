@@ -1,35 +1,32 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect } from 'react';
-import { ShoppingEventDetailsPage } from '@/features/shopping-event/features';
+import { StartShoppingEvent } from '@/features/shopping-event/features/shopping-event-list/components/start-shopping-event';
 import { useBreadCrumbs } from '@/hooks';
 
 export const Route = createFileRoute(
-  '/_protected/app/shopping-event/$shoppingEventId',
+  '/_protected/shopping-event/start-shopping-event',
 )({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { shoppingEventId } = Route.useParams();
-
   const { addBreadcrumbs } = useBreadCrumbs();
   useEffect(() => {
     addBreadcrumbs(
       [
         {
           label: 'Evento de compra',
-          to: '/app/shopping-event',
+          to: '/shopping-event',
         },
         {
-          label: 'Detalhes do evento',
-          to: `/app/shopping-event/$shoppingEventId`,
+          label: 'Iniciar evento de compra',
+          to: `/shopping-event/$shoppingEventId`,
         },
       ],
       {
-        title: 'Detalhes do Evento de compra',
+        title: 'Iniciar evento de compra',
       },
     );
   }, []);
-
-  return <ShoppingEventDetailsPage shoppingEventId={shoppingEventId} />;
+  return <StartShoppingEvent />;
 }

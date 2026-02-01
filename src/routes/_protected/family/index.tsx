@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect } from 'react';
-import { ShoppingEventPage } from '@/features/shopping-event/features';
+import { FamilyOnboardingPage } from '@/features/family/pages';
 import { useBreadCrumbs } from '@/hooks';
 
-export const Route = createFileRoute('/_protected/app/shopping-event/')({
+export const Route = createFileRoute('/_protected/family/')({
   component: RouteComponent,
 });
 
@@ -13,14 +13,15 @@ function RouteComponent() {
     addBreadcrumbs(
       [
         {
-          label: 'Evento de compra',
-          to: '/app/shopping-event',
+          label: 'Família',
+          to: '/family',
         },
       ],
       {
-        title: 'Evento de compra',
+        title: 'Familia',
       },
     );
   }, []);
-  return <ShoppingEventPage />;
+
+  return <FamilyOnboardingPage />;
 }

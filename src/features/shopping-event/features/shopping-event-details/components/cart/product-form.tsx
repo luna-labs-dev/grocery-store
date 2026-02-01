@@ -51,6 +51,7 @@ export const ProductForm = ({
 
   const form = useForm<FormInput>({
     resolver: zodResolver(FormInputSchema),
+    mode: 'onChange',
     defaultValues: isUpdate
       ? {
           name: product.name,

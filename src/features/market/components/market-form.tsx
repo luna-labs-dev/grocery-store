@@ -18,7 +18,7 @@ import {
 } from '@/features/market/infrastructure';
 
 const FormInputSchema = z.object({
-  marketName: z.string(),
+  marketName: z.string().min(3, 'O nome deve ter no mínimo 3 caracteres'),
 });
 
 type FormInput = z.infer<typeof FormInputSchema>;
@@ -39,6 +39,7 @@ export const MarketForm = ({ updateProps }: MarketFormProps) => {
 
   const form = useForm<FormInput>({
     resolver: zodResolver(FormInputSchema),
+    mode: 'onChange',
     defaultValues: {
       marketName: '',
     },
@@ -61,7 +62,7 @@ export const MarketForm = ({ updateProps }: MarketFormProps) => {
     if (updateProps?.setOpen) {
       updateProps.setOpen(false);
     }
-    navigate({ to: '/app/market' });
+    navigate({ to: '/market' });
   };
 
   const onSubmit = async (values: FormInput) => {

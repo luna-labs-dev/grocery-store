@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect } from 'react';
-import { NewMarketPage } from '@/features/market/features';
+import { ShoppingEventPage } from '@/features/shopping-event/features';
 import { useBreadCrumbs } from '@/hooks';
 
-export const Route = createFileRoute('/_protected/app/market/new-market')({
+export const Route = createFileRoute('/_protected/shopping-event/')({
   component: RouteComponent,
 });
 
@@ -13,18 +13,14 @@ function RouteComponent() {
     addBreadcrumbs(
       [
         {
-          label: 'Mercado',
-          to: '/app/market',
-        },
-        {
-          label: 'Novo Mercado',
-          to: `/app/market/new-market`,
+          label: 'Evento de compra',
+          to: '/shopping-event',
         },
       ],
       {
-        title: 'Novo Mercado',
+        title: 'Evento de compra',
       },
     );
   }, []);
-  return <NewMarketPage />;
+  return <ShoppingEventPage />;
 }

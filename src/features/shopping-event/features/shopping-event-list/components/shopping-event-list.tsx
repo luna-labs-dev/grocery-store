@@ -28,7 +28,7 @@ export const ShoppingEventList = () => {
         <Button
           onClick={() =>
             navigate({
-              to: '/app/shopping-event/start-shopping-event',
+              to: '/shopping-event/start-shopping-event',
             })
           }
         >

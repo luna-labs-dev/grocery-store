@@ -16,6 +16,7 @@ export const JoinFamilyForm = () => {
 
   const form = useForm<JoinFamilyInput>({
     resolver: zodResolver(JoinFamilyInputSchema),
+    mode: 'onChange',
     defaultValues: {
       inviteCode: '',
     },

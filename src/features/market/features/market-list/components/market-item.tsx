@@ -1,5 +1,4 @@
 import { Link, useNavigate } from '@tanstack/react-router';
-import { UpdateMarketDialog } from '../../update-market/update-market-dialog';
 import {
   Button,
   Card,
@@ -27,18 +26,11 @@ export const MarketItem = ({ market }: MarketItemParams) => {
       <CardContent>
         <div className="flex justify-end gap-2">
           <div>
-            <UpdateMarketDialog
-              options={{
-                triggerName: 'Editar',
-                marketId: market.id,
-              }}
-            />
             <Link
-              to={`/app/market/update/$marketId`}
+              to={'/market/update/$marketId'}
               params={{
                 marketId: market.id,
               }}
-              className="block md:hidden"
             >
               <Button size={'sm'}>Editar</Button>
             </Link>
@@ -52,7 +44,7 @@ export const MarketItem = ({ market }: MarketItemParams) => {
                   marketId: market.id,
                 });
                 navigate({
-                  to: '/app/shopping-event/$shoppingEventId',
+                  to: '/shopping-event/$shoppingEventId',
                   params: {
                     shoppingEventId: shoppingEvent.id,
                   },

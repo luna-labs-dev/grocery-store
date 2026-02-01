@@ -24,6 +24,7 @@ export const CreateFamilyForm = () => {
 
   const form = useForm<CreateFamilyInput>({
     resolver: zodResolver(CreateFamilyInputSchema),
+    mode: 'onChange',
     defaultValues: {
       name: '',
       description: '',

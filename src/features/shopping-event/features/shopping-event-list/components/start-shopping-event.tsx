@@ -94,7 +94,7 @@ export const StartShoppingEvent = () => {
             if (value) {
               const shoppingEvent = await mutateAsync({ marketId: value.id });
               navigate({
-                to: `/app/shopping-event/$shoppingEventId`,
+                to: '/shopping-event/$shoppingEventId',
                 params: { shoppingEventId: shoppingEvent.id },
                 replace: true,
               });
