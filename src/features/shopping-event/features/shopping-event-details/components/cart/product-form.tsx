@@ -24,10 +24,10 @@ import {
 
 const FormInputSchema = z.object({
   name: z.string().min(2),
-  amount: z.number().int().gt(0),
-  wholesaleMinAmount: z.number().optional(),
-  price: z.number().min(0.01),
-  wholesalePrice: z.number().optional(),
+  amount: z.coerce.number().int().gt(0),
+  wholesaleMinAmount: z.coerce.number().optional(),
+  price: z.coerce.number().min(0.01),
+  wholesalePrice: z.coerce.number().optional(),
 });
 
 type FormInput = z.infer<typeof FormInputSchema>;
@@ -141,25 +141,6 @@ export const ProductForm = ({
               {...field}
               aria-invalid={fieldState.invalid}
               placeholder="Nome do Produto"
-            />
-            {fieldState.invalid ? (
-              <FieldError>{fieldState.error?.message}</FieldError>
-            ) : (
-              <FieldDescription>Quantidade</FieldDescription>
-            )}
-          </Field>
-        )}
-      />
-      <Controller
-        control={control}
-        name="amount"
-        render={({ field, fieldState }) => (
-          <Field aria-invalid={fieldState.invalid}>
-            <FieldLabel>{field.name}</FieldLabel>
-            <Input
-              {...field}
-              aria-invalid={fieldState.invalid}
-              placeholder="Quantade de Produto(s)"
             />
             {fieldState.invalid ? (
               <FieldError>{fieldState.error?.message}</FieldError>
