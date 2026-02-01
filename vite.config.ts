@@ -20,7 +20,16 @@ export default defineConfig(({ mode }) => {
       react(),
       tailwindcss(),
     ],
-    server: { port },
+    server: {
+      port,
+      proxy: {
+        '/api': {
+          target: 'https://dev-grocery-store-backend.lunalabs.com.br',
+          changeOrigin: true,
+          secure: false,
+        },
+      },
+    },
     preview: { port },
 
     resolve: {
