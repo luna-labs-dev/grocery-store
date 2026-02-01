@@ -1,33 +1,33 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
 import {
   Button,
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
   Input,
   Label,
   MoneyInput,
   Switch,
 } from '@/components';
-import { AddProductToCartSuccessResult, Product } from '@/features/shopping-event/domain';
+import type {
+  AddProductToCartSuccessResult,
+  Product,
+} from '@/features/shopping-event/domain';
 import {
   useAddProductCartMutation,
   useUpdateProductInCartMutation,
 } from '@/features/shopping-event/infrastructure';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 const FormInputSchema = z.object({
   name: z.string().min(2),
-  amount: z.number().int().gt(0),
-  wholesaleMinAmount: z.number().optional(),
-  price: z.number().min(0.01),
-  wholesalePrice: z.number().optional(),
+  amount: z.coerce.number().int().gt(0),
+  wholesaleMinAmount: z.coerce.number().optional(),
+  price: z.coerce.number().min(0.01),
+  wholesalePrice: z.coerce.number().optional(),
 });
 
 type FormInput = z.infer<typeof FormInputSchema>;
@@ -38,7 +38,11 @@ interface ProductFormProps {
   product?: Product;
 }
 
-export const ProductForm = ({ setOpen, shoppingEventId, product }: ProductFormProps) => {
+export const ProductForm = ({
+  setOpen,
+  shoppingEventId,
+  product,
+}: ProductFormProps) => {
   const [isWholesale, setIsWholesale] = useState<boolean>(false);
   const isUpdate = !!product;
   useEffect(() => {
@@ -47,6 +51,7 @@ export const ProductForm = ({ setOpen, shoppingEventId, product }: ProductFormPr
 
   const form = useForm<FormInput>({
     resolver: zodResolver(FormInputSchema),
+    mode: 'onChange',
     defaultValues: isUpdate
       ? {
           name: product.name,
@@ -67,7 +72,8 @@ export const ProductForm = ({ setOpen, shoppingEventId, product }: ProductFormPr
   const { control, handleSubmit, reset } = form;
 
   const { mutateAsync: mutateAddProductAsync } = useAddProductCartMutation();
-  const { mutateAsync: mutateUpdateProductAsync } = useUpdateProductInCartMutation();
+  const { mutateAsync: mutateUpdateProductAsync } =
+    useUpdateProductInCartMutation();
 
   const onFinished = () => {
     setOpen(false);
@@ -83,7 +89,9 @@ export const ProductForm = ({ setOpen, shoppingEventId, product }: ProductFormPr
           name: values.name,
           amount: values.amount,
           price: values.price,
-          wholesaleMinAmount: isWholesale ? values.wholesaleMinAmount : undefined,
+          wholesaleMinAmount: isWholesale
+            ? values.wholesaleMinAmount
+            : undefined,
           wholesalePrice: isWholesale ? values.wholesalePrice : undefined,
         },
       });
@@ -96,7 +104,9 @@ export const ProductForm = ({ setOpen, shoppingEventId, product }: ProductFormPr
           name: values.name,
           amount: values.amount,
           price: values.price,
-          wholesaleMinAmount: isWholesale ? values.wholesaleMinAmount : undefined,
+          wholesaleMinAmount: isWholesale
+            ? values.wholesaleMinAmount
+            : undefined,
           wholesalePrice: isWholesale ? values.wholesalePrice : undefined,
         },
       });
@@ -107,7 +117,10 @@ export const ProductForm = ({ setOpen, shoppingEventId, product }: ProductFormPr
     }
   };
 
-  const handleAmountChange = (realChangeFn: (realValue?: number) => void, value: string) => {
+  const handleAmountChange = (
+    realChangeFn: (realValue?: number) => void,
+    value: string,
+  ) => {
     const textDigits = value.trim().replace(/\D/g, '');
 
     const digits = Number(textDigits);
@@ -117,92 +130,111 @@ export const ProductForm = ({ setOpen, shoppingEventId, product }: ProductFormPr
     realChangeFn(digits);
   };
   return (
-    <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <FormField
-          control={control}
-          name="name"
-          render={({ field, fieldState: { error } }) => (
-            <FormItem>
-              <FormLabel>Nome</FormLabel>
-              <FormControl>
-                <Input placeholder="Nome do Produto" {...field} />
-              </FormControl>
-              {error && <FormDescription>{error.message}</FormDescription>}
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="amount"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Quantidade</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Quantidade"
-                  {...field}
-                  type="text"
-                  value={field.value}
-                  onChange={(event) => handleAmountChange(field.onChange, event.target.value)}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <MoneyInput form={form} label="Preço" name="price" placeholder="Valor do produto" />
-        <div className="flex items-center space-x-2">
-          <Switch id="airplane-mode" checked={isWholesale} onCheckedChange={setIsWholesale} />
-          <Label htmlFor="airplane-mode">atacado</Label>
-        </div>
-        {isWholesale && (
-          <div className="flex flex-col gap-4">
-            <FormField
-              control={control}
-              name="wholesaleMinAmount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quantidade atacado</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Quantidade mín. atacado"
-                      {...field}
-                      type="text"
-                      onChange={(event) => handleAmountChange(field.onChange, event.target.value)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  <FormDescription>Digite aqui a quantidade</FormDescription>
-                </FormItem>
-              )}
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <Controller
+        control={control}
+        name="name"
+        render={({ field, fieldState }) => (
+          <Field aria-invalid={fieldState.invalid}>
+            <FieldLabel>{field.name}</FieldLabel>
+            <Input
+              {...field}
+              aria-invalid={fieldState.invalid}
+              placeholder="Nome do Produto"
             />
-            <MoneyInput
-              form={form}
-              label="Preço atacado"
-              name="wholesalePrice"
-              placeholder="Valor do produto"
-            />
-          </div>
+            {fieldState.invalid ? (
+              <FieldError>{fieldState.error?.message}</FieldError>
+            ) : (
+              <FieldDescription>Quantidade</FieldDescription>
+            )}
+          </Field>
         )}
-        <div className="grid grid-cols-2 gap-4">
-          <Button
-            variant={'outline'}
-            type="button"
-            className="w-full"
-            onClick={() => {
-              reset();
-              onFinished();
-            }}
-          >
-            Cancelar
-          </Button>
+      />
 
-          <Button type="submit" className="w-full md:w-24">
-            {isUpdate ? 'Atualizar' : 'Adicionar'}
-          </Button>
+      <Controller
+        control={control}
+        name="amount"
+        render={({ field, fieldState }) => (
+          <Field aria-invalid={fieldState.invalid}>
+            <FieldLabel>{field.name}</FieldLabel>
+            <Input
+              {...field}
+              aria-invalid={fieldState.invalid}
+              placeholder="Quantade de Produto(s)"
+            />
+            {fieldState.invalid ? (
+              <FieldError>{fieldState.error?.message}</FieldError>
+            ) : (
+              <FieldDescription>Quantidade</FieldDescription>
+            )}
+          </Field>
+        )}
+      />
+
+      <MoneyInput
+        form={form}
+        label="Preço"
+        name="price"
+        placeholder="Valor do produto"
+      />
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="airplane-mode"
+          checked={isWholesale}
+          onCheckedChange={setIsWholesale}
+        />
+        <Label htmlFor="airplane-mode">atacado</Label>
+      </div>
+      {isWholesale && (
+        <div className="flex flex-col gap-4">
+          <Controller
+            control={control}
+            name="wholesaleMinAmount"
+            render={({ field, fieldState }) => (
+              <Field aria-invalid={fieldState.invalid}>
+                <FieldLabel>{field.name}</FieldLabel>
+                <Input
+                  {...field}
+                  aria-invalid={fieldState.invalid}
+                  placeholder="Quantidade mín. atacado"
+                  onChange={(event) =>
+                    handleAmountChange(field.onChange, event.target.value)
+                  }
+                />
+                {fieldState.invalid ? (
+                  <FieldError>{fieldState.error?.message}</FieldError>
+                ) : (
+                  <FieldDescription>Quantidade</FieldDescription>
+                )}
+              </Field>
+            )}
+          />
+
+          <MoneyInput
+            form={form}
+            label="Preço atacado"
+            name="wholesalePrice"
+            placeholder="Valor do produto"
+          />
         </div>
-      </form>
-    </Form>
+      )}
+      <div className="grid grid-cols-2 gap-4">
+        <Button
+          variant={'outline'}
+          type="button"
+          className="w-full"
+          onClick={() => {
+            reset();
+            onFinished();
+          }}
+        >
+          Cancelar
+        </Button>
+
+        <Button type="submit" className="w-full md:w-24">
+          {isUpdate ? 'Atualizar' : 'Adicionar'}
+        </Button>
+      </div>
+    </form>
   );
 };

@@ -1,18 +1,22 @@
-import { Button, KeyValue } from '@/components';
-import { fCurrency } from '@/domain';
-
 import { Icon } from '@iconify/react';
+import type {
+  QueryObserverResult,
+  RefetchOptions,
+} from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-
-import { Product, ShoppingEventStatus } from '@/features/shopping-event/domain';
-import { cn } from '@/lib/utils';
-import { QueryObserverResult, RefetchOptions } from '@tanstack/react-query';
 import {
   AddProductToCartSheet,
   RemoveProductFromCartDialog,
   UpdateProductInCartSheet,
 } from './cart';
+import { Button, KeyValue } from '@/components';
+import { fCurrency } from '@/domain';
+import type {
+  Product,
+  ShoppingEventStatus,
+} from '@/features/shopping-event/domain';
+import { cn } from '@/lib/utils';
 
 interface ShoppingEventDetailsProductsProps {
   products: Product[];
@@ -54,10 +58,15 @@ export const ShoppingEventDetailsProducts = ({
       <div className="flex flex-col gap-2">
         {products.map((product) => {
           return (
-            <div key={product.id} className="flex flex-col p-4 border rounded-lg md:w-[32rem]">
+            <div
+              key={product.id}
+              className="flex flex-col p-4 border rounded-lg md:w-lg"
+            >
               <div className="flex justify-between ">
                 <p className="text-sm">{product.name}</p>
-                <p className="text-sm">{format(product.addedAt, 'HH:mm:ss', { locale: ptBR })}</p>
+                <p className="text-sm">
+                  {format(product.addedAt, 'HH:mm:ss', { locale: ptBR })}
+                </p>
               </div>
               <div className="grid grid-cols-3">
                 <KeyValue
@@ -97,12 +106,18 @@ export const ShoppingEventDetailsProducts = ({
               </div>
               {shoppingEventStatus === 'ONGOING' && (
                 <div className="flex justify-end gap-2">
-                  <UpdateProductInCartSheet shoppingEventId={shoppingEventId} product={product}>
+                  <UpdateProductInCartSheet
+                    shoppingEventId={shoppingEventId}
+                    product={product}
+                  >
                     <Button size="sm">
                       <Icon icon="mingcute:edit-2-line" />
                     </Button>
                   </UpdateProductInCartSheet>
-                  <RemoveProductFromCartDialog shoppingEventId={shoppingEventId} product={product}>
+                  <RemoveProductFromCartDialog
+                    shoppingEventId={shoppingEventId}
+                    product={product}
+                  >
                     <Button size="sm" variant="destructive">
                       <Icon icon="mingcute:delete-2-line" />
                     </Button>

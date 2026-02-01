@@ -13,7 +13,9 @@ export const useFamilyOnboardingContext = () => {
   const context = useContext(FamilyOnboardingContext);
 
   if (!context) {
-    throw new Error('FamilyOnboardingContext must be used within a FamilyOnboardingProvider');
+    throw new Error(
+      'FamilyOnboardingContext must be used within a FamilyOnboardingProvider',
+    );
   }
   return context;
 };

@@ -1,8 +1,8 @@
-import { Button, Form, MoneyInput } from '@/components';
-import { useEndShoppingEventMutation } from '@/features/shopping-event/infrastructure';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { Button, MoneyInput } from '@/components';
+import { useEndShoppingEventMutation } from '@/features/shopping-event/infrastructure';
 
 const FormInputSchema = z.object({
   totalPaid: z.number().min(0.01),
@@ -14,9 +14,13 @@ interface EndShoppingEventFormProps {
   shoppingEventId: string;
   setOpen: (value: boolean) => void;
 }
-export const EndShoppingEventForm = ({ shoppingEventId, setOpen }: EndShoppingEventFormProps) => {
+export const EndShoppingEventForm = ({
+  shoppingEventId,
+  setOpen,
+}: EndShoppingEventFormProps) => {
   const form = useForm<FormInput>({
     resolver: zodResolver(FormInputSchema),
+    mode: 'onChange',
     defaultValues: {
       totalPaid: 0,
     },
@@ -43,31 +47,29 @@ export const EndShoppingEventForm = ({ shoppingEventId, setOpen }: EndShoppingEv
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <MoneyInput
-          form={form}
-          label="Total Pago"
-          name="totalPaid"
-          placeholder="Total a ser pago"
-        />
-        <div className="grid grid-cols-2 gap-4">
-          <Button
-            variant={'outline'}
-            type="button"
-            className="w-full"
-            onClick={() => {
-              onFinished();
-            }}
-          >
-            Cancelar
-          </Button>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <MoneyInput
+        form={form}
+        label="Total Pago"
+        name="totalPaid"
+        placeholder="Total a ser pago"
+      />
+      <div className="grid grid-cols-2 gap-4">
+        <Button
+          variant={'outline'}
+          type="button"
+          className="w-full"
+          onClick={() => {
+            onFinished();
+          }}
+        >
+          Cancelar
+        </Button>
 
-          <Button type="submit" className="w-full md:w-24">
-            Finalizar
-          </Button>
-        </div>
-      </form>
-    </Form>
+        <Button type="submit" className="w-full md:w-24">
+          Finalizar
+        </Button>
+      </div>
+    </form>
   );
 };

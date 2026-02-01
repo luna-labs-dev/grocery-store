@@ -1,2 +1,2 @@
-export * from './routes';
 export * from './domain';
+export * from './routes';

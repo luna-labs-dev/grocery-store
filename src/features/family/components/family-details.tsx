@@ -1,3 +1,9 @@
+import { Icon } from '@iconify/react';
+import { useClipboard } from '@mantine/hooks';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { toast } from 'sonner';
+import { RemoveFamilyMemberAlertDialog } from './remove-family-member-alert-dialog';
 import {
   Avatar,
   AvatarFallback,
@@ -5,19 +11,12 @@ import {
   Button,
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components';
 import { getInitials, unsecuredCopyToClipboard } from '@/domain';
-
-import { CardDescription } from '@/components';
 import { useGetFamilyQuery } from '@/features/family/infrastructure';
-import { Icon } from '@iconify/react';
-import { useClipboard } from '@mantine/hooks';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { toast } from 'sonner';
-import { RemoveFamilyMemberAlertDialog } from './remove-family-member-alert-dialog';
 
 export const FamilyDetails = () => {
   const { data, isLoading } = useGetFamilyQuery();
@@ -51,7 +50,9 @@ export const FamilyDetails = () => {
               <div className="flex flex-col gap-0">
                 <span className="text-xs font-bold">criado em</span>
                 <p className="text-sm">
-                  {format(data.createdAt, 'EEEEEE - dd/MM/yyyy HH:mm:ss ', { locale: ptBR })}
+                  {format(data.createdAt, 'EEEEEE - dd/MM/yyyy HH:mm:ss ', {
+                    locale: ptBR,
+                  })}
                 </p>
               </div>
             </div>
@@ -74,10 +75,13 @@ export const FamilyDetails = () => {
                           unsecuredCopyToClipboard(data.inviteCode);
                         }
 
-                        toast('Código de convite copiado para a área de transferência', {
-                          position: 'top-center',
-                          invert: true,
-                        });
+                        toast(
+                          'Código de convite copiado para a área de transferência',
+                          {
+                            position: 'top-center',
+                            invert: true,
+                          },
+                        );
                       }}
                     >
                       <Icon icon="gravity-ui:copy" />
@@ -121,13 +125,21 @@ export const FamilyDetails = () => {
                       </Avatar>
                       {member.id === data.owner.id && (
                         <div className="absolute p-1 border border-yellow-300 rounded-full shadow-md -top-3 -right-3">
-                          <Icon icon="ph:crown" fontSize=".7rem" className="text-yellow-300" />
+                          <Icon
+                            icon="ph:crown"
+                            fontSize=".7rem"
+                            className="text-yellow-300"
+                          />
                         </div>
                       )}
                     </div>
                     <div>
-                      <p className="text-sm font-medium leading-none">{member.name}</p>
-                      <p className="text-sm text-muted-foreground">{member.email}</p>
+                      <p className="text-sm font-medium leading-none">
+                        {member.name}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {member.email}
+                      </p>
                     </div>
                   </div>
                   {/* Family owner validation goes here */}

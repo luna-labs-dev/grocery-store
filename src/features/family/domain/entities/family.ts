@@ -1,4 +1,4 @@
-import { Entity } from '../../../../domain/core';
+import type { Entity } from '../../../../domain/core';
 
 export interface User extends Entity {
   name: string;
@@ -17,7 +17,8 @@ export interface Family extends Entity {
   createdBy: string;
 }
 
-export interface CreateFamilyParams extends Pick<Family, 'name' | 'description'> {}
+export interface CreateFamilyParams
+  extends Pick<Family, 'name' | 'description'> {}
 
 export interface JoinFamilyParams extends Pick<Family, 'inviteCode'> {}
 

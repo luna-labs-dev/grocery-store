@@ -1,6 +1,6 @@
-import { httpClient } from '@/config/clients';
-import { RemoveProductFromCartParams } from '@/features/shopping-event/domain';
 import { isAxiosError } from 'axios';
+import { httpClient } from '@/config/clients';
+import type { RemoveProductFromCartParams } from '@/features/shopping-event/domain';
 
 export const httpRemoveProductFromCart = async ({
   shoppingEventId,

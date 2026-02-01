@@ -1,6 +1,6 @@
 import { KeyValueWithIcon } from '@/components';
 import { fCurrency } from '@/domain';
-import { ShoppingEventCalculatedTotals } from '@/features/shopping-event/domain';
+import type { ShoppingEventCalculatedTotals } from '@/features/shopping-event/domain';
 
 interface ShoppingEventDetailsTotalsProps {
   calculatedTotals: ShoppingEventCalculatedTotals;

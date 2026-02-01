@@ -1,9 +1,6 @@
-import { useParams } from 'react-router-dom';
-
 import { MarketForm } from '../../components';
 
-export const UpdateMarketPage = () => {
-  const { marketId } = useParams();
+export const UpdateMarketPage = ({ marketId }: { marketId: string }) => {
   return (
     <div className="py-4">
       <MarketForm updateProps={{ marketId }} />

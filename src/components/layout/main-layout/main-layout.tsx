@@ -1,8 +1,9 @@
-import { useBreadCrumbs } from '@/hooks';
-import { ReactNode } from 'react';
-
+import type { ReactNode } from 'react';
+import { AppSidebar } from './app-sidebar';
 import { Breadcrumbs } from './breadcrumbs';
-import { Navigation } from './navigation';
+import { Separator, SidebarInset, SidebarTrigger } from '@/components';
+import { useBreadCrumbs } from '@/hooks';
+import { ModeToggle } from '@/providers';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -11,19 +12,32 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const { currentPage } = useBreadCrumbs();
 
   return (
-    <div className="flex flex-col gap-4 pt-4">
-      <div className="flex items-center gap-4 px-4 pt-2">
-        <Navigation />
-        <div className="flex flex-col items-baseline md:gap-2 md:flex-row">
-          <h1 className="text-2xl font-bold">{currentPage.title}</h1>
-          {currentPage.subTitle && <span className="hidden md:block">|</span>}
-          <h2 className="font-light text-md">{currentPage.subTitle}</h2>
-        </div>
-      </div>
-      <div className="px-4 pt-4">
-        <Breadcrumbs />
-        {children}
-      </div>
-    </div>
+    <>
+      <AppSidebar />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 justify-between">
+          <div className="flex shrink-0 items-center gap-2">
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+              orientation="vertical"
+              className="mr-2 data-[orientation=vertical]:h-4"
+            />
+            <Breadcrumbs />
+          </div>
+          <ModeToggle />
+        </header>
+        <main className="px-4 pt-4 flex flex-col gap-2">
+          <div>
+            <h1 className="text-base font-semibold">{currentPage.title}</h1>
+            {currentPage.subTitle && (
+              <p className="text-sm text-muted-foreground">
+                {currentPage.subTitle}
+              </p>
+            )}
+          </div>
+          {children}
+        </main>
+      </SidebarInset>
+    </>
   );
 };

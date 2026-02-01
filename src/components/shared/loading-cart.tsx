@@ -6,7 +6,11 @@ interface LoadingCartProps {
   className?: string;
 }
 
-export function LoadingCart({ size = 40, color = '#8b5cf6', className = '' }: LoadingCartProps) {
+export function LoadingCart({
+  size = 40,
+  color = '#8b5cf6',
+  className = '',
+}: LoadingCartProps) {
   return (
     <div
       className={`relative w-[160px] h-[80px] flex items-center justify-center overflow-hidden rounded-xl ${className}`}
@@ -50,7 +54,12 @@ export function LoadingCart({ size = 40, color = '#8b5cf6', className = '' }: Lo
       {/* Carrinho em movimento */}
       <div className="relative z-20 animate-cart-move-modern">
         <div className="animate-cart-tilt-subtle">
-          <ShoppingCart size={size} color={color} strokeWidth={2} className="drop-shadow-lg" />
+          <ShoppingCart
+            size={size}
+            color={color}
+            strokeWidth={2}
+            className="drop-shadow-lg"
+          />
         </div>
       </div>
     </div>

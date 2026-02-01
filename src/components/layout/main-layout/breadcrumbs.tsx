@@ -1,13 +1,13 @@
+import { Link } from '@tanstack/react-router';
+import React from 'react';
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from '@/components/shadcn';
+} from '@/components';
 import { useBreadCrumbs } from '@/hooks/use-breadcrumbs';
-import React from 'react';
-import { Link } from 'react-router-dom';
 
 export const Breadcrumbs = () => {
   const { breadcrumbs } = useBreadCrumbs();
@@ -17,7 +17,7 @@ export const Breadcrumbs = () => {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link to={'/'}>Home</Link>
+            <Link to={'/app'}>Home</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />

@@ -1,2 +1,2 @@
-export * from './format-number';
 export * from './format-name';
+export * from './format-number';

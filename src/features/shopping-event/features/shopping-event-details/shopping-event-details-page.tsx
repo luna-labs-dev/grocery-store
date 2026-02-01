@@ -1,16 +1,18 @@
-import { useGetShoppingEventByIdQuery } from '@/features/shopping-event/infrastructure';
-import { useParams } from 'react-router-dom';
-
 import {
   ShoppingEventDetailsHeader,
   ShoppingEventDetailsProducts,
   ShoppingEventDetailsTotals,
 } from './components';
+import { useGetShoppingEventByIdQuery } from '@/features/shopping-event/infrastructure';
 
-export const ShoppingEventDetailsPage = () => {
-  const { shoppingEventId } = useParams();
-
-  const { data, refetch, isFetching } = useGetShoppingEventByIdQuery({ shoppingEventId });
+export const ShoppingEventDetailsPage = ({
+  shoppingEventId,
+}: {
+  shoppingEventId: string;
+}) => {
+  const { data, refetch, isFetching } = useGetShoppingEventByIdQuery({
+    shoppingEventId,
+  });
 
   if (!data) {
     return <div>No data</div>;

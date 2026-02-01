@@ -1,18 +1,22 @@
-import { Toaster } from '@/components';
-import { AuthProvider } from './auth-provider';
-import { QueryProvider } from './query-provider';
+import { ClerkProvider } from '@clerk/clerk-react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from './router-provider';
 import { ThemeProvider } from './theme-provider';
+import { SidebarProvider } from '@/components';
+import { env } from '@/config';
 
 export const Providers = () => {
+  const queryClient = new QueryClient();
+
   return (
-    <AuthProvider>
-      <QueryProvider>
-        <ThemeProvider>
-          <RouterProvider />
-          <Toaster />
-        </ThemeProvider>
-      </QueryProvider>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <ClerkProvider publishableKey={env.clerk.publishableKey}>
+          <SidebarProvider>
+            <RouterProvider />
+          </SidebarProvider>
+        </ClerkProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 };

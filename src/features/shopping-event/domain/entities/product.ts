@@ -1,4 +1,4 @@
-import { Entity } from '@/domain';
+import type { Entity } from '@/domain';
 
 export interface Product extends Entity {
   name: string;
@@ -9,7 +9,8 @@ export interface Product extends Entity {
   addedAt: Date;
 }
 
-export interface AddProductToCartInputParams extends Pick<Product, 'name' | 'amount' | 'price'> {
+export interface AddProductToCartInputParams
+  extends Pick<Product, 'name' | 'amount' | 'price'> {
   wholesaleMinAmount?: number;
   wholesalePrice?: number;
 }
@@ -28,4 +29,5 @@ export interface RemoveProductFromCartParams {
   productId: string;
 }
 
-export interface AddProductToCartSuccessResult extends Pick<Product, 'id' | 'addedAt'> {}
+export interface AddProductToCartSuccessResult
+  extends Pick<Product, 'id' | 'addedAt'> {}

@@ -1,19 +1,16 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { useFamilyOnboardingContext } from './family-onboarding-context';
 import {
   Button,
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
+  Field,
+  FieldDescription,
+  FieldLabel,
   Input,
   Textarea,
 } from '@/components';
 import { useCreateFamilyMutation } from '@/features/family/infrastructure';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { useFamilyOnboardingContext } from './family-onboarding-context';
 
 const CreateFamilyInputSchema = z.object({
   name: z.string().min(2),
@@ -27,6 +24,7 @@ export const CreateFamilyForm = () => {
 
   const form = useForm<CreateFamilyInput>({
     resolver: zodResolver(CreateFamilyInputSchema),
+    mode: 'onChange',
     defaultValues: {
       name: '',
       description: '',
@@ -52,51 +50,64 @@ export const CreateFamilyForm = () => {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <FormField
-          control={control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome</FormLabel>
-              <FormControl>
-                <Input disabled={false} placeholder="Nome da família" {...field} />
-              </FormControl>
-              <FormDescription>Digite aqui o nome da família</FormDescription>
-            </FormItem>
-          )}
-        />
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <Controller
+        control={control}
+        name={'name'}
+        render={({ field, fieldState }) => {
+          return (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel>{field.name}</FieldLabel>
+              <Input
+                {...field}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                placeholder="Nome da família"
+                autoComplete="off"
+              />
+              <FieldDescription>Digite aqui o nome da família</FieldDescription>
+            </Field>
+          );
+        }}
+      />
 
-        <FormField
-          control={control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Descrição</FormLabel>
-              <FormControl>
-                <Textarea disabled={false} placeholder="Descrição da família" {...field} />
-              </FormControl>
-              <FormDescription>Digite aqui a descrição da família</FormDescription>
-            </FormItem>
-          )}
-        />
-        <div className="flex flex-col-reverse items-end gap-4 md:justify-end md:flex-row">
-          <Button
-            onClick={() => {
-              onFinished();
-            }}
-            variant={'outline'}
-            type="button"
-            className="w-24"
-          >
-            Cancelar
-          </Button>
-          <Button type="submit" className="w-full md:w-24">
-            Salvar
-          </Button>
-        </div>
-      </form>
-    </Form>
+      <Controller
+        control={control}
+        name={'description'}
+        render={({ field, fieldState }) => {
+          return (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel>{field.name}</FieldLabel>
+              <Textarea
+                {...field}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                placeholder="Descrição da família"
+                autoComplete="off"
+              />
+              <FieldDescription>
+                Digite aqui a descrição da família
+              </FieldDescription>
+            </Field>
+          );
+        }}
+      />
+
+      <div className="flex flex-col-reverse items-end gap-4 md:justify-end md:flex-row">
+        <Button
+          onClick={() => {
+            onFinished();
+          }}
+          variant={'outline'}
+          type="button"
+          className="w-24"
+        >
+          Cancelar
+        </Button>
+        <Button type="submit" className="w-full md:w-24">
+          Salvar
+        </Button>
+      </div>
+    </form>
   );
 };

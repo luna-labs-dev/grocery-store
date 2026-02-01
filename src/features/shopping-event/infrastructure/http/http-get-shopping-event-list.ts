@@ -1,9 +1,9 @@
+import { isAxiosError } from 'axios';
 import { httpClient } from '@/config/clients';
-import {
+import type {
   FetchShoppingEventListParams,
   ShoppingEventListResponse,
 } from '@/features/shopping-event/domain';
-import { isAxiosError } from 'axios';
 
 export const httpGetShoppingEventList = async (
   params: FetchShoppingEventListParams,

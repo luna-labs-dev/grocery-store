@@ -4,11 +4,17 @@ interface GetInitialsParams {
   upperCase?: boolean;
 }
 
-export const getInitials = ({ fullName, initialsLength, upperCase }: GetInitialsParams) => {
+export const getInitials = ({
+  fullName,
+  initialsLength,
+  upperCase,
+}: GetInitialsParams) => {
   const splittedName = fullName.split(/\s+/);
 
   const remainingLetters =
-    splittedName.length < initialsLength ? initialsLength - splittedName.length : undefined;
+    splittedName.length < initialsLength
+      ? initialsLength - splittedName.length
+      : undefined;
 
   const initials = splittedName.map((name, index) => {
     if (index === 0) {

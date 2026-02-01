@@ -1,6 +1,5 @@
-import { useGetFamilyQuery } from '@/features/family/infrastructure';
-
 import { FamilyDetails, FamilyOnboarding } from '../components';
+import { useGetFamilyQuery } from '@/features/family/infrastructure';
 
 export const FamilyOnboardingPage = () => {
   const { isFamilyMember } = useGetFamilyQuery();

@@ -1,20 +1,22 @@
-import { Pagination } from '@/components';
-import { FetchShoppingEventListParams } from '@/features/shopping-event/domain';
-import { useGetShoppingEventListQuery } from '@/features/shopping-event/infrastructure';
+import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
-
 import { ShoppingEventItem } from './shopping-event-item';
-import { StartShoppingEvent } from './start-shopping-event';
+import { Button, CustomPagination } from '@/components';
+import type { FetchShoppingEventListParams } from '@/features/shopping-event/domain';
+import { useGetShoppingEventListQuery } from '@/features/shopping-event/infrastructure';
 
 export const ShoppingEventList = () => {
-  const [paginationParams, setPaginationParams] = useState<FetchShoppingEventListParams>({
-    pageIndex: 0,
-    pageSize: 4,
-    orderBy: 'createdAt',
-    orderDirection: 'asc',
-  });
+  const navigate = useNavigate();
+  const [paginationParams, setPaginationParams] =
+    useState<FetchShoppingEventListParams>({
+      pageIndex: 0,
+      pageSize: 10,
+      orderBy: 'createdAt',
+      orderDirection: 'desc',
+    });
 
-  const { data, status, isFetching } = useGetShoppingEventListQuery(paginationParams);
+  const { data, status, isFetching } =
+    useGetShoppingEventListQuery(paginationParams);
 
   if (status === 'error') {
     return <div>Error</div>;
@@ -23,8 +25,16 @@ export const ShoppingEventList = () => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <StartShoppingEvent />
-        <Pagination
+        <Button
+          onClick={() =>
+            navigate({
+              to: '/shopping-event/start-shopping-event',
+            })
+          }
+        >
+          Novo Evento
+        </Button>
+        <CustomPagination
           paginationProps={{
             paginationParams,
             setPaginationParams,

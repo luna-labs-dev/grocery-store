@@ -1,7 +1,7 @@
-import { Entity, FetchListParams, FetchListResponse } from '@/domain';
-import { MarketResponse } from '@/features/market';
-import { Product } from './product';
-import { ShoppingEventStatus } from './status';
+import type { Product } from './product';
+import type { ShoppingEventStatus } from './status';
+import type { Entity, FetchListParams, FetchListResponse } from '@/domain';
+import type { MarketResponse } from '@/features/market';
 
 export interface ShoppingEventCalculatedTotals {
   retailTotal: number;
@@ -29,17 +29,20 @@ export interface FetchShoppingEventListPeriod {
   end: Date;
 }
 
-export interface FetchShoppingEventListParams extends FetchListParams<ShoppingEventSortBy> {
+export interface FetchShoppingEventListParams
+  extends FetchListParams<ShoppingEventSortBy> {
   status?: ShoppingEventStatus;
   period?: FetchShoppingEventListPeriod;
 }
 
-export interface ShoppingEventListItem extends Pick<ShoppingEvent, 'id' | 'status' | 'createdAt'> {
+export interface ShoppingEventListItem
+  extends Pick<ShoppingEvent, 'id' | 'status' | 'createdAt'> {
   market: string;
   totals: Pick<ShoppingEventCalculatedTotals, 'retailTotal' | 'wholesaleTotal'>;
 }
 
-export interface ShoppingEventListResponse extends FetchListResponse<ShoppingEventListItem> {}
+export interface ShoppingEventListResponse
+  extends FetchListResponse<ShoppingEventListItem> {}
 
 export interface GetShoppingEventByIdParams {
   shoppingEventId?: string;
@@ -63,4 +66,5 @@ export interface EndShoppingEventParams {
   };
 }
 
-export interface EndShoppingEventResult extends Omit<ShoppingEvent, 'products'> {}
+export interface EndShoppingEventResult
+  extends Omit<ShoppingEvent, 'products'> {}

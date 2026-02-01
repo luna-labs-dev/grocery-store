@@ -1,16 +1,15 @@
-import { Pagination } from '@/components';
-import { FetchListParams } from '@/domain';
-import { useGetMarketListQuery } from '@/features/market/infrastructure';
 import { useState } from 'react';
-
 import { MarketItem } from './market-item';
+import { CustomPagination } from '@/components';
+import type { FetchListParams } from '@/domain';
+import { useGetMarketListQuery } from '@/features/market/infrastructure';
 
 export const MarketList = () => {
   const [paginationParams, setPaginationParams] = useState<FetchListParams>({
     pageIndex: 0,
-    pageSize: 4,
+    pageSize: 10,
     orderBy: 'createdAt',
-    orderDirection: 'asc',
+    orderDirection: 'desc',
   });
 
   const { data, status, isFetching } = useGetMarketListQuery(paginationParams);
@@ -21,7 +20,7 @@ export const MarketList = () => {
 
   return (
     <div>
-      <Pagination
+      <CustomPagination
         paginationProps={{
           paginationParams,
           setPaginationParams,

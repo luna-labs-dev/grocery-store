@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { ProductForm } from './product-form';
 import {
   Sheet,
   SheetContent,
@@ -6,10 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components';
-import { Product } from '@/features/shopping-event/domain';
-import { useState } from 'react';
-
-import { ProductForm } from './product-form';
+import type { Product } from '@/features/shopping-event/domain';
 
 interface UpdateProductInCartSheetProps {
   children: React.ReactElement;
@@ -28,9 +27,15 @@ export const UpdateProductInCartSheet = ({
       <SheetContent className="w-full">
         <SheetHeader>
           <SheetTitle>Adicionar Produto</SheetTitle>
-          <SheetDescription>Adicionar um novo produto ao carrinho</SheetDescription>
+          <SheetDescription>
+            Adicionar um novo produto ao carrinho
+          </SheetDescription>
         </SheetHeader>
-        <ProductForm shoppingEventId={shoppingEventId} setOpen={setOpen} product={product} />
+        <ProductForm
+          shoppingEventId={shoppingEventId}
+          setOpen={setOpen}
+          product={product}
+        />
       </SheetContent>
     </Sheet>
   );

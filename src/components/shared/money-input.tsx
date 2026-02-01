@@ -1,7 +1,12 @@
-import { UseFormReturn } from 'react-hook-form';
-
 import { useReducer } from 'react';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage, Input } from '../shadcn';
+import { Controller, type UseFormReturn } from 'react-hook-form';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+  Input,
+} from '@/components';
 
 type TextInputProps = {
   form: UseFormReturn<any>;
@@ -48,7 +53,10 @@ export const MoneyInput = (props: TextInputProps) => {
     return moneyFormatter.format(next);
   }, initialValue);
 
-  function handleChange(realChangeFn: (realValue: number) => void, formattedValue: string) {
+  function handleChange(
+    realChangeFn: (realValue: number) => void,
+    formattedValue: string,
+  ) {
     const textDigits = formattedValue.trim().replace(/\D/g, '');
 
     let digits = Number(textDigits);
@@ -58,34 +66,32 @@ export const MoneyInput = (props: TextInputProps) => {
   }
 
   return (
-    <FormField
+    <Controller
       control={props.form.control}
       name={props.name}
-      render={({ field }) => {
-        field.value = value;
-
-        return (
-          <FormItem>
-            <FormLabel>{props.label}</FormLabel>
-            <FormControl>
-              <Input
-                placeholder={props.placeholder}
-                type="text"
-                {...field}
-                onChange={(ev) => {
-                  handleChange(field.onChange, ev.target.value);
-                }}
-                onKeyUp={(ev) => {
-                  ev.currentTarget.setSelectionRange(value.length, value.length);
-                }}
-                value={value}
-              />
-            </FormControl>
-
-            <FormMessage />
-          </FormItem>
-        );
-      }}
+      render={({ field, fieldState }) => (
+        <Field aria-invalid={fieldState.invalid}>
+          <FieldLabel>{props.label}</FieldLabel>
+          <Input
+            {...field}
+            type="text"
+            aria-invalid={fieldState.invalid}
+            placeholder={props.placeholder}
+            onChange={(ev) => {
+              handleChange(field.onChange, ev.target.value);
+            }}
+            onKeyUp={(ev) => {
+              ev.currentTarget.setSelectionRange(value.length, value.length);
+            }}
+            value={value}
+          />
+          {fieldState.invalid ? (
+            <FieldError>{fieldState.error?.message}</FieldError>
+          ) : (
+            <FieldDescription>Quantidade</FieldDescription>
+          )}
+        </Field>
+      )}
     />
   );
 };

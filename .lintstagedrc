@@ -1,5 +1,5 @@
 {
   "*.{js,jsx,ts,tsx,json}": [
-    "biome check --apply-unsafe src"
+   "biome check --write --no-errors-on-unmatched"
   ]
 }

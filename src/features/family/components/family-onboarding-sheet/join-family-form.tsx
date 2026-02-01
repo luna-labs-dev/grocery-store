@@ -1,18 +1,9 @@
-import {
-  Button,
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  Input,
-} from '@/components';
-import { useJoinFamilyMutation } from '@/features/family/infrastructure';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useFamilyOnboardingContext } from './family-onboarding-context';
+import { Button, Field, FieldLabel, Input } from '@/components';
+import { useJoinFamilyMutation } from '@/features/family/infrastructure';
 
 const JoinFamilyInputSchema = z.object({
   inviteCode: z.string().min(2),
@@ -25,6 +16,7 @@ export const JoinFamilyForm = () => {
 
   const form = useForm<JoinFamilyInput>({
     resolver: zodResolver(JoinFamilyInputSchema),
+    mode: 'onChange',
     defaultValues: {
       inviteCode: '',
     },
@@ -48,38 +40,39 @@ export const JoinFamilyForm = () => {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <FormField
-          control={control}
-          name="inviteCode"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Codigo do convite</FormLabel>
-              <FormControl>
-                <Input disabled={false} placeholder="Codigo do convite" {...field} />
-              </FormControl>
-              <FormDescription>Digite aqui o codigo do convite</FormDescription>
-            </FormItem>
-          )}
-        />
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <Controller
+        control={control}
+        name="inviteCode"
+        render={({ field, fieldState }) => {
+          return (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel>{field.name}</FieldLabel>
+              <Input
+                {...field}
+                placeholder="Codigo do convite"
+                aria-invalid={fieldState.invalid}
+              />
+            </Field>
+          );
+        }}
+      />
 
-        <div className="flex flex-col-reverse items-end gap-4 md:justify-end md:flex-row">
-          <Button
-            onClick={() => {
-              onFinished();
-            }}
-            variant={'outline'}
-            type="button"
-            className="w-24"
-          >
-            Cancelar
-          </Button>
-          <Button type="submit" className="w-full md:w-24">
-            Salvar
-          </Button>
-        </div>
-      </form>
-    </Form>
+      <div className="flex flex-col-reverse items-end gap-4 md:justify-end md:flex-row">
+        <Button
+          onClick={() => {
+            onFinished();
+          }}
+          variant={'outline'}
+          type="button"
+          className="w-24"
+        >
+          Cancelar
+        </Button>
+        <Button type="submit" className="w-full md:w-24">
+          Salvar
+        </Button>
+      </div>
+    </form>
   );
 };

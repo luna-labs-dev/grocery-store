@@ -1,11 +1,14 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate } from '@tanstack/react-router';
+import { useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
 import {
   Button,
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
   Input,
 } from '@/components';
 import {
@@ -13,14 +16,9 @@ import {
   useNewMarketMutation,
   useUpdateMarketMutation,
 } from '@/features/market/infrastructure';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
 
 const FormInputSchema = z.object({
-  marketName: z.string(),
+  marketName: z.string().min(3, 'O nome deve ter no mínimo 3 caracteres'),
 });
 
 type FormInput = z.infer<typeof FormInputSchema>;
@@ -35,10 +33,13 @@ interface MarketFormProps {
 export const MarketForm = ({ updateProps }: MarketFormProps) => {
   const navigate = useNavigate();
 
-  const { data: market } = useGetMarketByIdQuery({ marketId: updateProps?.marketId });
+  const { data: market } = useGetMarketByIdQuery({
+    marketId: updateProps?.marketId,
+  });
 
   const form = useForm<FormInput>({
     resolver: zodResolver(FormInputSchema),
+    mode: 'onChange',
     defaultValues: {
       marketName: '',
     },
@@ -52,14 +53,16 @@ export const MarketForm = ({ updateProps }: MarketFormProps) => {
     }
   }, [market, setValue]);
 
-  const { mutateAsync: newMutateAsync, isPending: newIsPending } = useNewMarketMutation();
-  const { mutateAsync: updateMutateAsync, isPending: updateIsPending } = useUpdateMarketMutation();
+  const { mutateAsync: newMutateAsync, isPending: newIsPending } =
+    useNewMarketMutation();
+  const { mutateAsync: updateMutateAsync, isPending: updateIsPending } =
+    useUpdateMarketMutation();
 
   const onFinished = () => {
     if (updateProps?.setOpen) {
       updateProps.setOpen(false);
     }
-    navigate('/market');
+    navigate({ to: '/market' });
   };
 
   const onSubmit = async (values: FormInput) => {
@@ -78,38 +81,50 @@ export const MarketForm = ({ updateProps }: MarketFormProps) => {
   const isPending = newIsPending || updateIsPending;
 
   return (
-    <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <FormField
-          control={control}
-          name="marketName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome</FormLabel>
-              <FormControl>
-                <Input disabled={isPending} placeholder="Nome do mercado" {...field} />
-              </FormControl>
-              <FormDescription>Digite aqui o nome do mercado</FormDescription>
-            </FormItem>
-          )}
-        />
-        <div className="flex flex-col-reverse items-end gap-4 md:justify-end md:flex-row">
-          <Button
-            onClick={() => {
-              reset();
-              onFinished();
-            }}
-            variant={'outline'}
-            type="button"
-            className="w-24"
-          >
-            Cancelar
-          </Button>
-          <Button type="submit" className="w-full md:w-24">
-            Salvar
-          </Button>
-        </div>
-      </form>
-    </Form>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <Controller
+        control={control}
+        name="marketName"
+        render={({ field, fieldState }) => {
+          return (
+            <Field>
+              <FieldLabel aria-invalid={fieldState.invalid}>
+                {field.name}
+              </FieldLabel>
+              <Input
+                {...field}
+                aria-invalid={fieldState.invalid}
+                placeholder="Nome do mercado"
+                disabled={isPending}
+              />
+              {fieldState.invalid ? (
+                <FieldError>{fieldState.error?.message}</FieldError>
+              ) : (
+                <FieldDescription>
+                  Digite aqui o nome do mercado
+                </FieldDescription>
+              )}
+            </Field>
+          );
+        }}
+      />
+
+      <div className="flex flex-col-reverse items-end gap-4 md:justify-end md:flex-row">
+        <Button
+          onClick={() => {
+            reset();
+            onFinished();
+          }}
+          variant={'outline'}
+          type="button"
+          className="w-24"
+        >
+          Cancelar
+        </Button>
+        <Button type="submit" className="w-full md:w-24">
+          Salvar
+        </Button>
+      </div>
+    </form>
   );
 };

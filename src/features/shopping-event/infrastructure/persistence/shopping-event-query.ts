@@ -1,19 +1,8 @@
-import { HttpError, errorMapper } from '@/domain';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-
-import {
-  httpAddProductToCart,
-  httpEndShoppingEvent,
-  httpGetShoppingEventById,
-  httpGetShoppingEventList,
-  httpRemoveProductFromCart,
-  httpStartShoppingEvent,
-  httpUpdateProductInCart,
-} from '@/features/shopping-event/infrastructure';
-
-import {
+import { errorMapper, type HttpError } from '@/domain';
+import type {
   AddProductToCartParams,
   AddProductToCartSuccessResult,
   EndShoppingEventParams,
@@ -25,8 +14,19 @@ import {
   StartShoppingEventResult,
   UpdateProductInCartParams,
 } from '@/features/shopping-event/domain';
+import {
+  httpAddProductToCart,
+  httpEndShoppingEvent,
+  httpGetShoppingEventById,
+  httpGetShoppingEventList,
+  httpRemoveProductFromCart,
+  httpStartShoppingEvent,
+  httpUpdateProductInCart,
+} from '@/features/shopping-event/infrastructure';
 
-export const useGetShoppingEventListQuery = (params: FetchShoppingEventListParams) => {
+export const useGetShoppingEventListQuery = (
+  params: FetchShoppingEventListParams,
+) => {
   const query = useQuery({
     queryKey: ['get-shopping-event-list', params],
     queryFn: ({ queryKey }) =>
@@ -36,10 +36,13 @@ export const useGetShoppingEventListQuery = (params: FetchShoppingEventListParam
   return { ...query };
 };
 
-export const useGetShoppingEventByIdQuery = (params: GetShoppingEventByIdParams) => {
+export const useGetShoppingEventByIdQuery = (
+  params: GetShoppingEventByIdParams,
+) => {
   const query = useQuery({
     queryKey: ['get-shopping-event-by-id', params],
-    queryFn: ({ queryKey }) => httpGetShoppingEventById(queryKey[1] as GetShoppingEventByIdParams),
+    queryFn: ({ queryKey }) =>
+      httpGetShoppingEventById(queryKey[1] as GetShoppingEventByIdParams),
     staleTime: 1000 * 5,
     enabled: !!params.shoppingEventId,
     refetchInterval: 1000 * 60 * 2,
@@ -50,7 +53,11 @@ export const useGetShoppingEventByIdQuery = (params: GetShoppingEventByIdParams)
 
 export const useStartShoppingEventMutation = () => {
   const queryClient = useQueryClient();
-  const mutation = useMutation<StartShoppingEventResult, HttpError, StartShoppingEventParams>({
+  const mutation = useMutation<
+    StartShoppingEventResult,
+    HttpError,
+    StartShoppingEventParams
+  >({
     mutationFn: httpStartShoppingEvent,
     onError: (error, params) => {
       const { title, description } = errorMapper(error.code ?? '')(params);
@@ -76,7 +83,11 @@ export const useStartShoppingEventMutation = () => {
 
 export const useEndShoppingEventMutation = () => {
   const queryClient = useQueryClient();
-  const mutation = useMutation<EndShoppingEventResult, HttpError, EndShoppingEventParams>({
+  const mutation = useMutation<
+    EndShoppingEventResult,
+    HttpError,
+    EndShoppingEventParams
+  >({
     mutationFn: httpEndShoppingEvent,
     onError: (error, params) => {
       const { title, description } = errorMapper(error.code ?? '')(params);
@@ -109,7 +120,11 @@ export const useEndShoppingEventMutation = () => {
 export const useAddProductCartMutation = () => {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<AddProductToCartSuccessResult, HttpError, AddProductToCartParams>({
+  const mutation = useMutation<
+    AddProductToCartSuccessResult,
+    HttpError,
+    AddProductToCartParams
+  >({
     mutationFn: httpAddProductToCart,
     onError: (error) => {
       const { title } = errorMapper(error.code ?? '')();
