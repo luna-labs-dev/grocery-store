@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ProductForm } from './product-form';
 import {
+  FieldGroup,
   Sheet,
   SheetContent,
   SheetDescription,
@@ -21,14 +22,20 @@ export const AddProductToCartSheet = ({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent className="w-full">
+      <SheetContent
+        style={{
+          width: '100vw',
+        }}
+      >
         <SheetHeader>
           <SheetTitle>Adicionar Produto</SheetTitle>
           <SheetDescription>
             Adicionar um novo produto ao carrinho
           </SheetDescription>
         </SheetHeader>
-        <ProductForm shoppingEventId={shoppingEventId} setOpen={setOpen} />
+        <FieldGroup className="p-4">
+          <ProductForm shoppingEventId={shoppingEventId} setOpen={setOpen} />
+        </FieldGroup>
       </SheetContent>
     </Sheet>
   );
