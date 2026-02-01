@@ -2,7 +2,7 @@ import axios, { type AxiosError } from 'axios';
 import { clerk, loadClerkIfNeeded } from './clerk-client';
 import { env } from '@/config/env';
 import type { HttpError } from '@/domain';
-import { history } from '@/domain/utils/history';
+import { router } from '@/providers';
 
 const { baseUrl } = env.backend;
 
@@ -31,7 +31,12 @@ httpClient.interceptors.response.use(
     }
 
     if (data.requiredAction === 'add-user-to-family') {
-      history.navigate('/family/onboarding');
+      console.log('add-user-to-family');
+      router.navigate({
+        to: '/family',
+        replace: true,
+      });
+
       throw error;
     }
 

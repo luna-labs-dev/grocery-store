@@ -37,7 +37,7 @@ export const FamilyOnboardingSheet = ({
     >
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>{trigger}</SheetTrigger>
-        <SheetContent>
+        <SheetContent className="p-4">
           <SheetHeader>
             <SheetTitle>{context.title}</SheetTitle>
             <SheetDescription>{context.description}</SheetDescription>
