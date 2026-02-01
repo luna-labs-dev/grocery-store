@@ -29,6 +29,7 @@ export interface MarketResponse extends NewResponse {
   name: string;
 }
 
-export interface MarketListItem extends Pick<Market, 'id' | 'code' | 'name'> {}
+export interface MarketListItem
+  extends Pick<Market, 'id' | 'code' | 'name' | 'createdAt'> {}
 
 export interface MarketListResponse extends FetchListResponse<MarketListItem> {}

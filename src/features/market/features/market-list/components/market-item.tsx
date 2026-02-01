@@ -1,4 +1,5 @@
 import { Link, useNavigate } from '@tanstack/react-router';
+import { format } from 'date-fns';
 import {
   Button,
   Card,
@@ -6,6 +7,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemTitle,
 } from '@/components';
 import type { MarketListItem } from '@/features/market';
 import { useStartShoppingEventMutation } from '@/features/shopping-event/infrastructure';
@@ -24,8 +29,16 @@ export const MarketItem = ({ market }: MarketItemParams) => {
         <CardDescription>{market.code}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex justify-end gap-2">
-          <div>
+        <div className="flex justify-between items-end">
+          <Item className="p-0">
+            <ItemContent>
+              <ItemTitle>Criado em</ItemTitle>
+              <ItemDescription className="text-xs">
+                {format(market.createdAt, 'dd/MMyyyy HH:mm:ss')}
+              </ItemDescription>
+            </ItemContent>
+          </Item>
+          <div className="flex justify-end gap-2">
             <Link
               to={'/market/update/$marketId'}
               params={{
@@ -34,8 +47,6 @@ export const MarketItem = ({ market }: MarketItemParams) => {
             >
               <Button size={'sm'}>Editar</Button>
             </Link>
-          </div>
-          <div>
             <Button
               size={'sm'}
               variant="secondary"

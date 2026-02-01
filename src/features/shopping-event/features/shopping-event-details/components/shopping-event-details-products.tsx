@@ -60,7 +60,7 @@ export const ShoppingEventDetailsProducts = ({
           return (
             <div
               key={product.id}
-              className="flex flex-col p-4 border rounded-lg md:w-[32rem]"
+              className="flex flex-col p-4 border rounded-lg md:w-lg"
             >
               <div className="flex justify-between ">
                 <p className="text-sm">{product.name}</p>

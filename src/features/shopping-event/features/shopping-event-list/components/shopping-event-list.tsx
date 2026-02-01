@@ -10,9 +10,9 @@ export const ShoppingEventList = () => {
   const [paginationParams, setPaginationParams] =
     useState<FetchShoppingEventListParams>({
       pageIndex: 0,
-      pageSize: 4,
+      pageSize: 10,
       orderBy: 'createdAt',
-      orderDirection: 'asc',
+      orderDirection: 'desc',
     });
 
   const { data, status, isFetching } =
