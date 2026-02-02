@@ -1,7 +1,8 @@
-import { Link, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import {
   Button,
+  ButtonGroup,
   Card,
   CardContent,
   CardDescription,
@@ -39,32 +40,39 @@ export const MarketItem = ({ market }: MarketItemParams) => {
             </ItemContent>
           </Item>
           <div className="flex justify-end gap-2">
-            <Link
-              to={'/market/update/$marketId'}
-              params={{
-                marketId: market.id,
-              }}
-            >
-              <Button size={'sm'}>Editar</Button>
-            </Link>
-            <Button
-              size={'sm'}
-              variant="secondary"
-              onClick={async () => {
-                const shoppingEvent = await mutateAsync({
-                  marketId: market.id,
-                });
-                navigate({
-                  to: '/shopping-event/$shoppingEventId',
-                  params: {
-                    shoppingEventId: shoppingEvent.id,
-                  },
-                  replace: true,
-                });
-              }}
-            >
-              Iniciar compra
-            </Button>
+            <ButtonGroup>
+              <Button
+                onClick={() =>
+                  navigate({
+                    to: '/market/update/$marketId',
+                    params: {
+                      marketId: market.id,
+                    },
+                  })
+                }
+                size={'sm'}
+              >
+                Editar
+              </Button>
+              <Button
+                size={'sm'}
+                variant="secondary"
+                onClick={async () => {
+                  const shoppingEvent = await mutateAsync({
+                    marketId: market.id,
+                  });
+                  navigate({
+                    to: '/shopping-event/$shoppingEventId',
+                    params: {
+                      shoppingEventId: shoppingEvent.id,
+                    },
+                    replace: true,
+                  });
+                }}
+              >
+                Comprar
+              </Button>
+            </ButtonGroup>
           </div>
         </div>
       </CardContent>

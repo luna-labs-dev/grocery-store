@@ -1,6 +1,6 @@
 export * from './alert';
 export * from './dialog';
-
+export * from './button-group'
 export * from './switch';
 export * from './alert-dialog';
 export * from './avatar';
