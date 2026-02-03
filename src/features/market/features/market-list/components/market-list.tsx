@@ -15,7 +15,7 @@ export const MarketList = () => {
   const { data } = useGetMarketListQuery(paginationParams);
 
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <CustomPagination
         paginationProps={{
           paginationParams,

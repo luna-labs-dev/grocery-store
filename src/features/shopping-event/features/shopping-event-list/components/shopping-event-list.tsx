@@ -18,14 +18,15 @@ export const ShoppingEventList = () => {
   const { data, isError } = useGetShoppingEventListQuery(paginationParams);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-4 mb-4">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-0 items-center justify-between">
         <Button
           onClick={() =>
             navigate({
               to: '/shopping-event/start-shopping-event',
             })
           }
+          className="w-full md:w-fit"
         >
           Novo Evento
         </Button>

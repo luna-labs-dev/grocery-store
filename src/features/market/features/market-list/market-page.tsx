@@ -5,7 +5,7 @@ import { Button } from '@/components';
 export const MarketPage = () => {
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col justify-end gap-2 pt-2 sm:gap-0 sm:flex-row">
+      <div className="flex flex-col justify-end gap-2 pt-2 sm:flex-row sm:gap-0">
         <div>
           <Link to={'/market/new-market'} replace>
             <Button className="w-full">Novo Mercado</Button>
