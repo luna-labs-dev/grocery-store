@@ -7,16 +7,12 @@ import { useGetMarketListQuery } from '@/features/market/infrastructure';
 export const MarketList = () => {
   const [paginationParams, setPaginationParams] = useState<FetchListParams>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 1,
     orderBy: 'createdAt',
     orderDirection: 'desc',
   });
 
-  const { data, status, isFetching } = useGetMarketListQuery(paginationParams);
-
-  if (status === 'error') {
-    return <div>Error</div>;
-  }
+  const { data } = useGetMarketListQuery(paginationParams);
 
   return (
     <div>
@@ -25,7 +21,6 @@ export const MarketList = () => {
           paginationParams,
           setPaginationParams,
           listTotal: data?.total,
-          isFetching,
         }}
       />
 

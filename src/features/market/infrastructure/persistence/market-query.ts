@@ -30,6 +30,7 @@ export const useGetMarketListQuery = (params: FetchListParams) => {
       params,
     },
     staleTime: 0,
+    keepPreviousData: true,
   });
 
   return { ...query };

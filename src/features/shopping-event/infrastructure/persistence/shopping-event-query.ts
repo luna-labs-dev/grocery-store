@@ -31,6 +31,7 @@ export const useGetShoppingEventListQuery = (
     queryKey: ['get-shopping-event-list', params],
     queryFn: ({ queryKey }) =>
       httpGetShoppingEventList(queryKey[1] as FetchShoppingEventListParams),
+    placeholderData: (previousData) => previousData,
   });
 
   return { ...query };
