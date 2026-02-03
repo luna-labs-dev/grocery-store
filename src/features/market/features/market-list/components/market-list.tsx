@@ -7,7 +7,7 @@ import { useGetMarketListQuery } from '@/features/market/infrastructure';
 export const MarketList = () => {
   const [paginationParams, setPaginationParams] = useState<FetchListParams>({
     pageIndex: 0,
-    pageSize: 1,
+    pageSize: 10,
     orderBy: 'createdAt',
     orderDirection: 'desc',
   });
