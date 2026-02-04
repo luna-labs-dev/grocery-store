@@ -1,3 +1,4 @@
+import { Icon } from '@iconify/react';
 import {
   ShoppingEventDetailsHeader,
   ShoppingEventDetailsProducts,
@@ -13,6 +14,19 @@ export const ShoppingEventDetailsPage = ({
   const { data, refetch, isFetching } = useGetShoppingEventByIdQuery({
     shoppingEventId,
   });
+
+  if (!data && isFetching) {
+    return (
+      <div className="w-full h-64 flex items-center justify-center gap-1">
+        <Icon
+          icon={'material-symbols:refresh'}
+          fontSize={24}
+          className={'animate-spin'}
+        />
+        Carregando evento de compra
+      </div>
+    );
+  }
 
   if (!data) {
     return <div>No data</div>;

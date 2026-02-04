@@ -1,3 +1,4 @@
+import { Icon } from '@iconify/react';
 import { useState } from 'react';
 import { MarketItem } from './market-item';
 import { CustomPagination } from '@/components';
@@ -12,7 +13,20 @@ export const MarketList = () => {
     orderDirection: 'desc',
   });
 
-  const { data } = useGetMarketListQuery(paginationParams);
+  const { data, isFetching } = useGetMarketListQuery(paginationParams);
+
+  if (isFetching) {
+    return (
+      <div className="w-full h-64 flex items-center justify-center gap-1">
+        <Icon
+          icon={'material-symbols:refresh'}
+          fontSize={24}
+          className={'animate-spin'}
+        />
+        Carregando Mercados
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">

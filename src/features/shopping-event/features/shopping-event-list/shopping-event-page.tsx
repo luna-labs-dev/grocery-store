@@ -16,7 +16,7 @@ export const ShoppingEventPage = () => {
 
   const { data } = useGetShoppingEventListQuery(paginationParams);
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <div className="flex flex-col md:flex-row gap-4 md:gap-0 items-center justify-between">
         <Button
           onClick={() =>

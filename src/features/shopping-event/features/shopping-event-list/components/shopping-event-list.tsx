@@ -1,3 +1,4 @@
+import { Icon } from '@iconify/react';
 import { ShoppingEventItem } from './shopping-event-item';
 import type { FetchShoppingEventListParams } from '@/features/shopping-event/domain';
 import { useGetShoppingEventListQuery } from '@/features/shopping-event/infrastructure';
@@ -11,7 +12,16 @@ export const ShoppingEventList = ({ paginationParams }: Props) => {
     useGetShoppingEventListQuery(paginationParams);
 
   if (isFetching) {
-    return <div>Loading...</div>;
+    return (
+      <div className="w-full h-64 flex items-center justify-center gap-1">
+        <Icon
+          icon={'material-symbols:refresh'}
+          fontSize={24}
+          className={'animate-spin'}
+        />
+        Carregando eventos de compra
+      </div>
+    );
   }
 
   if (isError) {

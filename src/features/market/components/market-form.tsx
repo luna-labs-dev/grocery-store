@@ -33,7 +33,11 @@ interface MarketFormProps {
 export const MarketForm = ({ updateProps }: MarketFormProps) => {
   const navigate = useNavigate();
 
-  const { data: market } = useGetMarketByIdQuery({
+  const {
+    data: market,
+    isFetching,
+    isEnabled,
+  } = useGetMarketByIdQuery({
     marketId: updateProps?.marketId,
   });
 
@@ -94,7 +98,9 @@ export const MarketForm = ({ updateProps }: MarketFormProps) => {
               <Input
                 {...field}
                 aria-invalid={fieldState.invalid}
-                placeholder="Nome do mercado"
+                placeholder={
+                  isEnabled && isFetching ? 'Carregando...' : 'Nome do mercado'
+                }
                 disabled={isPending}
               />
               {fieldState.invalid ? (
