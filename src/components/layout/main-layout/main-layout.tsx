@@ -3,6 +3,7 @@ import { AppSidebar } from './app-sidebar';
 import { Breadcrumbs } from './breadcrumbs';
 import { Separator, SidebarInset, SidebarTrigger } from '@/components';
 import { useBreadCrumbs } from '@/hooks';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { ModeToggle } from '@/providers';
 
 interface MainLayoutProps {
@@ -10,6 +11,7 @@ interface MainLayoutProps {
 }
 export const MainLayout = ({ children }: MainLayoutProps) => {
   const { currentPage } = useBreadCrumbs();
+  const isMobile = useIsMobile();
 
   return (
     <>
@@ -24,7 +26,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             />
             <Breadcrumbs />
           </div>
-          <ModeToggle />
+          {!isMobile && <ModeToggle />}
         </header>
         <main className="px-4 pt-4 flex flex-col gap-2">
           <div>

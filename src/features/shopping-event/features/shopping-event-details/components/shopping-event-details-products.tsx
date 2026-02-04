@@ -83,6 +83,13 @@ export const ShoppingEventDetailsProducts = ({
                   }}
                 />
 
+                <KeyValue
+                  props={{
+                    title: 'Total',
+                    text: fCurrency(product.totalRetailPrice),
+                  }}
+                />
+
                 {product.wholesaleMinAmount && (
                   <KeyValue
                     props={{
@@ -100,13 +107,6 @@ export const ShoppingEventDetailsProducts = ({
                     }}
                   />
                 )}
-
-                <KeyValue
-                  props={{
-                    title: 'Total varejo',
-                    text: fCurrency(product.totalRetailPrice),
-                  }}
-                />
 
                 {product.totalWholesalePrice && product.wholesalePrice && (
                   <KeyValue
