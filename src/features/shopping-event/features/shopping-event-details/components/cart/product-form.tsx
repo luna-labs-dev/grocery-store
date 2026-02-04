@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Icon } from '@iconify/react';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -71,8 +72,9 @@ export const ProductForm = ({
 
   const { control, handleSubmit, reset } = form;
 
-  const { mutateAsync: mutateAddProductAsync } = useAddProductCartMutation();
-  const { mutateAsync: mutateUpdateProductAsync } =
+  const { mutateAsync: mutateAddProductAsync, isPending: isAdding } =
+    useAddProductCartMutation();
+  const { mutateAsync: mutateUpdateProductAsync, isPending: isUpdating } =
     useUpdateProductInCartMutation();
 
   const onFinished = () => {
@@ -218,11 +220,12 @@ export const ProductForm = ({
           />
         </div>
       )}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="flex flex-col md:flex-row justify-end gap-4">
         <Button
           variant={'outline'}
           type="button"
-          className="w-full"
+          disabled={isAdding || isUpdating}
+          className="w-full md:w-24"
           onClick={() => {
             reset();
             onFinished();
@@ -231,7 +234,19 @@ export const ProductForm = ({
           Cancelar
         </Button>
 
-        <Button type="submit" className="w-full md:w-24">
+        <Button
+          type="submit"
+          disabled={isAdding || isUpdating}
+          className="w-full md:w-32"
+        >
+          {(isAdding || isUpdating) && (
+            // true
+            <Icon
+              icon={'material-symbols:refresh'}
+              fontSize={18}
+              className={'animate-spin'}
+            />
+          )}
           {isUpdate ? 'Atualizar' : 'Adicionar'}
         </Button>
       </div>
