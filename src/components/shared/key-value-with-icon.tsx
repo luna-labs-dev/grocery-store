@@ -1,4 +1,11 @@
 import { Icon } from '@iconify/react';
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from '../ui';
 
 interface KeyValueWithIconProps {
   props: {
@@ -12,15 +19,14 @@ export const KeyValueWithIcon = ({
   props: { title, text, iconName },
 }: KeyValueWithIconProps) => {
   return (
-    <div className="grid grid-cols-[20px_1fr] gap-2 items-start leading-none">
-      <Icon icon={iconName} className="translate-y-[0.10rem]" fontSize={'20'} />
-
-      <div className="">
-        <span className="text-xs font-medium text-muted-foreground">
-          {title}
-        </span>
-        <p className="text-sm ">{text}</p>
-      </div>
-    </div>
+    <Item className="p-0">
+      <ItemMedia variant={'icon'}>
+        <Icon icon={iconName} />
+      </ItemMedia>
+      <ItemContent>
+        <ItemTitle>{title}</ItemTitle>
+        <ItemDescription>{text}</ItemDescription>
+      </ItemContent>
+    </Item>
   );
 };

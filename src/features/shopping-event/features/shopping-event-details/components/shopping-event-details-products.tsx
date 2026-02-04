@@ -60,7 +60,7 @@ export const ShoppingEventDetailsProducts = ({
           return (
             <div
               key={product.id}
-              className="flex flex-col p-4 border rounded-lg md:w-lg"
+              className="flex flex-col gap-4 p-4 border rounded-lg w-full"
             >
               <div className="flex justify-between ">
                 <p className="text-sm">{product.name}</p>
@@ -68,18 +68,11 @@ export const ShoppingEventDetailsProducts = ({
                   {format(product.addedAt, 'HH:mm:ss', { locale: ptBR })}
                 </p>
               </div>
-              <div className="grid grid-cols-3">
+              <div className="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-8 gap-4">
                 <KeyValue
                   props={{
                     title: 'Quantidade',
-                    text: (product.amount ?? 0).toString(),
-                  }}
-                />
-
-                <KeyValue
-                  props={{
-                    title: 'Mín. atacado',
-                    text: (product.wholesaleMinAmount ?? 0).toString(),
+                    text: product.amount.toString(),
                   }}
                 />
 
@@ -90,19 +83,48 @@ export const ShoppingEventDetailsProducts = ({
                   }}
                 />
 
-                <KeyValue
-                  props={{
-                    title: 'Preço atacado',
-                    text: fCurrency(product.wholesalePrice ?? 0),
-                  }}
-                />
+                {product.wholesaleMinAmount && (
+                  <KeyValue
+                    props={{
+                      title: 'Mín. atacado',
+                      text: (product.wholesaleMinAmount ?? 0).toString(),
+                    }}
+                  />
+                )}
+
+                {product.wholesalePrice && (
+                  <KeyValue
+                    props={{
+                      title: 'Preço atacado',
+                      text: fCurrency(product.wholesalePrice ?? 0),
+                    }}
+                  />
+                )}
 
                 <KeyValue
                   props={{
-                    title: 'Total',
-                    text: fCurrency(product.amount * product.price),
+                    title: 'Total varejo',
+                    text: fCurrency(product.totalRetailPrice),
                   }}
                 />
+
+                {product.totalWholesalePrice && product.wholesalePrice && (
+                  <KeyValue
+                    props={{
+                      title: 'Total atacado',
+                      text: fCurrency(product.totalWholesalePrice),
+                    }}
+                  />
+                )}
+
+                {product.totalDifference && product.wholesalePrice && (
+                  <KeyValue
+                    props={{
+                      title: 'Economia',
+                      text: fCurrency(product.totalDifference),
+                    }}
+                  />
+                )}
               </div>
               {shoppingEventStatus === 'ONGOING' && (
                 <div className="flex justify-end gap-2">

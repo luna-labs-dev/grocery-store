@@ -2,9 +2,9 @@ import { z } from 'zod';
 
 const envVariables = z.object({
   VITE_ENV: z
-    .enum(['development', 'production'])
-    .default('development')
-    .optional(),
+    .enum(['local', 'remote-backend', 'development', 'production'])
+    .default('development'),
+
   VITE_PORT: z.coerce.number().default(3000),
   VITE_BACKEND_URL: z.string(),
   VITE_CLERK_PUBLISHABLE_KEY: z.string(),
@@ -24,9 +24,11 @@ export const env = {
     port: VITE_PORT,
   },
   backend: {
-    baseUrl: VITE_ENV === 'production' ? VITE_BACKEND_URL : '/',
+    baseUrl: VITE_ENV === 'remote-backend' ? '/' : VITE_BACKEND_URL,
   },
   clerk: {
     publishableKey: VITE_CLERK_PUBLISHABLE_KEY,
   },
 };
+
+console.log({ VITE_ENV, env });

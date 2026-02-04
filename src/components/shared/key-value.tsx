@@ -1,3 +1,5 @@
+import { Item, ItemContent, ItemDescription, ItemTitle } from '../ui';
+
 interface KeyValueWithIconProps {
   props: {
     title: string;
@@ -7,9 +9,11 @@ interface KeyValueWithIconProps {
 
 export const KeyValue = ({ props: { title, text } }: KeyValueWithIconProps) => {
   return (
-    <div className="leading-none">
-      <span className="text-xs font-medium text-muted-foreground">{title}</span>
-      <p className="text-sm">{text}</p>
-    </div>
+    <Item className="px-4 py-2 bg-accent/30">
+      <ItemContent>
+        <ItemTitle className="text-xs">{title}</ItemTitle>
+        <ItemDescription className="text-sm">{text}</ItemDescription>
+      </ItemContent>
+    </Item>
   );
 };
