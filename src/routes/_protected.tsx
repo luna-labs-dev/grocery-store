@@ -4,7 +4,6 @@ import { MainLayout } from '@/components';
 export const Route = createFileRoute('/_protected')({
   beforeLoad: async ({ context }) => {
     const token = await context.auth?.getToken();
-    console.log({ token });
 
     if (!token) {
       throw redirect({

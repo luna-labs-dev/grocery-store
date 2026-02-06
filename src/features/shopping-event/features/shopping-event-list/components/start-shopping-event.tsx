@@ -21,7 +21,7 @@ import { useStartShoppingEventMutation } from '@/features/shopping-event/infrast
 
 export const StartShoppingEvent = () => {
   const navigate = useNavigate();
-  const { mutateAsync } = useStartShoppingEventMutation();
+  const { mutateAsync, isPending } = useStartShoppingEventMutation();
 
   const [value, setValue] = useState<MarketListItem | null>(null);
 
@@ -89,7 +89,7 @@ export const StartShoppingEvent = () => {
           Cancelar
         </Button>
         <Button
-          disabled={!value}
+          disabled={!value || isPending}
           onClick={async () => {
             if (value) {
               const shoppingEvent = await mutateAsync({ marketId: value.id });
@@ -102,6 +102,8 @@ export const StartShoppingEvent = () => {
             }
           }}
         >
+          {' '}
+          {isPending && <HourglassIcon />}
           Iniciar
         </Button>
       </CardFooter>
