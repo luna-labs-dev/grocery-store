@@ -52,17 +52,17 @@ export const AppSidebar = () => {
 
   const pages: MenuItem[] = [
     {
-      title: 'Family',
+      title: 'Famíia',
       to: '/family',
       icon: 'material-symbols-light:family-group',
     },
     {
-      title: 'Market',
+      title: 'Mercados',
       to: '/market',
       icon: 'lsicon:marketplace-outline',
     },
     {
-      title: 'Shopping Event',
+      title: 'Eventos de Compra',
       to: '/shopping-event',
       icon: 'tabler:calendar-event',
     },

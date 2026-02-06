@@ -23,7 +23,7 @@ export const ShoppingEventDetailsPage = ({
           fontSize={24}
           className={'animate-spin'}
         />
-        Carregando evento de compra
+        Carregando evento de compras
       </div>
     );
   }
