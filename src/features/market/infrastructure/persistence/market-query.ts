@@ -29,7 +29,7 @@ export const useGetMarketListQuery = (params: FetchListParams) => {
       fn: httpGetMarketList,
       params,
     },
-    staleTime: 0,
+    staleTime: 1000 * 60 * 1,
     keepPreviousData: true,
   });
 
@@ -43,6 +43,7 @@ export const useGetMarketByIdQuery = (params: GetMarketByIdParams) => {
       fn: httpGetMarketById,
       params,
     },
+    staleTime: 1000 * 60 * 10,
     enabled: !!params.marketId,
   });
 

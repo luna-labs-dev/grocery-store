@@ -31,6 +31,7 @@ export const useGetShoppingEventListQuery = (
     queryKey: ['get-shopping-event-list', params],
     queryFn: ({ queryKey }) =>
       httpGetShoppingEventList(queryKey[1] as FetchShoppingEventListParams),
+    staleTime: 1000 * 60 * 1,
     placeholderData: (previousData) => previousData,
   });
 
@@ -45,8 +46,8 @@ export const useGetShoppingEventByIdQuery = (
     queryFn: ({ queryKey }) =>
       httpGetShoppingEventById(queryKey[1] as GetShoppingEventByIdParams),
     staleTime: 1000 * 5,
+    refetchInterval: 1000 * 20,
     enabled: !!params.shoppingEventId,
-    refetchInterval: 1000 * 60 * 2,
   });
 
   return { ...query };
