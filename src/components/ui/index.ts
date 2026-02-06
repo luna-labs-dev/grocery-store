@@ -21,3 +21,4 @@ export * from './pagination'
 export * from './item'
 export * from './combobox';
 export * from './accordion'
+export * from './scroll-area'
