@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Icon } from '@iconify/react';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -14,6 +13,7 @@ import {
   MoneyInput,
   Switch,
 } from '@/components';
+import HourglassIcon from '@/components/hourglass-icon';
 import type {
   AddProductToCartSuccessResult,
   Product,
@@ -239,14 +239,7 @@ export const ProductForm = ({
           disabled={isAdding || isUpdating}
           className="w-full md:w-32"
         >
-          {(isAdding || isUpdating) && (
-            // true
-            <Icon
-              icon={'material-symbols:refresh'}
-              fontSize={18}
-              className={'animate-spin'}
-            />
-          )}
+          {(isAdding || isUpdating) && <HourglassIcon size={18} />}
           {isUpdate ? 'Atualizar' : 'Adicionar'}
         </Button>
       </div>

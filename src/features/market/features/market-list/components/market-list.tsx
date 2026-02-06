@@ -1,7 +1,6 @@
-import { Icon } from '@iconify/react';
 import { useState } from 'react';
 import { MarketItem } from './market-item';
-import { CustomPagination } from '@/components';
+import { CustomPagination, Loading } from '@/components';
 import type { FetchListParams } from '@/domain';
 import { useGetMarketListQuery } from '@/features/market/infrastructure';
 
@@ -18,12 +17,7 @@ export const MarketList = () => {
   if (isFetching) {
     return (
       <div className="w-full h-64 flex items-center justify-center gap-1">
-        <Icon
-          icon={'material-symbols:refresh'}
-          fontSize={24}
-          className={'animate-spin'}
-        />
-        Carregando Mercados
+        <Loading text="Carregando lista de mercados" />
       </div>
     );
   }

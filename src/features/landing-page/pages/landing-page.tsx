@@ -59,11 +59,11 @@ export const LandingPage = () => {
           <div className="container max-w-3xl mx-auto text-center">
             <div className="space-y-6">
               <h1 className="text-4xl font-bold tracking-tight text-white md:text-5xl">
-                Controle suas compras de supermercado com facilidadeSignIn
+                Controle suas compra de supermercado com facilidadeSignIn
               </h1>
               <p className="text-lg text-gray-400">
-                Economize tempo e dinheiro gerenciando suas compras em família
-                de forma inteligente e evitando surpresas no caixa.
+                Economize tempo e dinheiro gerenciando suas compra em família de
+                forma inteligente e evitando surpresas no caixa.
               </p>
               <div className="flex flex-col justify-center gap-4 sm:flex-row">
                 <Button size="lg" className="bg-violet-600 hover:bg-violet-700">
@@ -82,11 +82,11 @@ export const LandingPage = () => {
           <div className="container">
             <div className="max-w-3xl mx-auto space-y-4 text-center">
               <h2 className="text-3xl font-bold text-white">
-                Simplifique suas compras de supermercado
+                Simplifique suas compra de supermercado
               </h2>
               <p className="text-lg text-gray-400">
                 O Groceryfy é um aplicativo que ajuda você e sua família a
-                controlar as compras de supermercado em tempo real. Acompanhe o
+                controlar as compra de supermercado em tempo real. Acompanhe o
                 valor total, evite surpresas no caixa e tenha controle completo
                 sobre seus gastos.
               </p>
@@ -118,11 +118,11 @@ export const LandingPage = () => {
                   <Users className="w-6 h-6 text-violet-400" />
                 </div>
                 <h3 className="mb-2 text-xl font-semibold text-center text-white">
-                  Compras em família
+                  compra em família
                 </h3>
                 <p className="text-center text-gray-400">
                   Crie ou participe de grupos familiares para organizar as
-                  compras coletivamente.
+                  compra coletivamente.
                 </p>
               </div>
               <div className="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-md">
@@ -171,7 +171,7 @@ export const LandingPage = () => {
                     Adicione supermercados
                   </h3>
                   <p className="text-gray-400">
-                    Cadastre os supermercados onde você costuma fazer compras.
+                    Cadastre os supermercados onde você costuma fazer compra.
                   </p>
                 </div>
               </div>
@@ -181,7 +181,7 @@ export const LandingPage = () => {
                 </div>
                 <div>
                   <h3 className="mb-1 text-xl font-semibold text-white">
-                    Inicie um evento de compras
+                    Inicie um evento de compra
                   </h3>
                   <p className="text-gray-400">
                     Comece a adicionar produtos ao seu carrinho e acompanhe o
@@ -218,7 +218,7 @@ export const LandingPage = () => {
             </h2>
             <p className="max-w-2xl mx-auto text-xl">
               Experimente o Groceryfy gratuitamente e transforme a maneira como
-              você faz compras no supermercado.
+              você faz compra no supermercado.
             </p>
             <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <Button size="lg" variant="secondary">
@@ -241,8 +241,7 @@ export const LandingPage = () => {
         <div className="container text-center">
           <GroceryfyLogo />
           <p className="max-w-md mx-auto mb-8 text-sm">
-            Controle suas compras de supermercado de forma inteligente e
-            prática.
+            Controle suas compra de supermercado de forma inteligente e prática.
           </p>
 
           {/* <div className="flex justify-center gap-8 mb-8">

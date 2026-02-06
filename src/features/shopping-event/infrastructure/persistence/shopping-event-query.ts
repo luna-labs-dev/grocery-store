@@ -68,8 +68,8 @@ export const useStartShoppingEventMutation = () => {
       });
     },
     onSuccess: (success) => {
-      toast.success('Evento de compras iniciado', {
-        description: `O evento de compras foi iniciado às ${format(success.createdAt, 'HH:mm:ss')}`,
+      toast.success('Evento de compra iniciado', {
+        description: `O evento de compra foi iniciado às ${format(success.createdAt, 'HH:mm:ss')}`,
       });
     },
     onSettled: () => {
@@ -99,7 +99,7 @@ export const useEndShoppingEventMutation = () => {
     },
     onSuccess: (success) => {
       toast.success('Evento finalizado', {
-        description: `O evento de compras foi finalizado às ${format(
+        description: `O evento de compra foi finalizado às ${format(
           success.createdAt,
           'HH:mm:ss',
         )}`,

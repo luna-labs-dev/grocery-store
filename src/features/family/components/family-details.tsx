@@ -14,6 +14,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Loading,
 } from '@/components';
 import { getInitials, unsecuredCopyToClipboard } from '@/domain';
 import { useGetFamilyQuery } from '@/features/family/infrastructure';
@@ -26,7 +27,11 @@ export const FamilyDetails = () => {
   });
 
   if (isLoading) {
-    return <div>Carregando...</div>;
+    return (
+      <div className="w-full h-64 flex items-center justify-center gap-1">
+        <Loading text=" Carregando dados da família" />
+      </div>
+    );
   }
 
   if (!data) {

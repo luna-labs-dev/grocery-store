@@ -15,16 +15,16 @@ function RouteComponent() {
     addBreadcrumbs(
       [
         {
-          label: 'Evento de compras',
+          label: 'Evento de compra',
           to: '/shopping-event',
         },
         {
-          label: 'Iniciar evento de compras',
+          label: 'Iniciar evento de compra',
           to: `/shopping-event/$shoppingEventId`,
         },
       ],
       {
-        title: 'Iniciar evento de compras',
+        title: 'Iniciar evento de compra',
       },
     );
   }, []);

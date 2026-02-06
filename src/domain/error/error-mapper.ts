@@ -13,15 +13,14 @@ const mappedErrors: Record<string, MakeMappedError> = {
     description: `o mercado "${params.marketName}" já existe`,
   }),
   SHOPPING_EVENT_NOT_FOUND_ERROR: () => ({
-    title: 'Evento de compras não localizado',
+    title: 'Evento de compra não localizado',
   }),
   EMPTY_CART_ERROR: () => ({
     title: 'Carrinho vazio',
-    description:
-      'evento de compras não pode ser encerrado com o carrinho vazio',
+    description: 'evento de compra não pode ser encerrado com o carrinho vazio',
   }),
   SHOPPING_EVENT_ALREADY_ENDED_ERROR: () => ({
-    title: 'Evento de compras já finalizado',
+    title: 'Evento de compra já finalizado',
   }),
   UNKOWN: () => ({
     title: 'Ocorreu um erro inesperado',

@@ -1,9 +1,9 @@
-import { Icon } from '@iconify/react';
 import {
   ShoppingEventDetailsHeader,
   ShoppingEventDetailsProducts,
   ShoppingEventDetailsTotals,
 } from './components';
+import { Loading } from '@/components';
 import { useGetShoppingEventByIdQuery } from '@/features/shopping-event/infrastructure';
 
 export const ShoppingEventDetailsPage = ({
@@ -18,12 +18,7 @@ export const ShoppingEventDetailsPage = ({
   if (!data && isFetching) {
     return (
       <div className="w-full h-64 flex items-center justify-center gap-1">
-        <Icon
-          icon={'material-symbols:refresh'}
-          fontSize={24}
-          className={'animate-spin'}
-        />
-        Carregando evento de compras
+        <Loading text=" Carregando evento de compra" />
       </div>
     );
   }
