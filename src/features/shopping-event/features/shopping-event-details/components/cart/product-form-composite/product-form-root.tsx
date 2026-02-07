@@ -118,7 +118,7 @@ export const ProductFormRoot = ({
     >
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col h-full w-full gap-4"
+        className="flex flex-col h-full w-full"
       >
         {children}
       </form>
