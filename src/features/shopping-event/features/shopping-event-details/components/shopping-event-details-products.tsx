@@ -60,7 +60,7 @@ export const ShoppingEventDetailsProducts = ({
           return (
             <div
               key={product.id}
-              className="flex flex-col gap-4 p-4 border rounded-lg w-full"
+              className="flex flex-col gap-2 py-2 px-3 border rounded-lg w-full"
             >
               <div className="flex justify-between ">
                 <p className="text-sm">{product.name}</p>
@@ -68,7 +68,7 @@ export const ShoppingEventDetailsProducts = ({
                   {format(product.addedAt, 'HH:mm:ss', { locale: ptBR })}
                 </p>
               </div>
-              <div className="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-8 gap-4">
+              <div className="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-8 gap-2">
                 <KeyValue
                   props={{
                     title: 'Quantidade',
@@ -77,6 +77,7 @@ export const ShoppingEventDetailsProducts = ({
                 />
 
                 <KeyValue
+                  className="px-2 py-1"
                   props={{
                     title: 'Preço',
                     text: fCurrency(product.price ?? 0),
@@ -84,6 +85,7 @@ export const ShoppingEventDetailsProducts = ({
                 />
 
                 <KeyValue
+                  className="px-2 py-1"
                   props={{
                     title: 'Total',
                     text: fCurrency(product.totalRetailPrice),
@@ -92,6 +94,7 @@ export const ShoppingEventDetailsProducts = ({
 
                 {product.wholesaleMinAmount && (
                   <KeyValue
+                    className="px-2 py-1"
                     props={{
                       title: 'Mín. atacado',
                       text: (product.wholesaleMinAmount ?? 0).toString(),
@@ -101,6 +104,7 @@ export const ShoppingEventDetailsProducts = ({
 
                 {product.wholesalePrice && (
                   <KeyValue
+                    className="px-2 py-1"
                     props={{
                       title: 'Preço atacado',
                       text: fCurrency(product.wholesalePrice ?? 0),
@@ -110,6 +114,7 @@ export const ShoppingEventDetailsProducts = ({
 
                 {product.totalWholesalePrice && product.wholesalePrice && (
                   <KeyValue
+                    className="px-2 py-1"
                     props={{
                       title: 'Total atacado',
                       text: fCurrency(product.totalWholesalePrice),
@@ -119,6 +124,7 @@ export const ShoppingEventDetailsProducts = ({
 
                 {product.totalDifference && product.wholesalePrice && (
                   <KeyValue
+                    className="px-2 py-1"
                     props={{
                       title: 'Economia',
                       text: fCurrency(product.totalDifference),
