@@ -14,7 +14,7 @@ const RootLayout = () => {
     <>
       <HeadContent />
       <Outlet />
-      <TanStackRouterDevtools position="top-right" />
+      <TanStackRouterDevtools position="bottom-left" />
     </>
   );
 };

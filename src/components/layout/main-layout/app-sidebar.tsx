@@ -18,6 +18,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
+import { ModeToggle } from '@/providers';
 
 interface MenuItem {
   title: string;
@@ -37,7 +40,7 @@ interface Group {
 
 export const AppSidebar = () => {
   const { open, setOpenMobile } = useSidebar();
-
+  const isMobile = useIsMobile();
   const clipboard = useClipboard({
     timeout: 2000,
   });
@@ -83,7 +86,9 @@ export const AppSidebar = () => {
     <Sidebar variant="floating" collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem>
+          <SidebarMenuItem
+            className={cn(isMobile && 'flex items-center gap-4')}
+          >
             <SidebarMenuButton
               asChild
               className="data-[slot=sidebar-menu-button]:p-2!"
@@ -95,6 +100,7 @@ export const AppSidebar = () => {
                 <GroceryfyLogo iconOnly={!open} />
               </Link>
             </SidebarMenuButton>
+            {isMobile && <ModeToggle />}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

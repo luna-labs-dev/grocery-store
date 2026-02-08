@@ -31,13 +31,15 @@ export const SidebarUser = () => {
               </span>
             </div>
           </div>
-          <Button
-            onClick={() => signOut()}
-            variant={'ghost'}
-            className="cursor-pointer"
-          >
-            <Icon icon="uit:signout" className="w-5! h-5! text-red-600" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => signOut()}
+              variant={'outline'}
+              className="cursor-pointer"
+            >
+              <Icon icon="uit:signout" className="w-4! h-4! text-red-600" />
+            </Button>
+          </div>
         </div>
       </SidebarMenuItem>
     </SidebarMenu>
