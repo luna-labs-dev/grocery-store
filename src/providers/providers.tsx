@@ -12,7 +12,7 @@ export const Providers = () => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <ClerkProvider publishableKey={env.clerk.publishableKey}>
-          <SidebarProvider>
+          <SidebarProvider className="h-full overflow-hidden">
             <RouterProvider />
           </SidebarProvider>
         </ClerkProvider>

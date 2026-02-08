@@ -28,9 +28,9 @@ export const ShoppingEventDetailsPage = ({
   }
 
   return (
-    <div className="flex flex-col gap-4 pt-2">
+    <div className="flex flex-col gap-4 pt-2 h-full">
       <ShoppingEventDetailsHeader shoppingEvent={data} />
-      <div className="flex flex-col">
+      <div className="flex flex-col flex-1 min-h-0">
         <ShoppingEventDetailsTotals calculatedTotals={data.calculatedTotals} />
         <ShoppingEventDetailsProducts
           products={data.products}
