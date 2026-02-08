@@ -7,7 +7,6 @@ import type { Theme } from "@/providers"
 import { Sun } from "../animate-ui/icons/sun"
 import { MoonStar } from "../animate-ui/icons/moon-star"
 import { SunMoon } from "../animate-ui/icons/sun-moon"
-import { Button } from "./button"
 
 interface AnimatedThemeTogglerProps extends React.ComponentPropsWithoutRef<"button"> {
   duration?: number
@@ -104,17 +103,19 @@ export const AnimatedThemeToggler = ({
   }, [isDark, theme, duration])
 
   return (
-    <Button
+    <button
       ref={buttonRef}
-      variant={'outline'}
+      // variant={'outline'}
       onClick={toggleTheme}
       className={cn('cursor-pointer',className)}
       {...props}
     >
-      {theme === 'dark' && <MoonStar className='w-5! h-5!' animate animation="default"/> }
-      {theme === 'light' && <Sun className='w-5! h-5!' animate animation="default"/> }
-      {theme === 'system' && <SunMoon className='w-5! h-5!' animate animation="default"/> }
+          
+        {theme === 'dark' && <MoonStar animate animateOnHover className='w-5! h-5!'/> }
+        {theme === 'light' && <Sun animate animateOnHover className='w-5! h-5!'/> }
+        {theme === 'system' && <SunMoon animate animateOnHover className='w-5! h-5!'/> }
+     
       <span className="sr-only">Toggle theme</span>
-    </Button>
+    </button>
   )
 }
