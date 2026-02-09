@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect } from 'react';
+import { Page } from '@/components/layout/page-layout';
 import { useBreadCrumbs } from '@/hooks';
 
 export const Route = createFileRoute('/_protected/dashboard')({
@@ -23,5 +24,19 @@ function RouteComponent() {
       },
     );
   }, []);
-  return <div>Dashboard Content will be placed here</div>;
+  return (
+    <Page>
+      <Page.Header className="p-4 border-b">
+        <h1 className="text-lg font-semibold">Dashboard</h1>
+      </Page.Header>
+      <Page.Content className="p-4">
+        <div>Dashboard Content will be placed here</div>
+      </Page.Content>
+      <Page.Footer>
+        <div className="flex justify-center gap-2 p-4">
+          <p>All rights reserved. {new Date().getFullYear()} Tiago</p>
+        </div>
+      </Page.Footer>
+    </Page>
+  );
 }

@@ -2,7 +2,6 @@ import { ClerkProvider } from '@clerk/clerk-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from './router-provider';
 import { ThemeProvider } from './theme-provider';
-import { SidebarProvider } from '@/components';
 import { env } from '@/config';
 
 export const Providers = () => {
@@ -12,9 +11,7 @@ export const Providers = () => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <ClerkProvider publishableKey={env.clerk.publishableKey}>
-          <SidebarProvider className="h-full overflow-hidden">
-            <RouterProvider />
-          </SidebarProvider>
+          <RouterProvider />
         </ClerkProvider>
       </ThemeProvider>
     </QueryClientProvider>
