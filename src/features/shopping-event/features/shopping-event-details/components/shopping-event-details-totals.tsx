@@ -20,7 +20,7 @@ export const ShoppingEventDetailsTotals = ({
       <h3 className="text-xl font-bold ">Totais</h3>
 
       <div className="w-fit flex flex-col gap-2 grow">
-        <div className="w-fit flex flex-wrap gap-4 pe-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <KeyValueWithIcon
             props={{
               title: 'Total da compra',
@@ -50,7 +50,7 @@ export const ShoppingEventDetailsTotals = ({
             <AccordionTrigger className="gap-2 justify-start">
               Mais totais
             </AccordionTrigger>
-            <AccordionContent className="flex gap-4">
+            <AccordionContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <KeyValueWithIcon
                 props={{
                   title: 'Varejo',
