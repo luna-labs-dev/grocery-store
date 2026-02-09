@@ -10,7 +10,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="h-screen overflow-hidden">
+      <SidebarInset className="h-svh overflow-hidden">
         <MainHeader />
         <main className="flex-1 overflow-hidden">{children}</main>
       </SidebarInset>

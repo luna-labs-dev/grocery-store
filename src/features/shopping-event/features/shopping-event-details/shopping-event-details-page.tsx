@@ -1,10 +1,14 @@
+import { Icon } from '@iconify/react';
 import {
   ShoppingEventDetailsHeader,
   ShoppingEventDetailsProducts,
   ShoppingEventDetailsTotals,
 } from './components';
-import { Loading } from '@/components';
+import { AddProductToCartSheet } from './components/cart';
+import { Button, Loading } from '@/components';
+import { Page } from '@/components/layout/page-layout';
 import { useGetShoppingEventByIdQuery } from '@/features/shopping-event/infrastructure';
+import { cn } from '@/lib/utils';
 
 export const ShoppingEventDetailsPage = ({
   shoppingEventId,
@@ -28,10 +32,31 @@ export const ShoppingEventDetailsPage = ({
   }
 
   return (
-    <div className="flex flex-col gap-4 pt-2 h-full">
-      <ShoppingEventDetailsHeader shoppingEvent={data} />
-      <div className="flex flex-col flex-1 min-h-0">
+    <Page>
+      <Page.Header className="flex flex-col gap-4 px-4 pt-4">
+        <ShoppingEventDetailsHeader shoppingEvent={data} />
         <ShoppingEventDetailsTotals calculatedTotals={data.calculatedTotals} />
+        <div className="flex justify-between">
+          <h3 className="text-xl font-bold ">Produtos</h3>
+          {data.status === 'ONGOING' && (
+            <div className="flex gap-1">
+              <Button variant={'ghost'} onClick={() => refetch()}>
+                <Icon
+                  icon={'material-symbols:refresh'}
+                  fontSize={20}
+                  className={cn(isFetching && 'animate-spin')}
+                />
+              </Button>
+              <AddProductToCartSheet shoppingEventId={shoppingEventId}>
+                <Button variant={'ghost'}>
+                  <Icon icon="fa:cart-plus" fontSize={20} />
+                </Button>
+              </AddProductToCartSheet>
+            </div>
+          )}
+        </div>
+      </Page.Header>
+      <Page.Content className="p-4">
         <ShoppingEventDetailsProducts
           products={data.products}
           shoppingEventId={data.id}
@@ -39,7 +64,7 @@ export const ShoppingEventDetailsPage = ({
           refetch={refetch}
           isFetching={isFetching}
         />
-      </div>
-    </div>
+      </Page.Content>
+    </Page>
   );
 };

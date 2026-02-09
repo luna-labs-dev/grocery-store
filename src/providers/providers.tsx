@@ -2,6 +2,7 @@ import { ClerkProvider } from '@clerk/clerk-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from './router-provider';
 import { ThemeProvider } from './theme-provider';
+import { Toaster } from '@/components';
 import { env } from '@/config';
 
 export const Providers = () => {
@@ -12,6 +13,7 @@ export const Providers = () => {
       <ThemeProvider>
         <ClerkProvider publishableKey={env.clerk.publishableKey}>
           <RouterProvider />
+          <Toaster />
         </ClerkProvider>
       </ThemeProvider>
     </QueryClientProvider>

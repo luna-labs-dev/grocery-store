@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useGetShoppingEventListQuery } from '../../infrastructure';
 import { ShoppingEventList } from './components/shopping-event-list';
 import { Button, CustomPagination } from '@/components';
+import { Page } from '@/components/layout/page-layout';
 import type { FetchShoppingEventListParams } from '@/features/shopping-event/domain';
 export const ShoppingEventPage = () => {
   const navigate = useNavigate();
@@ -16,18 +17,27 @@ export const ShoppingEventPage = () => {
 
   const { data } = useGetShoppingEventListQuery(paginationParams);
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col md:flex-row gap-4 md:gap-0 items-center justify-between">
-        <Button
-          onClick={() =>
-            navigate({
-              to: '/shopping-event/start-shopping-event',
-            })
-          }
-          className="w-full md:w-fit"
-        >
-          Novo Evento
-        </Button>
+    <Page>
+      <Page.Header className="p-4">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-0 items-center justify-between">
+          <Button
+            onClick={() =>
+              navigate({
+                to: '/shopping-event/start-shopping-event',
+              })
+            }
+            className="w-full md:w-fit"
+          >
+            Novo Evento
+          </Button>
+        </div>
+      </Page.Header>
+      <Page.Content>
+        <div className="px-4">
+          <ShoppingEventList paginationParams={paginationParams} />
+        </div>
+      </Page.Content>
+      <Page.Footer className="p-4 border-t">
         <CustomPagination
           paginationProps={{
             paginationParams,
@@ -35,8 +45,7 @@ export const ShoppingEventPage = () => {
             listTotal: data?.total,
           }}
         />
-      </div>
-      <ShoppingEventList paginationParams={paginationParams} />
-    </div>
+      </Page.Footer>
+    </Page>
   );
 };
