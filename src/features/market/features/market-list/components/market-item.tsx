@@ -13,6 +13,7 @@ import {
   ItemDescription,
   ItemTitle,
 } from '@/components';
+import HourglassIcon from '@/components/hourglass-icon';
 import type { MarketListItem } from '@/features/market';
 import { useStartShoppingEventMutation } from '@/features/shopping-event/infrastructure';
 
@@ -21,7 +22,7 @@ export interface MarketItemParams {
 }
 
 export const MarketItem = ({ market }: MarketItemParams) => {
-  const { mutateAsync } = useStartShoppingEventMutation();
+  const { mutateAsync, isPending } = useStartShoppingEventMutation();
   const navigate = useNavigate();
   return (
     <Card>
@@ -42,6 +43,7 @@ export const MarketItem = ({ market }: MarketItemParams) => {
           <div className="flex justify-end gap-2">
             <ButtonGroup>
               <Button
+                className="w-20"
                 onClick={() =>
                   navigate({
                     to: '/market/update/$marketId',
@@ -57,6 +59,8 @@ export const MarketItem = ({ market }: MarketItemParams) => {
               <Button
                 size={'sm'}
                 variant="secondary"
+                className="w-28"
+                disabled={isPending}
                 onClick={async () => {
                   const shoppingEvent = await mutateAsync({
                     marketId: market.id,
@@ -70,6 +74,7 @@ export const MarketItem = ({ market }: MarketItemParams) => {
                   });
                 }}
               >
+                {isPending && <HourglassIcon size={18} />}
                 Comprar
               </Button>
             </ButtonGroup>
