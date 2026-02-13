@@ -54,6 +54,7 @@ export const ProductFormFields = () => {
             <FieldLabel>Quantidade</FieldLabel>
             <Input
               {...field}
+              type="number"
               aria-invalid={fieldState.invalid}
               placeholder="Quantidade de Produto(s)"
             />

@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 export const FormInputSchema = z.object({
   name: z.string().min(2),
-  amount: z.coerce.number().int().gt(0),
+  amount: z.coerce.number().gt(0),
   wholesaleMinAmount: z.coerce.number().optional(),
   price: z.coerce.number().min(0.01),
   wholesalePrice: z.coerce.number().optional(),

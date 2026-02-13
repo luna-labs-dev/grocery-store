@@ -9,6 +9,7 @@ import type {
   EndShoppingEventResult,
   FetchShoppingEventListParams,
   GetShoppingEventByIdParams,
+  ProductCartMutation,
   RemoveProductFromCartParams,
   StartShoppingEventParams,
   StartShoppingEventResult,
@@ -45,7 +46,7 @@ export const useGetShoppingEventByIdQuery = (
     queryKey: ['get-shopping-event-by-id', params],
     queryFn: ({ queryKey }) =>
       httpGetShoppingEventById(queryKey[1] as GetShoppingEventByIdParams),
-    staleTime: 1000 * 5,
+    staleTime: 1000 * 60 * 5,
     refetchInterval: 1000 * 20,
     enabled: !!params.shoppingEventId,
   });
@@ -119,7 +120,7 @@ export const useEndShoppingEventMutation = () => {
   return { ...mutation };
 };
 
-export const useAddProductCartMutation = () => {
+export const useAddProductCartMutation = (params: ProductCartMutation) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<
@@ -139,7 +140,7 @@ export const useAddProductCartMutation = () => {
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: ['get-shopping-event-by-id'],
+        queryKey: ['get-shopping-event-by-id', params],
       });
     },
   });
@@ -147,7 +148,7 @@ export const useAddProductCartMutation = () => {
   return { ...mutation };
 };
 
-export const useUpdateProductInCartMutation = () => {
+export const useUpdateProductInCartMutation = (params: ProductCartMutation) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<void, HttpError, UpdateProductInCartParams>({
@@ -157,13 +158,15 @@ export const useUpdateProductInCartMutation = () => {
       toast.error(title);
     },
     onSuccess: (_, params) => {
+      alert('success');
       toast.success('Produto atualizado', {
         description: `O produto ${params.params.name} foi atualizado no carrinho`,
       });
     },
     onSettled: () => {
+      alert('settled');
       queryClient.invalidateQueries({
-        queryKey: ['get-shopping-event-by-id'],
+        queryKey: ['get-shopping-event-by-id', params],
       });
     },
   });
@@ -186,6 +189,7 @@ export const useRemoveProductFromCartMutation = () => {
       });
     },
     onSettled: () => {
+      alert('settled');
       queryClient.invalidateQueries({
         queryKey: ['get-shopping-event-by-id'],
       });

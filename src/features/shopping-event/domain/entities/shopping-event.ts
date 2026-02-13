@@ -68,3 +68,7 @@ export interface EndShoppingEventParams {
 
 export interface EndShoppingEventResult
   extends Omit<ShoppingEvent, 'products'> {}
+
+export interface ProductCartMutation {
+  shoppingEventId?: string;
+}

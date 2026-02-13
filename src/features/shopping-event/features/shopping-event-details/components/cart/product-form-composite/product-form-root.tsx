@@ -60,9 +60,9 @@ export const ProductFormRoot = ({
   const { handleSubmit, reset } = form;
 
   const { mutateAsync: mutateAddProductAsync, isPending: isAdding } =
-    useAddProductCartMutation();
+    useAddProductCartMutation({ shoppingEventId });
   const { mutateAsync: mutateUpdateProductAsync, isPending: isUpdating } =
-    useUpdateProductInCartMutation();
+    useUpdateProductInCartMutation({ shoppingEventId });
 
   const isSubmitting = isAdding || isUpdating;
 
