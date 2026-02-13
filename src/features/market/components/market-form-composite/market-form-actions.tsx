@@ -1,5 +1,5 @@
 import { useMarketFormContext } from './market-form-context';
-import { Button } from '@/components';
+import { Button, ButtonGroup } from '@/components';
 import HourglassIcon from '@/components/hourglass-icon';
 
 export const MarketFormActions = () => {
@@ -7,19 +7,21 @@ export const MarketFormActions = () => {
 
   return (
     <div className="flex items-end gap-4 justify-end ">
-      <Button
-        onClick={onFinished}
-        variant={'outline'}
-        type="button"
-        className="w-24"
-        disabled={isSubmitting}
-      >
-        Cancelar
-      </Button>
-      <Button type="submit" className="w-24" disabled={isSubmitting}>
-        {isSubmitting && <HourglassIcon size={18} />}
-        Salver
-      </Button>
+      <ButtonGroup>
+        <Button
+          onClick={onFinished}
+          variant={'outline'}
+          type="button"
+          className="w-24"
+          disabled={isSubmitting}
+        >
+          Cancelar
+        </Button>
+        <Button type="submit" className="w-24" disabled={isSubmitting}>
+          {isSubmitting && <HourglassIcon size={18} />}
+          Salver
+        </Button>
+      </ButtonGroup>
     </div>
   );
 };
