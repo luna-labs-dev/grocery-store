@@ -5,16 +5,27 @@ import {
 } from '@tanstack/react-router';
 import { routeTree } from '@/route-tree.gen';
 
-export const router = createRouter({
+const routerConfig = {
   routeTree,
   context: {
     auth: undefined,
   },
-  defaultPreload: 'intent',
+  defaultPreload: 'intent' as const,
   scrollRestoration: true,
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
-});
+};
+
+// Create or retrieve the router instance
+export const router =
+  import.meta.hot?.data.router ?? createRouter(routerConfig);
+
+// Keep the router instance in HMR data to persist across re-evaluations
+if (import.meta.hot) {
+  import.meta.hot.data.router = router;
+  // Update the existing router with the newly imported routeTree
+  router.update({ ...routerConfig, routeTree });
+}
 
 export const RouterProvider = () => {
   const auth = useAuth();
