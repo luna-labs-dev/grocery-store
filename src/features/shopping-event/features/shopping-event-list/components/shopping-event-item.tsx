@@ -9,6 +9,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
 } from '@/components';
 import { fCurrency } from '@/domain';
 import {
@@ -34,9 +39,9 @@ export const ShoppingEventItem = ({
           replace: true,
         });
       }}
-      className="cursor-pointer"
+      className="cursor-pointer p-4"
     >
-      <CardHeader className="flex flex-col ">
+      <CardHeader className="flex flex-col p-0">
         <CardTitle className="flex flex-col items-start">
           {shoppingEvent.market}
         </CardTitle>
@@ -44,36 +49,34 @@ export const ShoppingEventItem = ({
           {getStatus(shoppingEvent.status)}
         </CardDescription>
       </CardHeader>
-      <CardContent className="">
-        <div className="flex gap-6">
-          <div className="grid grid-cols-[20px_1fr] items-start">
-            <Icon icon={'prime:circle'} className="translate-y-2" />
-
-            <div className="space-y-1">
-              <span className="text-xs font-medium leading-none text-muted-foreground">
-                total varejo
-              </span>
-              <p className="text-sm">
+      <CardContent className="p-0">
+        <div className="flex gap-4">
+          <Item className="p-0 gap-2">
+            <ItemMedia>
+              <Icon icon="mingcute:shopping-cart-2-line" />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>Total Varejo</ItemTitle>
+              <ItemDescription>
                 {fCurrency(shoppingEvent.totals.retailTotal)}
-              </p>
-            </div>
-          </div>
+              </ItemDescription>
+            </ItemContent>
+          </Item>
 
-          <div className="grid grid-cols-[20px_1fr] items-start">
-            <Icon icon={'f7:rectangle-grid-2x2'} className="translate-y-2" />
-
-            <div className="space-y-1">
-              <span className="text-xs font-medium leading-none text-muted-foreground">
-                total atacado
-              </span>
-              <p className="text-sm">
+          <Item className="p-0 gap-2">
+            <ItemMedia>
+              <Icon icon="mingcute:truck-line" />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>Total atacado</ItemTitle>
+              <ItemDescription>
                 {fCurrency(shoppingEvent.totals.wholesaleTotal)}
-              </p>
-            </div>
-          </div>
+              </ItemDescription>
+            </ItemContent>
+          </Item>
         </div>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="px-0">
         <div className="flex items-end justify-end w-full">
           <div className="flex flex-col items-end">
             <p className="text-[8pt] font-bold text-muted-foreground">

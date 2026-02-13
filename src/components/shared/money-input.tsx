@@ -12,6 +12,7 @@ type TextInputProps = {
   form: UseFormReturn<any>;
   name: string;
   label: string;
+  description?: string;
   placeholder: string;
 };
 
@@ -88,7 +89,9 @@ export const MoneyInput = (props: TextInputProps) => {
           {fieldState.invalid ? (
             <FieldError>{fieldState.error?.message}</FieldError>
           ) : (
-            <FieldDescription>Quantidade</FieldDescription>
+            props.description && (
+              <FieldDescription>{props.description}</FieldDescription>
+            )
           )}
         </Field>
       )}

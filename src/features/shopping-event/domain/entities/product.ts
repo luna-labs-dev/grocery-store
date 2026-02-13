@@ -6,6 +6,9 @@ export interface Product extends Entity {
   wholesaleMinAmount?: number;
   price: number;
   wholesalePrice?: number;
+  totalRetailPrice: number;
+  totalWholesalePrice?: number;
+  totalDifference?: number;
   addedAt: Date;
 }
 

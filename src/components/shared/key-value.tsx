@@ -1,15 +1,24 @@
-interface KeyValueWithIconProps {
+import { Item, ItemContent, ItemDescription, ItemTitle } from '../ui';
+import { cn } from '@/lib/utils';
+
+interface KeyValueProps {
   props: {
     title: string;
     text: string;
   };
+  className?: string;
 }
 
-export const KeyValue = ({ props: { title, text } }: KeyValueWithIconProps) => {
+export const KeyValue = ({
+  props: { title, text },
+  className,
+}: KeyValueProps) => {
   return (
-    <div className="leading-none">
-      <span className="text-xs font-medium text-muted-foreground">{title}</span>
-      <p className="text-sm">{text}</p>
-    </div>
+    <Item className={cn('px-1 py-0.5 bg-accent/30', className)}>
+      <ItemContent>
+        <ItemTitle className="text-xs">{title}</ItemTitle>
+        <ItemDescription className="text-sm">{text}</ItemDescription>
+      </ItemContent>
+    </Item>
   );
 };

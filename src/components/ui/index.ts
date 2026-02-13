@@ -1,6 +1,6 @@
 export * from './alert';
 export * from './dialog';
-
+export * from './button-group'
 export * from './switch';
 export * from './alert-dialog';
 export * from './avatar';
@@ -20,3 +20,6 @@ export * from './tooltip';
 export * from './pagination'
 export * from './item'
 export * from './combobox';
+export * from './accordion'
+export * from './scroll-area'
+export * from './badge'

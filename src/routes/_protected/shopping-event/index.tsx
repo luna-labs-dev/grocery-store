@@ -13,12 +13,12 @@ function RouteComponent() {
     addBreadcrumbs(
       [
         {
-          label: 'Evento de compra',
+          label: 'Eventos de compra',
           to: '/shopping-event',
         },
       ],
       {
-        title: 'Evento de compra',
+        title: 'Eventos de compra',
       },
     );
   }, []);

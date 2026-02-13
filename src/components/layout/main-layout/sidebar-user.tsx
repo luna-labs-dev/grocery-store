@@ -1,5 +1,6 @@
 import { useAuth, useUser } from '@clerk/clerk-react';
-import { Icon } from '@iconify/react';
+import { AnimateIcon } from '@/components/animate-ui/icons/icon';
+import { LogOut } from '@/components/animate-ui/icons/log-out';
 import {
   Avatar,
   AvatarFallback,
@@ -31,13 +32,18 @@ export const SidebarUser = () => {
               </span>
             </div>
           </div>
-          <Button
-            onClick={() => signOut()}
-            variant={'ghost'}
-            className="cursor-pointer"
-          >
-            <Icon icon="uit:signout" className="w-5! h-5! text-red-600" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <AnimateIcon animate animateOnHover animation="default">
+              <Button
+                onClick={() => signOut()}
+                variant={'outline'}
+                className="cursor-pointer"
+              >
+                <LogOut />
+                {/* <Icon icon="uit:signout" className="w-4! h-4! text-red-600" /> */}
+              </Button>
+            </AnimateIcon>
+          </div>
         </div>
       </SidebarMenuItem>
     </SidebarMenu>

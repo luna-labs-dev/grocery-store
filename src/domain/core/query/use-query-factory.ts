@@ -10,6 +10,7 @@ export interface UseQueryFactory<HttpParams, HttpResponse> {
   refetchInterval?: number;
   retry?: boolean | number;
   enabled?: boolean;
+  keepPreviousData?: boolean;
 }
 
 export const useQueryFactory = <HttpParams, HttpResponse>({
@@ -19,6 +20,7 @@ export const useQueryFactory = <HttpParams, HttpResponse>({
   refetchInterval,
   retry,
   enabled,
+  keepPreviousData,
 }: UseQueryFactory<HttpParams, HttpResponse>) => {
   const query = useQuery({
     queryKey: [queryKey, params],
@@ -28,6 +30,9 @@ export const useQueryFactory = <HttpParams, HttpResponse>({
     enabled: enabled ?? true,
     staleTime,
     refetchInterval,
+
+    placeholderData: (previousData) =>
+      keepPreviousData ? previousData : undefined,
   });
 
   return { ...query };

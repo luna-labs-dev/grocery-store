@@ -1,33 +1,35 @@
-import { Icon } from '@iconify/react';
 import { usePagination } from '@mantine/hooks';
-import { Button } from '../ui';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '../ui';
 import type { FetchListParams } from '@/domain';
-import { cn } from '@/lib/utils';
 
 interface PaginationProps<TFetchParams = FetchListParams> {
   paginationProps: {
     listTotal?: number;
     paginationParams: TFetchParams;
     setPaginationParams: (params: TFetchParams) => void;
-    isFetching: boolean;
   };
 }
 
 export const CustomPagination = <TFetchParams,>({
-  paginationProps: {
-    listTotal,
-    paginationParams,
-    setPaginationParams,
-    isFetching,
-  },
+  paginationProps: { listTotal, paginationParams, setPaginationParams },
 }: PaginationProps<TFetchParams>) => {
   const total = listTotal
     ? Math.ceil(listTotal / (paginationParams as FetchListParams).pageSize)
     : 0;
 
-  const pagination = usePagination({
+  const { range, active, previous, next, setPage } = usePagination({
     total: total,
     initialPage: 1,
+    boundaries: 1,
+    siblings: 1,
     onChange: (page) => {
       setPaginationParams({
         ...paginationParams,
@@ -37,45 +39,44 @@ export const CustomPagination = <TFetchParams,>({
   });
 
   return (
-    <div className="flex justify-between pb-2 md:gap-2 md:justify-end">
-      <div className="flex gap-2">
-        <Button
-          disabled={isFetching || pagination.active === 1}
-          onClick={pagination.previous}
-        >
-          <Icon icon="mingcute:left-line" />
-        </Button>
-        <Button
-          disabled={isFetching || pagination.active === total}
-          onClick={pagination.next}
-        >
-          <Icon icon="mingcute:right-line" />
-        </Button>
-      </div>
-      <div className="flex">
-        {pagination.range.map((page) => {
+    <Pagination>
+      <PaginationContent>
+        {active > 1 && (
+          <PaginationItem>
+            <PaginationPrevious onClick={previous} className="cursor-pointer" />
+          </PaginationItem>
+        )}
+        {range.map((page, idx) => {
+          if (page === 'dots') {
+            return (
+              <PaginationItem key={`dots-${range[idx - 1]}-${range[idx + 1]}`}>
+                <PaginationEllipsis />
+              </PaginationItem>
+            );
+          }
+
           return (
-            <div key={page as number} className={'flex items-center'}>
-              <span
+            <PaginationItem key={page}>
+              <PaginationLink
+                isActive={active === page}
                 onClick={() => {
                   if (!Number.isNaN(page as number)) {
-                    pagination.setPage(page as number);
+                    setPage(page as number);
                   }
                 }}
-                onKeyUp={() => {}}
-                className={cn(
-                  pagination.active === page
-                    ? 'bg-primary text-white rounded-md'
-                    : '',
-                  'px-[.6rem] py-[.2rem]',
-                )}
               >
-                {Number.isNaN(page as number) ? '...' : page}
-              </span>
-            </div>
+                {page}
+              </PaginationLink>
+            </PaginationItem>
           );
         })}
-      </div>
-    </div>
+
+        {active < total && (
+          <PaginationItem>
+            <PaginationNext onClick={next} />
+          </PaginationItem>
+        )}
+      </PaginationContent>
+    </Pagination>
   );
 };

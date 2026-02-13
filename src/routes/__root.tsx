@@ -1,4 +1,5 @@
 import type { useAuth } from '@clerk/clerk-react';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import {
   createRootRouteWithContext,
   HeadContent,
@@ -14,7 +15,12 @@ const RootLayout = () => {
     <>
       <HeadContent />
       <Outlet />
-      <TanStackRouterDevtools position="top-right" />
+      {import.meta.env.VITE_DEV_TOOLS === 'true' ? (
+        <>
+          <TanStackRouterDevtools position="bottom-left" />
+          <ReactQueryDevtools position="left" buttonPosition="bottom-left" />
+        </>
+      ) : null}
     </>
   );
 };

@@ -2,7 +2,7 @@ import { ClerkProvider } from '@clerk/clerk-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from './router-provider';
 import { ThemeProvider } from './theme-provider';
-import { SidebarProvider } from '@/components';
+import { Toaster } from '@/components';
 import { env } from '@/config';
 
 export const Providers = () => {
@@ -12,9 +12,8 @@ export const Providers = () => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <ClerkProvider publishableKey={env.clerk.publishableKey}>
-          <SidebarProvider>
-            <RouterProvider />
-          </SidebarProvider>
+          <RouterProvider />
+          <Toaster />
         </ClerkProvider>
       </ThemeProvider>
     </QueryClientProvider>
