@@ -3,6 +3,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import {
   Button,
+  ButtonGroup,
   Card,
   CardContent,
   CardFooter,
@@ -45,68 +46,76 @@ export const StartShoppingEvent = () => {
   );
   const marketIcon = <Icon icon={'lsicon:marketplace-outline'} />;
   return (
-    <Card>
-      <CardContent>
-        <Combobox
-          items={marketList}
-          value={value}
-          itemToStringLabel={(item: MarketListItem) => item.name}
-          itemToStringValue={(item: MarketListItem) => item.code}
-          isItemEqualToValue={(itemValue, selectedValue) =>
-            itemValue.code === selectedValue.code
-          }
-          onValueChange={(item) => {
-            setValue(item);
-          }}
-        >
-          <ComboboxInput placeholder="Selecione um mercado" showClear={true}>
-            <InputGroupAddon>
-              {isLoading ? loadingIcon : marketIcon}
-            </InputGroupAddon>
-          </ComboboxInput>
-          <ComboboxContent>
-            <ComboboxEmpty>Nenhum mercado selecionado</ComboboxEmpty>
-            <ComboboxList>
-              {(market: MarketListItem) => (
-                <ComboboxItem key={market.id} value={market}>
-                  {market.name}
-                </ComboboxItem>
-              )}
-            </ComboboxList>
-          </ComboboxContent>
-        </Combobox>
-      </CardContent>
-
-      <CardFooter className="justify-start gap-4">
-        <Button
-          variant="outline"
-          onClick={() =>
-            navigate({
-              to: '..',
-            })
-          }
-        >
-          Cancelar
-        </Button>
-        <Button
-          disabled={!value || isPending}
-          onClick={async () => {
-            if (value) {
-              const shoppingEvent = await mutateAsync({ marketId: value.id });
-              navigate({
-                to: '/shopping-event/$shoppingEventId',
-                params: { shoppingEventId: shoppingEvent.id },
-                replace: true,
-              });
-              return;
+    <div className="p-4">
+      <Card className="">
+        <CardContent>
+          <Combobox
+            items={marketList}
+            value={value}
+            itemToStringLabel={(item: MarketListItem) => item.name}
+            itemToStringValue={(item: MarketListItem) => item.code}
+            isItemEqualToValue={(itemValue, selectedValue) =>
+              itemValue.code === selectedValue.code
             }
-          }}
-        >
-          {' '}
-          {isPending && <HourglassIcon />}
-          Iniciar
-        </Button>
-      </CardFooter>
-    </Card>
+            onValueChange={(item) => {
+              setValue(item);
+            }}
+          >
+            <ComboboxInput placeholder="Selecione um mercado" showClear={true}>
+              <InputGroupAddon>
+                {isLoading ? loadingIcon : marketIcon}
+              </InputGroupAddon>
+            </ComboboxInput>
+            <ComboboxContent>
+              <ComboboxEmpty>Nenhum mercado selecionado</ComboboxEmpty>
+              <ComboboxList>
+                {(market: MarketListItem) => (
+                  <ComboboxItem key={market.id} value={market}>
+                    {market.name}
+                  </ComboboxItem>
+                )}
+              </ComboboxList>
+            </ComboboxContent>
+          </Combobox>
+        </CardContent>
+
+        <CardFooter className="justify-end gap-4">
+          <ButtonGroup>
+            <Button
+              variant="outline"
+              className="w-28"
+              onClick={() =>
+                navigate({
+                  to: '..',
+                })
+              }
+            >
+              Cancelar
+            </Button>
+            <Button
+              disabled={!value || isPending}
+              className="w-28"
+              onClick={async () => {
+                if (value) {
+                  const shoppingEvent = await mutateAsync({
+                    marketId: value.id,
+                  });
+                  navigate({
+                    to: '/shopping-event/$shoppingEventId',
+                    params: { shoppingEventId: shoppingEvent.id },
+                    replace: true,
+                  });
+                  return;
+                }
+              }}
+            >
+              {' '}
+              {isPending && <HourglassIcon />}
+              Iniciar
+            </Button>
+          </ButtonGroup>
+        </CardFooter>
+      </Card>
+    </div>
   );
 };
