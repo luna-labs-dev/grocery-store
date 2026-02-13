@@ -16,16 +16,22 @@ const routerConfig = {
   defaultPreloadStaleTime: 0,
 };
 
-// Create or retrieve the router instance
-export const router =
-  import.meta.hot?.data.router ?? createRouter(routerConfig);
+function getRouter() {
+  const newRouter = createRouter(routerConfig);
 
-// Keep the router instance in HMR data to persist across re-evaluations
-if (import.meta.hot) {
-  import.meta.hot.data.router = router;
-  // Update the existing router with the newly imported routeTree
-  router.update({ ...routerConfig, routeTree });
+  if (typeof window !== 'undefined' && import.meta.hot) {
+    const hotData = import.meta.hot.data;
+    if (hotData.router) {
+      const existing = hotData.router as typeof newRouter;
+      existing.update({ ...routerConfig, routeTree });
+      return existing;
+    }
+    hotData.router = newRouter;
+  }
+  return newRouter;
 }
+
+export const router = getRouter();
 
 export const RouterProvider = () => {
   const auth = useAuth();
