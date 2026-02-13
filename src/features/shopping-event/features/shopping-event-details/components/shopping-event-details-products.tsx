@@ -1,13 +1,8 @@
-import { Icon } from '@iconify/react';
 import type {
   QueryObserverResult,
   RefetchOptions,
 } from '@tanstack/react-query';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { RemoveProductFromCartDialog, UpdateProductInCartSheet } from './cart';
-import { Button, KeyValue } from '@/components';
-import { fCurrency } from '@/domain';
+import { ProductItem } from './shopping-event-product-item';
 import type {
   Product,
   ShoppingEventStatus,
@@ -27,104 +22,15 @@ export const ShoppingEventDetailsProducts = ({
   shoppingEventStatus,
 }: ShoppingEventDetailsProductsProps) => {
   return (
-    <section className="flex flex-col flex-1 min-h-0">
+    <section className="flex flex-col gap-4">
       {products.map((product) => {
         return (
-          <div
+          <ProductItem
             key={product.id}
-            className="flex flex-col gap-2 py-2 px-3 border rounded-lg w-full"
-          >
-            <div className="flex justify-between ">
-              <p className="text-sm">{product.name}</p>
-              <p className="text-sm">
-                {format(product.addedAt, 'HH:mm:ss', { locale: ptBR })}
-              </p>
-            </div>
-            <div className="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-8 gap-2">
-              <KeyValue
-                props={{
-                  title: 'Quantidade',
-                  text: product.amount.toString(),
-                }}
-              />
-
-              <KeyValue
-                className="px-2 py-1"
-                props={{
-                  title: 'Preço',
-                  text: fCurrency(product.price ?? 0),
-                }}
-              />
-
-              <KeyValue
-                className="px-2 py-1"
-                props={{
-                  title: 'Total',
-                  text: fCurrency(product.totalRetailPrice),
-                }}
-              />
-
-              {product.wholesaleMinAmount && (
-                <KeyValue
-                  className="px-2 py-1"
-                  props={{
-                    title: 'Mín. atacado',
-                    text: (product.wholesaleMinAmount ?? 0).toString(),
-                  }}
-                />
-              )}
-
-              {product.wholesalePrice && (
-                <KeyValue
-                  className="px-2 py-1"
-                  props={{
-                    title: 'Preço atacado',
-                    text: fCurrency(product.wholesalePrice ?? 0),
-                  }}
-                />
-              )}
-
-              {product.totalWholesalePrice && product.wholesalePrice && (
-                <KeyValue
-                  className="px-2 py-1"
-                  props={{
-                    title: 'Total atacado',
-                    text: fCurrency(product.totalWholesalePrice),
-                  }}
-                />
-              )}
-
-              {product.totalDifference && product.wholesalePrice && (
-                <KeyValue
-                  className="px-2 py-1"
-                  props={{
-                    title: 'Economia',
-                    text: fCurrency(product.totalDifference),
-                  }}
-                />
-              )}
-            </div>
-            {shoppingEventStatus === 'ONGOING' && (
-              <div className="flex justify-end gap-2">
-                <UpdateProductInCartSheet
-                  shoppingEventId={shoppingEventId}
-                  product={product}
-                >
-                  <Button size="sm">
-                    <Icon icon="mingcute:edit-2-line" />
-                  </Button>
-                </UpdateProductInCartSheet>
-                <RemoveProductFromCartDialog
-                  shoppingEventId={shoppingEventId}
-                  product={product}
-                >
-                  <Button size="sm" variant="destructive">
-                    <Icon icon="mingcute:delete-2-line" />
-                  </Button>
-                </RemoveProductFromCartDialog>
-              </div>
-            )}
-          </div>
+            product={product}
+            shoppingEventId={shoppingEventId}
+            shoppingEventStatus={shoppingEventStatus}
+          />
         );
       })}
     </section>
