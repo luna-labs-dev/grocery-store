@@ -1,1 +1,1 @@
-export * from './market-form';
+export * from './market-form-composite';
