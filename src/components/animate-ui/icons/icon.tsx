@@ -1,21 +1,19 @@
 'use client';
 
-import {
-  type HTMLMotionProps,
-  type LegacyAnimationControls,
-  motion,
-  type SVGMotionProps,
-  type UseInViewOptions,
-  useAnimation,
-  type Variants,
-} from 'motion/react';
 import * as React from 'react';
 import {
-  Slot,
-  type WithAsChild,
-} from '@/components/animate-ui/primitives/animate/slot';
-import { useIsInView } from '@/hooks/use-is-in-view';
+  motion,
+  useAnimation,
+  type SVGMotionProps,
+  type UseInViewOptions,
+  type LegacyAnimationControls,
+  type Variants,
+  type HTMLMotionProps,
+} from 'motion/react';
+
 import { cn } from '@/lib/utils';
+import { useIsInView } from '@/hooks/use-is-in-view';
+import { Slot, type WithAsChild } from '@/components/animate-ui/primitives/animate/slot';
 
 const staticAnimations = {
   path: {
