@@ -1,8 +1,6 @@
 import { Icon } from '@iconify/react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { EndShoppingEventDialog } from './end-shopping-event';
-import { Button } from '@/components';
 import {
   getStatus,
   type ShoppingEvent,
@@ -35,15 +33,7 @@ export const ShoppingEventDetailsHeader = ({
           <p className="text-sm">{getStatus(shoppingEvent.status)}</p>
         </div>
       </div>
-      <div>
-        {shoppingEvent.status === 'ONGOING' && (
-          <EndShoppingEventDialog shoppingEventId={shoppingEvent.id}>
-            <Button variant="ghost" size={'sm'}>
-              <Icon icon="gis:flag-finish-b-o" fontSize={20} />
-            </Button>
-          </EndShoppingEventDialog>
-        )}
-      </div>
+      <div></div>
     </section>
   );
 };
