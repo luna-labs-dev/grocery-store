@@ -41,16 +41,38 @@ export const ShoppingEventDetailsPage = ({
     return <div>No data</div>;
   }
 
+  const totalTab = (
+    <Page.Content>
+      <div className="flex flex-col gap-2">
+        <ShoppingEventDetailsTotals calculatedTotals={data.calculatedTotals} />
+      </div>
+    </Page.Content>
+  );
+
+  const productsTab = (
+    <Page.Content className="pb-4 rounded-xl">
+      <ShoppingEventDetailsProducts
+        products={data.products}
+        shoppingEventId={data.id}
+        shoppingEventStatus={data.status}
+        refetch={refetch}
+        isFetching={isFetching}
+      />
+    </Page.Content>
+  );
+
+  const tabs = [
+    { value: 'totals', label: 'Totais', content: totalTab },
+    { value: 'products', label: 'Produtos', content: productsTab },
+  ];
+
   return (
     <Page className="px-4 py-2">
       <Tabs className="flex-1 flex flex-col min-h-0 gap-4">
         <Page.Header className="flex flex-col gap-4">
-          <TabsList className="w-full flex-none">
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="products">Produtos</TabsTrigger>
-          </TabsList>
-          <div className="flex justify-between">
-            {data.status === 'ONGOING' && (
+          <ShoppingEventDetailsHeader shoppingEvent={data} />
+          {data.status === 'ONGOING' ? (
+            <div className="flex justify-between">
               <div className="w-full flex justify-between">
                 <Button variant={'outline'} onClick={() => refetch()}>
                   <Icon
@@ -71,52 +93,45 @@ export const ShoppingEventDetailsPage = ({
                   </Button>
                 </AddProductToCartSheet>
               </div>
-            )}
-          </div>
+            </div>
+          ) : null}
+
+          <TabsList className="w-full flex-none">
+            <TabsTrigger value="totals">Totais</TabsTrigger>
+            <TabsTrigger value="products">Produtos</TabsTrigger>
+          </TabsList>
         </Page.Header>
 
         <TabsContents
           className="flex-1 min-h-0 [&>div]:h-full"
           animate={{ height: '100%' }}
         >
-          <TabsContent
-            value="details"
-            className="h-full flex flex-col min-h-0 overflow-hidden"
-          >
-            <Page.Content>
-              <div className="flex flex-col gap-2">
-                <ShoppingEventDetailsHeader shoppingEvent={data} />
-                <ShoppingEventDetailsTotals
-                  calculatedTotals={data.calculatedTotals}
-                />
-              </div>
-            </Page.Content>
-          </TabsContent>
-
-          <TabsContent
-            value="products"
-            className="h-full flex flex-col min-h-0"
-          >
-            <Page.Content className="pb-4 rounded-xl">
-              <ShoppingEventDetailsProducts
-                products={data.products}
-                shoppingEventId={data.id}
-                shoppingEventStatus={data.status}
-                refetch={refetch}
-                isFetching={isFetching}
-              />
-            </Page.Content>
-          </TabsContent>
+          {tabs.map((tab) => (
+            <TabsContent
+              key={tab.value}
+              value={tab.value}
+              className="h-full flex flex-col min-h-0 overflow-hidden"
+            >
+              {tab.content}
+            </TabsContent>
+          ))}
         </TabsContents>
       </Tabs>
-      <Page.Footer className="flex justify-end pb-2">
-        <EndShoppingEventDialog shoppingEventId={shoppingEventId}>
-          <Button variant="outline">
-            <CheckCheck animate animation="default" loop loopDelay={1000 * 5} />
-            Finalizar Compra
-          </Button>
-        </EndShoppingEventDialog>
-      </Page.Footer>
+      {data.status === 'ONGOING' ? (
+        <Page.Footer className="flex justify-end pt-4 pb-2">
+          <EndShoppingEventDialog shoppingEventId={shoppingEventId}>
+            <Button variant="outline">
+              <CheckCheck
+                animate
+                animation="default"
+                loop
+                loopDelay={1000 * 5}
+              />
+              Finalizar Compra
+            </Button>
+          </EndShoppingEventDialog>
+        </Page.Footer>
+      ) : null}
     </Page>
   );
 };
