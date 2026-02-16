@@ -1,17 +1,4 @@
-import {
-  ArrowDownCircle,
-  ArrowUpCircle,
-  BarChart3,
-  DollarSign,
-  Layers,
-  Package,
-  Percent,
-  ShoppingCart,
-  TrendingDown,
-  TrendingUp,
-  Truck,
-  Wallet,
-} from 'lucide-react';
+import { Icon } from '@iconify/react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { fCurrency, fPercent, fShortenNumber } from '@/domain';
@@ -22,36 +9,61 @@ interface ShoppingEventDetailsTotalsProps {
   totals: ShoppingEventCalculatedTotals;
 }
 
+// ----------------------------------------------------------------------
+// Styles & Types
+// ----------------------------------------------------------------------
+
+const ACCENT_STYLES = {
+  positive: {
+    iconWrapper: 'bg-emerald-500/10 text-emerald-600',
+    valueText: 'text-emerald-600',
+  },
+  negative: {
+    iconWrapper: 'bg-red-500/10 text-red-600',
+    valueText: 'text-red-600',
+  },
+  neutral: {
+    iconWrapper: 'bg-muted text-muted-foreground',
+    valueText: 'text-foreground',
+  },
+} as const;
+
+type AccentType = keyof typeof ACCENT_STYLES;
+
 interface StatItemProps {
-  icon: React.ReactNode;
+  icon: string;
   label: string;
   value: string;
-  accent?: 'positive' | 'negative' | 'neutral';
+  accent?: AccentType;
 }
 
+// ----------------------------------------------------------------------
+// Components
+// ----------------------------------------------------------------------
+
 function StatItem({ icon, label, value, accent = 'neutral' }: StatItemProps) {
+  const styles = ACCENT_STYLES[accent];
+
   return (
-    <Card className="shadow-none border-border/60 p-2.5 ">
+    <Card className="shadow-none border-border/60 p-2.5">
       <CardContent className="flex items-center gap-2.5 p-0">
         <div
           className={cn(
             'flex h-7 w-7 shrink-0 items-center justify-center rounded-md',
-            accent === 'positive' && 'bg-emerald-500/10 text-emerald-600',
-            accent === 'negative' && 'bg-red-500/10 text-red-600',
-            accent === 'neutral' && 'bg-muted text-muted-foreground',
+            styles.iconWrapper,
           )}
         >
-          {icon}
+          <Icon icon={icon} width={18} />
         </div>
+
         <div className="flex flex-col min-w-0">
-          <span className="text-[11px] text-muted-foreground leading-none">
+          <span className="text-[11px] text-muted-foreground leading-none mb-1">
             {label}
           </span>
           <span
             className={cn(
               'text-sm font-semibold leading-tight truncate',
-              accent === 'positive' && 'text-emerald-600',
-              accent === 'negative' && 'text-red-600',
+              styles.valueText,
             )}
           >
             {value}
@@ -62,44 +74,76 @@ function StatItem({ icon, label, value, accent = 'neutral' }: StatItemProps) {
   );
 }
 
-interface SectionProps {
+function Section({
+  title,
+  children,
+}: {
   title: string;
   children: React.ReactNode;
-}
-
-function Section({ title, children }: SectionProps) {
+}) {
   return (
-    <div className="flex flex-col gap-2">
-      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+    <div className="flex flex-col gap-3">
+      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-1">
         {title}
       </h4>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
         {children}
       </div>
     </div>
   );
 }
 
+function DifferenceStatItem({
+  icon,
+  label,
+  value,
+}: {
+  icon: string;
+  label: string;
+  value: number;
+}) {
+  const isPositive = value >= 0;
+
+  return (
+    <StatItem
+      icon={icon}
+      label={label}
+      value={fCurrency(value)}
+      accent={isPositive ? 'positive' : 'negative'}
+    />
+  );
+}
+
+// ----------------------------------------------------------------------
+// Main Component
+// ----------------------------------------------------------------------
+
 export function ShoppingEventDetailsTotals({
   totals,
 }: ShoppingEventDetailsTotalsProps) {
+  const showPaidStats = totals.paidValue > 0;
+
+  const showDifferenceStats =
+    showPaidStats &&
+    totals.retailPaidDifferenceValue !== undefined &&
+    totals.wholesalePaidDifferenceValue !== undefined;
+
   return (
-    <div className="flex flex-col gap-4">
-      {/* Section 1: Valores Principais */}
+    <div className="flex flex-col gap-6">
       <Section title="Valores">
         <StatItem
-          icon={<Truck className="h-3.5 w-3.5" />}
+          icon="solar:delivery-bold"
           label="Atacado"
           value={fCurrency(totals.wholesaleTotal)}
         />
         <StatItem
-          icon={<ShoppingCart className="h-3.5 w-3.5" />}
+          icon="solar:cart-large-minimalistic-bold"
           label="Varejo"
           value={fCurrency(totals.retailTotal)}
         />
-        {totals.paidValue > 0 && (
+        {showPaidStats && (
           <StatItem
-            icon={<DollarSign className="h-3.5 w-3.5" />}
+            icon="solar:dollar-minimalistic-bold"
             label="Pago"
             value={fCurrency(totals.paidValue)}
           />
@@ -108,81 +152,67 @@ export function ShoppingEventDetailsTotals({
 
       <Separator />
 
-      {/* Section 2: Economia & Diferenças */}
       <Section title="Economia">
         <StatItem
-          icon={<Wallet className="h-3.5 w-3.5" />}
+          icon="solar:wallet-bold"
           label="Economia"
           value={fCurrency(totals.savingsValue)}
           accent="positive"
         />
         <StatItem
-          icon={<Percent className="h-3.5 w-3.5" />}
+          icon="majesticons:percent"
           label="% Economizada"
           value={fPercent(totals.savingsPercentage)}
           accent="positive"
         />
-        {totals.paidValue > 0 &&
-          totals.retailPaidDifferenceValue !== undefined &&
-          totals.wholesalePaidDifferenceValue !== undefined && (
-            <>
-              <StatItem
-                icon={<TrendingDown className="h-3.5 w-3.5" />}
-                label="Dif. Varejo"
-                value={fCurrency(totals.retailPaidDifferenceValue)}
-                accent={
-                  totals.retailPaidDifferenceValue >= 0
-                    ? 'positive'
-                    : 'negative'
-                }
-              />
-              <StatItem
-                icon={<TrendingUp className="h-3.5 w-3.5" />}
-                label="Dif. Atacado"
-                value={fCurrency(totals.wholesalePaidDifferenceValue)}
-                accent={
-                  totals.wholesalePaidDifferenceValue >= 0
-                    ? 'positive'
-                    : 'negative'
-                }
-              />
-            </>
-          )}
+
+        {showDifferenceStats && (
+          <>
+            <DifferenceStatItem
+              icon="solar:graph-down-bold"
+              label="Dif. Varejo"
+              value={totals.retailPaidDifferenceValue ?? 0}
+            />
+            <DifferenceStatItem
+              icon="solar:graph-up-bold"
+              label="Dif. Atacado"
+              value={totals.wholesalePaidDifferenceValue ?? 0}
+            />
+          </>
+        )}
       </Section>
 
       <Separator />
 
-      {/* Section 3: Itens & Quantidades */}
       <Section title="Itens">
         <StatItem
-          icon={<Package className="h-3.5 w-3.5" />}
+          icon="solar:box-bold"
           label="Itens"
           value={fShortenNumber(totals.totalItemsDistinct, 3)}
         />
         <StatItem
-          icon={<Layers className="h-3.5 w-3.5" />}
+          icon="solar:layers-bold"
           label="Unidades"
           value={fShortenNumber(totals.totalItemsQuantity, 3)}
         />
         <StatItem
-          icon={<BarChart3 className="h-3.5 w-3.5" />}
-          label="Preço Medio/Un."
+          icon="solar:chart-2-bold"
+          label="Preço Médio/Un."
           value={fCurrency(10)} // TODO: implementar
         />
       </Section>
 
       <Separator />
 
-      {/* Section 4: Extremos de Preço */}
-      <Section title="Faixa de Preco">
+      <Section title="Faixa de Preço">
         <StatItem
-          icon={<ArrowUpCircle className="h-3.5 w-3.5" />}
+          icon="solar:square-arrow-up-bold"
           label="Mais Caro"
           value={fCurrency(totals.highestPrice)}
           accent="negative"
         />
         <StatItem
-          icon={<ArrowDownCircle className="h-3.5 w-3.5" />}
+          icon="solar:square-arrow-down-bold"
           label="Mais Barato"
           value={fCurrency(totals.lowestPrice)}
           accent="positive"
