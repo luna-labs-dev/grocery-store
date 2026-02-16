@@ -1,8 +1,20 @@
-import { HttpError, errorMapper } from '@/domain';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-
+import { errorMapper, type HttpError } from '@/domain';
+import type {
+  AddProductToCartParams,
+  AddProductToCartSuccessResult,
+  EndShoppingEventParams,
+  EndShoppingEventResult,
+  FetchShoppingEventListParams,
+  GetShoppingEventByIdParams,
+  ProductCartMutation,
+  RemoveProductFromCartParams,
+  StartShoppingEventParams,
+  StartShoppingEventResult,
+  UpdateProductInCartParams,
+} from '@/features/shopping-event/domain';
 import {
   httpAddProductToCart,
   httpEndShoppingEvent,
@@ -13,36 +25,30 @@ import {
   httpUpdateProductInCart,
 } from '@/features/shopping-event/infrastructure';
 
-import {
-  AddProductToCartParams,
-  AddProductToCartSuccessResult,
-  EndShoppingEventParams,
-  EndShoppingEventResult,
-  FetchShoppingEventListParams,
-  GetShoppingEventByIdParams,
-  RemoveProductFromCartParams,
-  StartShoppingEventParams,
-  StartShoppingEventResult,
-  UpdateProductInCartParams,
-} from '@/features/shopping-event/domain';
-
-export const useGetShoppingEventListQuery = (params: FetchShoppingEventListParams) => {
+export const useGetShoppingEventListQuery = (
+  params: FetchShoppingEventListParams,
+) => {
   const query = useQuery({
     queryKey: ['get-shopping-event-list', params],
     queryFn: ({ queryKey }) =>
       httpGetShoppingEventList(queryKey[1] as FetchShoppingEventListParams),
+    staleTime: 1000 * 60 * 1,
+    placeholderData: (previousData) => previousData,
   });
 
   return { ...query };
 };
 
-export const useGetShoppingEventByIdQuery = (params: GetShoppingEventByIdParams) => {
+export const useGetShoppingEventByIdQuery = (
+  params: GetShoppingEventByIdParams,
+) => {
   const query = useQuery({
     queryKey: ['get-shopping-event-by-id', params],
-    queryFn: ({ queryKey }) => httpGetShoppingEventById(queryKey[1] as GetShoppingEventByIdParams),
-    staleTime: 1000 * 5,
+    queryFn: ({ queryKey }) =>
+      httpGetShoppingEventById(queryKey[1] as GetShoppingEventByIdParams),
+    staleTime: 1000 * 60 * 5,
+    refetchInterval: 1000 * 20,
     enabled: !!params.shoppingEventId,
-    refetchInterval: 1000 * 60 * 2,
   });
 
   return { ...query };
@@ -50,7 +56,11 @@ export const useGetShoppingEventByIdQuery = (params: GetShoppingEventByIdParams)
 
 export const useStartShoppingEventMutation = () => {
   const queryClient = useQueryClient();
-  const mutation = useMutation<StartShoppingEventResult, HttpError, StartShoppingEventParams>({
+  const mutation = useMutation<
+    StartShoppingEventResult,
+    HttpError,
+    StartShoppingEventParams
+  >({
     mutationFn: httpStartShoppingEvent,
     onError: (error, params) => {
       const { title, description } = errorMapper(error.code ?? '')(params);
@@ -76,7 +86,11 @@ export const useStartShoppingEventMutation = () => {
 
 export const useEndShoppingEventMutation = () => {
   const queryClient = useQueryClient();
-  const mutation = useMutation<EndShoppingEventResult, HttpError, EndShoppingEventParams>({
+  const mutation = useMutation<
+    EndShoppingEventResult,
+    HttpError,
+    EndShoppingEventParams
+  >({
     mutationFn: httpEndShoppingEvent,
     onError: (error, params) => {
       const { title, description } = errorMapper(error.code ?? '')(params);
@@ -106,10 +120,14 @@ export const useEndShoppingEventMutation = () => {
   return { ...mutation };
 };
 
-export const useAddProductCartMutation = () => {
+export const useAddProductCartMutation = (params: ProductCartMutation) => {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<AddProductToCartSuccessResult, HttpError, AddProductToCartParams>({
+  const mutation = useMutation<
+    AddProductToCartSuccessResult,
+    HttpError,
+    AddProductToCartParams
+  >({
     mutationFn: httpAddProductToCart,
     onError: (error) => {
       const { title } = errorMapper(error.code ?? '')();
@@ -122,7 +140,7 @@ export const useAddProductCartMutation = () => {
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: ['get-shopping-event-by-id'],
+        queryKey: ['get-shopping-event-by-id', params],
       });
     },
   });
@@ -130,7 +148,7 @@ export const useAddProductCartMutation = () => {
   return { ...mutation };
 };
 
-export const useUpdateProductInCartMutation = () => {
+export const useUpdateProductInCartMutation = (params: ProductCartMutation) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<void, HttpError, UpdateProductInCartParams>({
@@ -140,13 +158,15 @@ export const useUpdateProductInCartMutation = () => {
       toast.error(title);
     },
     onSuccess: (_, params) => {
+      alert('success');
       toast.success('Produto atualizado', {
         description: `O produto ${params.params.name} foi atualizado no carrinho`,
       });
     },
     onSettled: () => {
+      alert('settled');
       queryClient.invalidateQueries({
-        queryKey: ['get-shopping-event-by-id'],
+        queryKey: ['get-shopping-event-by-id', params],
       });
     },
   });
@@ -169,6 +189,7 @@ export const useRemoveProductFromCartMutation = () => {
       });
     },
     onSettled: () => {
+      alert('settled');
       queryClient.invalidateQueries({
         queryKey: ['get-shopping-event-by-id'],
       });

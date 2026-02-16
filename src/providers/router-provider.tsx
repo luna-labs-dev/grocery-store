@@ -1,22 +1,40 @@
-import { RouterProvider as Router, createBrowserRouter } from 'react-router-dom';
+import { useAuth } from '@clerk/clerk-react';
+import {
+  createRouter,
+  RouterProvider as TanstackRouterProvider,
+} from '@tanstack/react-router';
+import { routeTree } from '@/route-tree.gen';
 
-import { LoadingCart } from '@/components/shared/loading-cart';
-import { history } from '@/domain/utils/history';
-import { useRoutes } from '@/routes';
+const routerConfig = {
+  routeTree,
+  context: {
+    auth: undefined,
+  },
+  defaultPreload: 'intent' as const,
+  scrollRestoration: true,
+  defaultStructuralSharing: true,
+  defaultPreloadStaleTime: 0,
+};
+
+function getRouter() {
+  const newRouter = createRouter(routerConfig);
+
+  if (typeof window !== 'undefined' && import.meta.hot) {
+    const hotData = import.meta.hot.data;
+    if (hotData.router) {
+      const existing = hotData.router as typeof newRouter;
+      existing.update({ ...routerConfig, routeTree });
+      return existing;
+    }
+    hotData.router = newRouter;
+  }
+  return newRouter;
+}
+
+export const router = getRouter();
 
 export const RouterProvider = () => {
-  const { routes, isLoaded } = useRoutes();
+  const auth = useAuth();
 
-  const router = createBrowserRouter(routes);
-  history.navigate = router.navigate;
-
-  const test = false;
-  if (!isLoaded || test) {
-    return (
-      <div className="flex items-center justify-center w-screen h-screen">
-        <LoadingCart className="w-[300px] h-[150px]" size={60} />
-      </div>
-    );
-  }
-  return <Router router={router} />;
+  return <TanstackRouterProvider router={router} context={{ auth }} />;
 };

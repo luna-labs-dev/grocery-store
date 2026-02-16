@@ -1,18 +1,21 @@
-import { Providers } from '@/providers';
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 
-import './config/style/globals.css';
-import { loadClerkIfNeeded } from './config/clients';
+import './index.css';
 
-const rootElement = document.getElementById('root');
-loadClerkIfNeeded();
+import { Providers, type router } from '@/providers';
 
-if (!!rootElement && !rootElement?.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <React.StrictMode>
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
+}
+
+const root = document.getElementById('root');
+if (root) {
+  createRoot(root).render(
+    <StrictMode>
       <Providers />
-    </React.StrictMode>,
+    </StrictMode>,
   );
 }

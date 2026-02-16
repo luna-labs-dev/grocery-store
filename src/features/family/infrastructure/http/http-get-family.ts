@@ -1,6 +1,6 @@
-import { httpClient } from '@/config/clients';
-import { Family } from '@/features/family';
 import { isAxiosError } from 'axios';
+import { httpClient } from '@/config/clients';
+import type { Family } from '@/features/family';
 
 export const httpGetFamily = async (): Promise<Family> => {
   try {

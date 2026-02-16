@@ -25,8 +25,10 @@ export function fPercent(number: InputValue) {
   }).format(Number(number ?? 0) / 100);
 }
 
-export function fShortenNumber(number: InputValue) {
-  const format = number ? numeral(number).format('0.00a') : '';
+export function fShortenNumber(number: InputValue, decimals = 2) {
+  const format = number
+    ? numeral(number).format(`0.${'0'.repeat(decimals)}a`)
+    : '';
 
   return result(format, '.00');
 }

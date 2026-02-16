@@ -1,3 +1,4 @@
+import { Icon } from '@iconify/react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,7 +12,6 @@ import {
   Button,
 } from '@/components';
 import { useRemoveFamilyMemberMutation } from '@/features/family/infrastructure';
-import { Icon } from '@iconify/react';
 
 interface Props {
   memberId: string;
@@ -22,7 +22,11 @@ export const RemoveFamilyMemberAlertDialog = ({ memberId }: Props) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button size="icon" variant="outline" className="h-10 w-10 text-red-600 hover:text-red-700">
+        <Button
+          size="icon"
+          variant="outline"
+          className="h-10 w-10 text-red-600 hover:text-red-700"
+        >
           <Icon icon="icons8:remove-user" fontSize={'1.1rem'} />
         </Button>
       </AlertDialogTrigger>

@@ -1,16 +1,20 @@
-import { HttpError, errorMapper } from '@/domain';
-
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import {
+  httpCreateFamily,
+  httpGetFamily,
+  httpJoinFamily,
+  httpRemoveFamilyMember,
+} from '../http';
+import { errorMapper, type HttpError } from '@/domain';
+import type {
   CreateFamilyParams,
   Family,
   JoinFamilyParams,
   RemoveFamilyMemberParams,
 } from '@/features/family';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
-import { httpCreateFamily, httpGetFamily, httpJoinFamily, httpRemoveFamilyMember } from '../http';
 
 export const useGetFamilyQuery = () => {
   const [isFamilyMember, setIsFamilyMember] = useState<boolean>(true);
@@ -41,7 +45,11 @@ export const useGetFamilyQuery = () => {
 export const useCreateFamilyMutation = () => {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<Family, AxiosError | HttpError, CreateFamilyParams>({
+  const mutation = useMutation<
+    Family,
+    AxiosError | HttpError,
+    CreateFamilyParams
+  >({
     mutationFn: (params: CreateFamilyParams) => httpCreateFamily(params),
     onError: (error, params) => {
       const { title, description } = errorMapper(error.code ?? '')(params);
@@ -81,7 +89,9 @@ export const useJoinFamilyMutation = () => {
     },
 
     onSuccess: () => {
-      toast.success('Entrou na família', { description: 'Agora você faz parte da família' });
+      toast.success('Entrou na família', {
+        description: 'Agora você faz parte da família',
+      });
     },
 
     onSettled: () => {
@@ -97,8 +107,13 @@ export const useJoinFamilyMutation = () => {
 export const useRemoveFamilyMemberMutation = () => {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<void, AxiosError | HttpError, RemoveFamilyMemberParams>({
-    mutationFn: (params: RemoveFamilyMemberParams) => httpRemoveFamilyMember(params),
+  const mutation = useMutation<
+    void,
+    AxiosError | HttpError,
+    RemoveFamilyMemberParams
+  >({
+    mutationFn: (params: RemoveFamilyMemberParams) =>
+      httpRemoveFamilyMember(params),
 
     onError: (error, params) => {
       const { title, description } = errorMapper(error.code ?? '')(params);

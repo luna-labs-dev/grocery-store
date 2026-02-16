@@ -1,2 +1,2 @@
-export * from './http-client';
 export * from './clerk-client';
+export * from './http-client';

@@ -1,4 +1,8 @@
-import { Entity, FetchListResponse, NewResponse } from '../../../../domain/core';
+import type {
+  Entity,
+  FetchListResponse,
+  NewResponse,
+} from '../../../../domain/core';
 
 export interface Market extends Entity {
   code: string;
@@ -25,6 +29,7 @@ export interface MarketResponse extends NewResponse {
   name: string;
 }
 
-export interface MarketListItem extends Pick<Market, 'id' | 'code' | 'name'> {}
+export interface MarketListItem
+  extends Pick<Market, 'id' | 'code' | 'name' | 'createdAt'> {}
 
 export interface MarketListResponse extends FetchListResponse<MarketListItem> {}

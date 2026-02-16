@@ -1,35 +1,25 @@
-import { Pagination } from '@/components';
-import { FetchListParams } from '@/domain';
-import { useGetMarketListQuery } from '@/features/market/infrastructure';
-import { useState } from 'react';
-
 import { MarketItem } from './market-item';
+import { Loading } from '@/components';
+import type { FetchListParams } from '@/domain';
+import { useGetMarketListQuery } from '@/features/market/infrastructure';
 
-export const MarketList = () => {
-  const [paginationParams, setPaginationParams] = useState<FetchListParams>({
-    pageIndex: 0,
-    pageSize: 4,
-    orderBy: 'createdAt',
-    orderDirection: 'asc',
-  });
+interface MarketListProps {
+  paginationParams: FetchListParams;
+}
 
-  const { data, status, isFetching } = useGetMarketListQuery(paginationParams);
+export const MarketList = ({ paginationParams }: MarketListProps) => {
+  const { data, isFetching } = useGetMarketListQuery(paginationParams);
 
-  if (status === 'error') {
-    return <div>Error</div>;
+  if (isFetching) {
+    return (
+      <div className="w-full h-64 flex items-center justify-center gap-1">
+        <Loading text="Carregando lista de mercados" />
+      </div>
+    );
   }
 
   return (
-    <div>
-      <Pagination
-        paginationProps={{
-          paginationParams,
-          setPaginationParams,
-          listTotal: data?.total,
-          isFetching,
-        }}
-      />
-
+    <div className="flex flex-col gap-4">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {data?.items.map((item) => (
           <MarketItem key={item.id} market={item} />

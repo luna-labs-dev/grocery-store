@@ -1,17 +1,20 @@
+import { isAxiosError } from 'axios';
 import { httpClient } from '@/config/clients';
-import {
+import type {
   StartShoppingEventParams,
   StartShoppingEventResult,
 } from '@/features/shopping-event/domain';
-import { isAxiosError } from 'axios';
 
 export const httpStartShoppingEvent = async ({
   marketId,
 }: StartShoppingEventParams): Promise<StartShoppingEventResult> => {
   try {
-    const response = await httpClient.post('api/grocery-shopping/v1/shopping-event/start', {
-      marketId,
-    });
+    const response = await httpClient.post(
+      'api/grocery-shopping/v1/shopping-event/start',
+      {
+        marketId,
+      },
+    );
 
     return response.data;
   } catch (error) {

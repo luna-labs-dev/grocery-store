@@ -1,6 +1,9 @@
-import { httpClient } from '@/config/clients';
-import { EndShoppingEventParams, EndShoppingEventResult } from '@/features/shopping-event/domain';
 import { isAxiosError } from 'axios';
+import { httpClient } from '@/config/clients';
+import type {
+  EndShoppingEventParams,
+  EndShoppingEventResult,
+} from '@/features/shopping-event/domain';
 
 export const httpEndShoppingEvent = async ({
   shoppingEventId,

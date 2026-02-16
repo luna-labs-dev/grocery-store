@@ -1,8 +1,10 @@
-import { httpClient } from '@/config/clients';
-import { MarketResponse, NewMarketParams } from '@/features/market';
 import { isAxiosError } from 'axios';
+import { httpClient } from '@/config/clients';
+import type { MarketResponse, NewMarketParams } from '@/features/market';
 
-export const httpNewMarket = async ({ marketName }: NewMarketParams): Promise<MarketResponse> => {
+export const httpNewMarket = async ({
+  marketName,
+}: NewMarketParams): Promise<MarketResponse> => {
   try {
     const response = await httpClient.post('api/grocery-shopping/v1/market', {
       marketName,

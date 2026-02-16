@@ -1,6 +1,6 @@
-import { httpClient } from '@/config/clients';
-import { UpdateProductInCartParams } from '@/features/shopping-event/domain';
 import { isAxiosError } from 'axios';
+import { httpClient } from '@/config/clients';
+import type { UpdateProductInCartParams } from '@/features/shopping-event/domain';
 
 export const httpUpdateProductInCart = async ({
   shoppingEventId,

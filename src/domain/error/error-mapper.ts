@@ -1,4 +1,4 @@
-import { NewMarketParams } from '@/features/market';
+import type { NewMarketParams } from '@/features/market';
 
 export interface MappedError {
   title: string;

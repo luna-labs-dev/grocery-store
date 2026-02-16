@@ -1,6 +1,6 @@
-import { Dialog, DialogContent, DialogTrigger } from '@/components';
 import { useState } from 'react';
 import { EndShoppingEventForm } from './end-shopping-event-form';
+import { Dialog, DialogContent, DialogTrigger } from '@/components';
 
 interface EndShoppingEventDialogProps {
   children: React.ReactElement;
@@ -16,7 +16,10 @@ export const EndShoppingEventDialog = ({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
-        <EndShoppingEventForm shoppingEventId={shoppingEventId} setOpen={setOpen} />
+        <EndShoppingEventForm
+          shoppingEventId={shoppingEventId}
+          setOpen={setOpen}
+        />
       </DialogContent>
     </Dialog>
   );

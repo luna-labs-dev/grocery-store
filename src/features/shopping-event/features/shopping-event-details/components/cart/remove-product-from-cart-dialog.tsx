@@ -10,7 +10,7 @@ import {
   AlertDialogTrigger,
 } from '@/components';
 import { fCurrency } from '@/domain';
-import { Product } from '@/features/shopping-event/domain';
+import type { Product } from '@/features/shopping-event/domain';
 import { useRemoveProductFromCartMutation } from '@/features/shopping-event/infrastructure';
 
 interface RemoveProductFromCartDialogProps {
@@ -32,7 +32,8 @@ export const RemoveProductFromCartDialog = ({
         <AlertDialogHeader>
           <AlertDialogTitle>Remover produto do carrinho?</AlertDialogTitle>
           <AlertDialogDescription>{`${product.name} - ${product.amount} x ${
-            product.amount >= (product.wholesaleMinAmount ?? 0) && !!product.wholesalePrice
+            product.amount >= (product.wholesaleMinAmount ?? 0) &&
+            !!product.wholesalePrice
               ? fCurrency(product.wholesalePrice)
               : fCurrency(product.price)
           }`}</AlertDialogDescription>

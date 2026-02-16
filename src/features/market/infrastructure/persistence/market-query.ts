@@ -1,9 +1,13 @@
-import { FetchListParams, HttpError, errorMapper, useQueryFactory } from '@/domain';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
+import type { AxiosError } from 'axios';
 import { toast } from 'sonner';
-
 import {
+  errorMapper,
+  type FetchListParams,
+  type HttpError,
+  useQueryFactory,
+} from '@/domain';
+import type {
   GetMarketByIdParams,
   Market,
   MarketListResponse,
@@ -11,7 +15,6 @@ import {
   NewMarketParams,
   UpdateMarketParams,
 } from '@/features/market';
-
 import {
   httpGetMarketById,
   httpGetMarketList,
@@ -26,7 +29,8 @@ export const useGetMarketListQuery = (params: FetchListParams) => {
       fn: httpGetMarketList,
       params,
     },
-    staleTime: 0,
+    staleTime: 1000 * 60 * 1,
+    keepPreviousData: true,
   });
 
   return { ...query };
@@ -39,6 +43,7 @@ export const useGetMarketByIdQuery = (params: GetMarketByIdParams) => {
       fn: httpGetMarketById,
       params,
     },
+    staleTime: 1000 * 60 * 10,
     enabled: !!params.marketId,
   });
 
@@ -47,7 +52,11 @@ export const useGetMarketByIdQuery = (params: GetMarketByIdParams) => {
 
 export const useNewMarketMutation = () => {
   const queryClient = useQueryClient();
-  const mutation = useMutation<MarketResponse, AxiosError | HttpError, NewMarketParams>({
+  const mutation = useMutation<
+    MarketResponse,
+    AxiosError | HttpError,
+    NewMarketParams
+  >({
     mutationFn: (params: NewMarketParams) => httpNewMarket(params),
 
     onError: (error, params) => {
@@ -75,7 +84,8 @@ export const useNewMarketMutation = () => {
 export const useUpdateMarketMutation = () => {
   const queryClient = useQueryClient();
   const mutation = useMutation<MarketResponse, HttpError, UpdateMarketParams>({
-    mutationFn: async (payload: UpdateMarketParams) => httpUpdateMarket(payload),
+    mutationFn: async (payload: UpdateMarketParams) =>
+      httpUpdateMarket(payload),
     onError: (error, params) => {
       const { title, description } = errorMapper(error.code)(params);
 

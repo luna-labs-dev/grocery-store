@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { FamilyOnboardingContext } from './family-onboarding-context';
 import {
   Sheet,
   SheetContent,
@@ -6,8 +8,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components';
-import { useState } from 'react';
-import { FamilyOnboardingContext } from './family-onboarding-context';
 
 interface FamilyOnboardingSheetProps {
   trigger: React.ReactElement;
@@ -37,7 +37,7 @@ export const FamilyOnboardingSheet = ({
     >
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>{trigger}</SheetTrigger>
-        <SheetContent>
+        <SheetContent className="p-4">
           <SheetHeader>
             <SheetTitle>{context.title}</SheetTitle>
             <SheetDescription>{context.description}</SheetDescription>

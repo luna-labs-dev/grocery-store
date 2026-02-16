@@ -1,8 +1,9 @@
+import type { LinkProps } from '@tanstack/react-router';
 import { create } from 'zustand';
 
 export type BreadcrumbType = {
   label: string;
-  to: string;
+  to: LinkProps['to'];
 };
 export type CurrentPage = {
   title: string;
@@ -11,7 +12,10 @@ export type CurrentPage = {
 interface BreadcrumbsStore {
   breadcrumbs: BreadcrumbType[];
   currentPage: CurrentPage;
-  addBreadcrumbs: (breadcrumbs: BreadcrumbType[], currentPage: CurrentPage) => void;
+  addBreadcrumbs: (
+    breadcrumbs: BreadcrumbType[],
+    currentPage: CurrentPage,
+  ) => void;
   clearBreadcrumbs: () => void;
 }
 
