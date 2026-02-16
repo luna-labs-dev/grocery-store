@@ -7,15 +7,21 @@ export interface ShoppingEventCalculatedTotals {
   retailTotal: number;
   wholesaleTotal: number;
   paidValue: number;
-  wholesaleSavingValue: number;
-  retailPaidDifferenceValue: number;
-  wholesalePaidDifferenceValue: number;
+  savingsValue: number;
+  savingsPercentage: number;
+  retailPaidDifferenceValue?: number;
+  wholesalePaidDifferenceValue?: number;
+  totalItemsDistinct: number;
+  totalItemsQuantity: number;
+  averagePricePerUnit: number;
+  highestPrice: number;
+  lowestPrice: number;
 }
 
 export interface ShoppingEvent extends Entity {
   status: ShoppingEventStatus;
   market: MarketResponse;
-  calculatedTotals: ShoppingEventCalculatedTotals;
+  totals: ShoppingEventCalculatedTotals;
   products: Product[];
   createdAt: Date;
   finishedAt?: Date;

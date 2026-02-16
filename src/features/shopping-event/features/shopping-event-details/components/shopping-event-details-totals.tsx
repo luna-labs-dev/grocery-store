@@ -14,12 +14,12 @@ import {
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { fCurrency, fPercent } from '@/domain';
+import { fCurrency, fPercent, fShortenNumber } from '@/domain';
 import type { ShoppingEventCalculatedTotals } from '@/features/shopping-event/domain';
 import { cn } from '@/lib/utils';
 
 interface ShoppingEventDetailsTotalsProps {
-  calculatedTotals: ShoppingEventCalculatedTotals;
+  totals: ShoppingEventCalculatedTotals;
 }
 
 interface StatItemProps {
@@ -81,7 +81,7 @@ function Section({ title, children }: SectionProps) {
 }
 
 export function ShoppingEventDetailsTotals({
-  calculatedTotals,
+  totals,
 }: ShoppingEventDetailsTotalsProps) {
   return (
     <div className="flex flex-col gap-4">
@@ -90,18 +90,18 @@ export function ShoppingEventDetailsTotals({
         <StatItem
           icon={<Truck className="h-3.5 w-3.5" />}
           label="Atacado"
-          value={fCurrency(calculatedTotals.wholesaleTotal)}
+          value={fCurrency(totals.wholesaleTotal)}
         />
         <StatItem
           icon={<ShoppingCart className="h-3.5 w-3.5" />}
           label="Varejo"
-          value={fCurrency(calculatedTotals.retailTotal)}
+          value={fCurrency(totals.retailTotal)}
         />
-        {calculatedTotals.paidValue > 0 && (
+        {totals.paidValue > 0 && (
           <StatItem
             icon={<DollarSign className="h-3.5 w-3.5" />}
             label="Pago"
-            value={fCurrency(calculatedTotals.paidValue)}
+            value={fCurrency(totals.paidValue)}
           />
         )}
       </Section>
@@ -113,39 +113,41 @@ export function ShoppingEventDetailsTotals({
         <StatItem
           icon={<Wallet className="h-3.5 w-3.5" />}
           label="Economia"
-          value={fCurrency(calculatedTotals.wholesaleSavingValue)}
+          value={fCurrency(totals.savingsValue)}
           accent="positive"
         />
         <StatItem
           icon={<Percent className="h-3.5 w-3.5" />}
           label="% Economizada"
-          value={fPercent(10)} // TODO: implementar
+          value={fPercent(totals.savingsPercentage)}
           accent="positive"
         />
-        {calculatedTotals.paidValue > 0 && (
-          <>
-            <StatItem
-              icon={<TrendingDown className="h-3.5 w-3.5" />}
-              label="Dif. Varejo"
-              value={fCurrency(calculatedTotals.retailPaidDifferenceValue)}
-              accent={
-                calculatedTotals.retailPaidDifferenceValue >= 0
-                  ? 'positive'
-                  : 'negative'
-              }
-            />
-            <StatItem
-              icon={<TrendingUp className="h-3.5 w-3.5" />}
-              label="Dif. Atacado"
-              value={fCurrency(calculatedTotals.wholesalePaidDifferenceValue)}
-              accent={
-                calculatedTotals.wholesalePaidDifferenceValue >= 0
-                  ? 'positive'
-                  : 'negative'
-              }
-            />
-          </>
-        )}
+        {totals.paidValue > 0 &&
+          totals.retailPaidDifferenceValue !== undefined &&
+          totals.wholesalePaidDifferenceValue !== undefined && (
+            <>
+              <StatItem
+                icon={<TrendingDown className="h-3.5 w-3.5" />}
+                label="Dif. Varejo"
+                value={fCurrency(totals.retailPaidDifferenceValue)}
+                accent={
+                  totals.retailPaidDifferenceValue >= 0
+                    ? 'positive'
+                    : 'negative'
+                }
+              />
+              <StatItem
+                icon={<TrendingUp className="h-3.5 w-3.5" />}
+                label="Dif. Atacado"
+                value={fCurrency(totals.wholesalePaidDifferenceValue)}
+                accent={
+                  totals.wholesalePaidDifferenceValue >= 0
+                    ? 'positive'
+                    : 'negative'
+                }
+              />
+            </>
+          )}
       </Section>
 
       <Separator />
@@ -155,12 +157,12 @@ export function ShoppingEventDetailsTotals({
         <StatItem
           icon={<Package className="h-3.5 w-3.5" />}
           label="Itens"
-          value={String(10)} // TODO: implementar
+          value={fShortenNumber(totals.totalItemsDistinct, 3)}
         />
         <StatItem
           icon={<Layers className="h-3.5 w-3.5" />}
           label="Unidades"
-          value={String(10)} // TODO: implementar
+          value={fShortenNumber(totals.totalItemsQuantity, 3)}
         />
         <StatItem
           icon={<BarChart3 className="h-3.5 w-3.5" />}
@@ -176,13 +178,13 @@ export function ShoppingEventDetailsTotals({
         <StatItem
           icon={<ArrowUpCircle className="h-3.5 w-3.5" />}
           label="Mais Caro"
-          value={fCurrency(10)} // TODO: implementar
+          value={fCurrency(totals.highestPrice)}
           accent="negative"
         />
         <StatItem
           icon={<ArrowDownCircle className="h-3.5 w-3.5" />}
           label="Mais Barato"
-          value={fCurrency(10)} // TODO: implementar
+          value={fCurrency(totals.lowestPrice)}
           accent="positive"
         />
       </Section>

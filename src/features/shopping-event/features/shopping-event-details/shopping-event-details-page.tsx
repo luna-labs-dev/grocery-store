@@ -44,7 +44,7 @@ export const ShoppingEventDetailsPage = ({
   const totalTab = (
     <Page.Content>
       <div className="flex flex-col gap-2">
-        <ShoppingEventDetailsTotals calculatedTotals={data.calculatedTotals} />
+        <ShoppingEventDetailsTotals totals={data.totals} />
       </div>
     </Page.Content>
   );
