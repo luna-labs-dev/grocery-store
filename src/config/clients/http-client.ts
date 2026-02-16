@@ -1,5 +1,4 @@
 import axios, { type AxiosError } from 'axios';
-import { clerk, loadClerkIfNeeded } from './clerk-client';
 import { env } from '@/config/env';
 import type { HttpError } from '@/domain';
 import { router } from '@/providers';
@@ -40,7 +39,6 @@ httpClient.interceptors.response.use(
       throw error;
     }
 
-    await loadClerkIfNeeded();
-    await clerk.signOut();
+    throw error;
   },
 );

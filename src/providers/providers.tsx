@@ -5,9 +5,15 @@ import { ThemeProvider } from './theme-provider';
 import { Toaster } from '@/components';
 import { env } from '@/config';
 
-export const Providers = () => {
-  const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
+export const Providers = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
