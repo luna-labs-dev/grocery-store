@@ -51,8 +51,7 @@ export function ProductItem({
   shoppingEventStatus,
 }: ProductItemProps) {
   const hasWholesale = product.wholesalePrice && product.wholesaleMinAmount;
-  const hasSavings =
-    product.totalDifference != null && product.totalDifference > 0;
+  const hasSavings = !!product.totalDifference && product.totalDifference > 0;
 
   const isOngoing = shoppingEventStatus === 'ONGOING';
 
@@ -88,15 +87,15 @@ export function ProductItem({
               {format(product.addedAt, 'HH:mm:ss', { locale: ptBR })}
             </span>
 
-            <span className="text-border">{'/'}</span>
+            <span className="text-border text-sm">{'/'}</span>
 
             <StatValue label="Qtd:" value={product.amount.toString()} />
 
-            <span className="text-border">{'/'}</span>
+            <span className="text-border text-sm">{'/'}</span>
 
             <StatValue label="Preço:" value={fCurrency(product.price ?? 0)} />
 
-            <span className="text-border">{'/'}</span>
+            <span className="text-border text-sm">{'/'}</span>
 
             <StatValue
               label="Total:"
@@ -106,19 +105,19 @@ export function ProductItem({
 
             {hasWholesale && (
               <>
-                <span className="text-border">{'/'}</span>
+                <span className="text-border text-sm">{'/'}</span>
                 <StatValue
-                  label="Mín:"
+                  label="Mín. Atac:"
                   value={(product.wholesaleMinAmount ?? 0).toString()}
                 />
-                <span className="text-border">{'/'}</span>
+                <span className="text-border text-sm">{'/'}</span>
                 <StatValue
                   label="Atac.:"
                   value={fCurrency(product.wholesalePrice ?? 0)}
                 />
                 {product.totalWholesalePrice != null && (
                   <>
-                    <span className="text-border">{'/'}</span>
+                    <span className="text-border text-sm">{'/'}</span>
                     <StatValue
                       label="T. Atac.:"
                       value={fCurrency(product.totalWholesalePrice)}
