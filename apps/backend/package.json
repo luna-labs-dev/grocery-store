@@ -1,6 +1,5 @@
 {
   "name": "backend",
-  "version": "1.0.0",
   "description": "A grocery shopping app to control how much the user are spending before the end of the shopping event",
   "main": "index.js",
   "repository": "git@github.com:Poli-Labs/grocery-store-backend.git",

@@ -1,6 +1,6 @@
 {
   "name": "grocery-store",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "",
   "scripts": {
     "dev:front": "pnpm --filter frontend dev",
