@@ -4,10 +4,10 @@ import { z } from 'zod';
 
 export const FormInputSchema = z.object({
   name: z.string().min(2),
-  amount: z.coerce.number().gt(0),
-  wholesaleMinAmount: z.coerce.number().optional(),
-  price: z.coerce.number().min(0.01),
-  wholesalePrice: z.coerce.number().optional(),
+  amount: z.number().gt(0),
+  wholesaleMinAmount: z.number().optional(),
+  price: z.number().min(0.01),
+  wholesalePrice: z.number().optional(),
 });
 
 export type FormInput = z.infer<typeof FormInputSchema>;

@@ -12,18 +12,18 @@ import {
 } from '@/components';
 import { useCreateFamilyMutation } from '@/features/family/infrastructure';
 
-const CreateFamilyInputSchema = z.object({
+const createFamilyInputSchema = z.object({
   name: z.string().min(2),
   description: z.string().optional(),
 });
 
-type CreateFamilyInput = z.infer<typeof CreateFamilyInputSchema>;
+type CreateFamilyInput = z.infer<typeof createFamilyInputSchema>;
 
 export const CreateFamilyForm = () => {
   const { openState } = useFamilyOnboardingContext();
 
   const form = useForm<CreateFamilyInput>({
-    resolver: zodResolver(CreateFamilyInputSchema),
+    resolver: zodResolver(createFamilyInputSchema),
     mode: 'onChange',
     defaultValues: {
       name: '',

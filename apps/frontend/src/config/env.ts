@@ -30,5 +30,3 @@ export const env = {
     publishableKey: VITE_CLERK_PUBLISHABLE_KEY,
   },
 };
-
-console.log({ VITE_ENV, env });
