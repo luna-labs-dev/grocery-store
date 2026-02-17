@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "strict": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "types": ["vitest/globals"],
+    "paths": {
+      "@/tests/*": ["../tests/*"],
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["./src", "./tests", "./prisma/**/*.ts", "./commitlint.config.js"],
+  "exclude": []
+}
