@@ -1,7 +1,8 @@
-## v2.0.0 (2026-02-17)
+## v2.0.0-a0 (2026-02-17)
 
 ### Refactor
 
+- adjust schema for zod new version
 - adjust adapters clerk stuff
 - map new backend totals to its fields
 
