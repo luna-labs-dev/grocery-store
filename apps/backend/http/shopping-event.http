@@ -1,0 +1,33 @@
+POST http://localhost:8000/api/grocery-shopping/v1/shopping-event/start
+Content-Type: application/json
+x-authorization-token: {{token}}
+
+{
+  "marketId": "318800c0-e6da-4dcb-9318-b9cdf2dc45bd"
+}
+
+### get shopping event
+GET http://localhost:8000/api/grocery-shopping/v1/shopping-event/d30c16ed-22f5-4fce-8f10-a6e0c0368b54
+Content-Type: application/json
+x-authorization-token: {{token}}
+
+### add product to shopping event
+POST http://localhost:8000/api/grocery-shopping/v1/shopping-event/d30c16ed-22f5-4fce-8f10-a6e0c0368b54/cart
+Content-Type: application/json
+x-authorization-token: {{token}}
+
+{
+  "name": "Açucar Barra",
+  "amount": 10,
+  "price": 3.89
+}
+### add product to shopping event
+POST http://localhost:8000/api/grocery-shopping/v1/shopping-event/d30c16ed-22f5-4fce-8f10-a6e0c0368b54/cart
+Content-Type: application/json
+x-authorization-token: {{token}}
+
+{
+  "name": "Arroz",
+  "amount": 3,
+  "price": 36.50
+}
