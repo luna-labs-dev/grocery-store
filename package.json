@@ -1,7 +1,8 @@
 {
   "name": "grocery-store",
-  "version": "2.0.0-a0",
+  "version": "2.0.0-a1",
   "description": "",
+  "type": "module",
   "scripts": {
     "dev:front": "pnpm --filter frontend dev",
     "dev:back": "pnpm --filter backend dev",
