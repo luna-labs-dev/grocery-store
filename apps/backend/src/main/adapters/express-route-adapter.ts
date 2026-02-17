@@ -10,7 +10,7 @@ export const adaptRoute = (controller: Controller) => {
       ...request.body,
       ...request.params,
       ...request.query,
-      auth: request.auth,
+      auth: request.auth(),
       user: userId,
     };
 

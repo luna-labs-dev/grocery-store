@@ -1,13 +1,17 @@
+import { getAuth } from '@clerk/express';
 import type { Request, Response } from 'express';
 import type { Controller } from '@/api/contracts';
 
 export const adaptStreamRoute = (controller: Controller) => {
   return async (request: Request, response: Response) => {
+    const { userId } = getAuth(request);
+
     const requestData = {
       ...request.body,
       ...request.params,
       ...request.query,
-      user: request.headers['x-user'],
+      auth: request.auth(),
+      user: userId,
     };
 
     const httpResponse = await controller.handle(requestData);
