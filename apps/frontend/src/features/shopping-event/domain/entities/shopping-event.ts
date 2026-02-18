@@ -44,7 +44,14 @@ export interface FetchShoppingEventListParams
 export interface ShoppingEventListItem
   extends Pick<ShoppingEvent, 'id' | 'status' | 'createdAt'> {
   market: string;
-  totals: Pick<ShoppingEventCalculatedTotals, 'retailTotal' | 'wholesaleTotal'>;
+  totals: Pick<
+    ShoppingEventCalculatedTotals,
+    | 'retailTotal'
+    | 'wholesaleTotal'
+    | 'totalItemsDistinct'
+    | 'totalItemsQuantity'
+    | 'savingsPercentage'
+  >;
 }
 
 export interface ShoppingEventListResponse

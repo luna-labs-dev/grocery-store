@@ -12,12 +12,21 @@ const badgeVariants = cva(
         default: "bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
         secondary:
           "bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
+        success:
+          "border-transparent bg-emerald-50 text-emerald-700 hover:bg-emerald-50/80 dark:bg-emerald-950 dark:text-emerald-400 dark:hover:bg-emerald-950/80 border-emerald-200 dark:border-emerald-800",
+        warning:
+          "border-transparent bg-amber-50 text-amber-700 hover:bg-amber-50/80 dark:bg-amber-950 dark:text-amber-400 dark:hover:bg-amber-950/80 border-amber-200 dark:border-amber-800",
+        error:
+          "border-transparent bg-red-50 text-red-700 hover:bg-red-50/80 dark:bg-red-950 dark:text-red-400 dark:hover:bg-red-950/80 border-red-200 dark:border-red-800",
+        info:
+          "border-transparent bg-blue-50 text-blue-700 hover:bg-blue-50/80 dark:bg-blue-950 dark:text-blue-400 dark:hover:bg-blue-950/80 border-blue-200 dark:border-blue-800",
         destructive:
           "bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
           "border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         ghost: "[a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         link: "text-primary underline-offset-4 [a&]:hover:underline",
+        
       },
     },
     defaultVariants: {
