@@ -1,7 +1,3 @@
-## v2.0.0-a1 (2026-02-17)
-
-## v2.0.0-a0 (2026-02-17)
-
 ### Refactor
 
 - adjust schema for zod new version

@@ -26,21 +26,12 @@ RUN pnpm --filter backend build
 FROM node:20-alpine AS runtime
 WORKDIR /app
 # We need to verify where the build output goes. usually apps/backend/dist
-COPY --from=build /app/apps/backend/package.json ./package.json
-COPY --from=build /app/apps/backend/dist ./dist
-COPY --from=build /app/apps/backend/scripts ./scripts
-COPY --from=build /app/apps/backend/prisma ./prisma
 COPY --from=build /app/node_modules ./node_modules
-# Backend specific node_modules might be in apps/backend/node_modules if not hoisted
-COPY --from=build /app/apps/backend/node_modules ./node_modules_backend
-# Adjust NODE_PATH or move modules if necessary. 
-# Simpler approach: deploy as a monorepo slice or just copy what's needed.
-# Let's try to copy prod deps.
-# Actually, for a production image, we often want only prod deps.
-# Let's refine the runtime stage to install only prod deps if possible, or copy from a prod-install stage.
-# Given complexity, let's stick to copying built artifacts and necessary deps.
-# To keep it simple and safe for now, I will copy the node_modules from build which has everything. 
-# Optimization can be done later.
+COPY --from=build /app/apps/backend/scripts ./scripts
+COPY --from=build /app/apps/backend/package.json ./apps/backend/package.json
+COPY --from=build /app/apps/backend/dist ./apps/backend/dist
+COPY --from=build /app/apps/backend/prisma ./apps/backend/prisma
+COPY --from=build /app/apps/backend/node_modules ./apps/backend/node_modules
 
 RUN apk --no-cache add curl openssl3
 RUN chmod +x ./scripts/server.sh
