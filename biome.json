@@ -10,11 +10,11 @@
     "includes": [
       "**",
       "!node_modules/",
-      "!dist/",
+      "!**/dist/",
       "!.vscode/",
-      "!src/components/ui",
-      "!src/components/animate-ui",
-      "!src/route-tree.gen.ts"
+      "!**/src/components/ui",
+      "!**/src/components/animate-ui",
+      "!**/src/route-tree.gen.ts"
     ]
   },
   "formatter": {
@@ -55,12 +55,15 @@
         "noStaticElementInteractions": "off"
       }
     },
-    "includes": ["**", "!src/routeTree.gen.ts"]
+    "includes": ["**", "!**/src/routeTree.gen.ts"]
   },
   "javascript": {
     "formatter": {
       "quoteStyle": "single",
       "semicolons": "always"
+    },
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
     }
   },
   "assist": {
@@ -85,7 +88,7 @@
   },
   "overrides": [
     {
-      "includes": ["src/routes/**/*"],
+      "includes": ["**/src/routes/**/*"],
       "linter": {
         "rules": {
           "style": {

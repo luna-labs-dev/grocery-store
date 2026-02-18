@@ -1,0 +1,67 @@
+name: Build and Push Docker Images (Unified)
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-push-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get Git tag
+        id: tag
+        run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+
+      - name: Log in to Docker registry
+        run: docker login ${{vars.DOCKER_REGISTRY}} -u "${{ secrets.DOCKER_USERNAME }}" -p "${{secrets.DOCKER_PASSWORD}}"
+
+      - name: Build and Push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/backend/Dockerfile
+          push: true
+          tags: |
+            ${{vars.DOCKER_REGISTRY}}/grocery-store-backend:${{ steps.tag.outputs.tag }}
+            ${{vars.DOCKER_REGISTRY}}/grocery-store-backend:latest
+
+  build-and-push-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get Git tag
+        id: tag
+        run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+
+      - name: Log in to Docker registry
+        run: docker login ${{vars.DOCKER_REGISTRY}} -u "${{ secrets.DOCKER_USERNAME }}" -p "${{secrets.DOCKER_PASSWORD}}"
+
+      - name: Build and Push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/frontend/Dockerfile
+          build-args: |
+            VITE_CLERK_PUBLISHABLE_KEY=${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+            VITE_BACKEND_URL=${{ vars.VITE_BACKEND_URL }}
+          push: true
+          tags: |
+            ${{vars.DOCKER_REGISTRY}}/grocery-store-frontend:${{ steps.tag.outputs.tag }}
+            ${{vars.DOCKER_REGISTRY}}/grocery-store-frontend:latest
+
+  deploy:
+    needs: [build-and-push-backend, build-and-push-frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Deployment
+        run: curl https://lunalabs.com.br/api/deploy/compose/fjDOWSSZHXxvWkRjRzkjF

@@ -1,0 +1,27 @@
+GET http://localhost:8000/api/grocery-shopping/v1/market
+Content-Type: application/json
+x-authorization-token: {{token}}
+
+### get market by id
+GET http://localhost:8000/api/grocery-shopping/v1/market/1
+Content-Type: application/json
+x-authorization-token: {{token}}
+
+### get market list
+GET http://localhost:8000/api/grocery-shopping/v1/market
+Content-Type: application/json
+x-authorization-token: {{token}}
+
+### add market
+POST http://localhost:8000/api/grocery-shopping/v1/market
+Content-Type: application/json
+x-authorization-token: {{token}}
+
+{
+  "marketName": "Assai",
+  "description": "Assai Cotia",
+  "location": {
+    "latitude": 1.23,
+    "longitude": 4.56
+  }
+}
