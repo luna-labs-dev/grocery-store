@@ -1,0 +1,36 @@
+### add family
+POST http://localhost:8000/api/grocery-shopping/v1/family
+Content-Type: application/json
+x-authorization-token: {{token}}
+
+{  
+  "name": "seuaciuc"  
+}
+
+### get family
+GET http://localhost:8000/api/grocery-shopping/v1/family
+Content-Type: application/json
+x-authorization-token: {{token}}
+
+### join family
+POST http://localhost:8000/api/grocery-shopping/v1/family/join
+Content-Type: application/json
+x-authorization-token: {{token}}
+
+{  
+  "inviteCode": "poli-oGhESU"
+}
+
+### leave family
+PUT http://localhost:8000/api/grocery-shopping/v1/family/leave
+Content-Type: application/json
+x-authorization-token: {{token}}
+
+### remove family member
+PUT http://localhost:8000/api/grocery-shopping/v1/family/remove
+Content-Type: application/json
+x-authorization-token: {{token}}
+
+{  
+  "userToBeRemovedId": "0885b802-a1be-4847-b02d-7306830f31f0"
+}
