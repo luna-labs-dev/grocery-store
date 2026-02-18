@@ -4,6 +4,14 @@
 - adjust adapters clerk stuff
 - map new backend totals to its fields
 
+## v1.0.5 (2026-02-18)
+
+### Refactor
+
+- adjust schema for zod new version
+- adjust adapters clerk stuff
+- map new backend totals to its fields
+
 ## v1.0.3 (2026-02-13)
 
 ### Refactor
