@@ -1,3 +1,13 @@
+## v2.0.1-test-1 (2026-02-19)
+
+### Feat
+
+- add amount-handler helper function
+
+### Fix
+
+- number fields are properly handled
+
 ## v2.0.1 (2026-02-18)
 
 ### Refactor
