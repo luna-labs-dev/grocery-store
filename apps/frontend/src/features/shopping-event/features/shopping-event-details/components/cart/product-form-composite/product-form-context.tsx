@@ -10,9 +10,7 @@ export const formInputSchema = z.object({
   wholesalePrice: z.number().optional(),
 });
 
-export type FormInput = z.input<typeof formInputSchema>;
-
-export type FormOutput = z.output<typeof formInputSchema>;
+export type FormInput = z.infer<typeof formInputSchema>;
 
 interface ProductFormContextValue {
   form: UseFormReturn<FormInput>;

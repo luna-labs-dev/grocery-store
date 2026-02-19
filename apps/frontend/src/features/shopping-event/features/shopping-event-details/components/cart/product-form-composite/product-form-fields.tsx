@@ -10,19 +10,11 @@ import {
   MoneyInput,
   Switch,
 } from '@/components';
+import { handleAmountChange } from '@/domain';
 
 export const ProductFormFields = () => {
   const { form, isWholesale, setIsWholesale } = useProductFormContext();
   const { control } = form;
-
-  const handleAmountChange = (
-    realChangeFn: (realValue?: number) => void,
-    value: string,
-  ) => {
-    const textDigits = value.trim().replace(/\D/g, '');
-    const digits = Number(textDigits);
-    digits === 0 ? realChangeFn(undefined) : realChangeFn(digits);
-  };
 
   return (
     <>
@@ -49,14 +41,23 @@ export const ProductFormFields = () => {
       <Controller
         control={control}
         name="amount"
-        render={({ field, fieldState }) => (
+        render={({ field: { onChange, value, ...field }, fieldState }) => (
           <Field aria-invalid={fieldState.invalid}>
             <FieldLabel>Quantidade</FieldLabel>
             <Input
               {...field}
-              type="number"
+              type="text"
               aria-invalid={fieldState.invalid}
               placeholder="Quantidade de Produto(s)"
+              value={value !== undefined ? String(value).replace(',', '.') : ''}
+              onChange={(e) => {
+                handleAmountChange({
+                  changeFn: onChange,
+                  value: e.target.value,
+                  type: 'decimal',
+                  maxDecimals: 3,
+                });
+              }}
             />
             {fieldState.invalid ? (
               <FieldError>{fieldState.error?.message}</FieldError>
@@ -89,15 +90,20 @@ export const ProductFormFields = () => {
           <Controller
             control={control}
             name="wholesaleMinAmount"
-            render={({ field, fieldState }) => (
+            render={({ field: { onChange, ...field }, fieldState }) => (
               <Field aria-invalid={fieldState.invalid}>
                 <FieldLabel>Quantidade mín. atacado</FieldLabel>
                 <Input
                   {...field}
+                  type="text"
                   aria-invalid={fieldState.invalid}
                   placeholder="Quantidade mín. atacado"
                   onChange={(event) =>
-                    handleAmountChange(field.onChange, event.target.value)
+                    handleAmountChange({
+                      changeFn: onChange,
+                      value: event.target.value,
+                      type: 'integer',
+                    })
                   }
                 />
                 {fieldState.invalid ? (

@@ -3,7 +3,6 @@ import { type ReactNode, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   type FormInput,
-  type FormOutput,
   formInputSchema,
   ProductFormProvider,
 } from './product-form-context';
@@ -38,7 +37,7 @@ export const ProductFormRoot = ({
     setIsWholesale(!!product && !!product.wholesaleMinAmount);
   }, [product]);
 
-  const form = useForm<FormInput, any, FormOutput>({
+  const form = useForm<FormInput>({
     resolver: zodResolver(formInputSchema),
     mode: 'onChange',
     defaultValues: isUpdate
@@ -67,7 +66,7 @@ export const ProductFormRoot = ({
 
   const isSubmitting = isAdding || isUpdating;
 
-  const onSubmit = handleSubmit(async (values: FormInput) => {
+  const onSubmit = handleSubmit(async (values) => {
     let success: AddProductToCartSuccessResult | boolean;
     if (isUpdate) {
       await mutateUpdateProductAsync({
