@@ -1,3 +1,11 @@
+## v2.0.1 (2026-02-18)
+
+### Refactor
+
+- fix zod validation for number fields
+
+## v1.0.4 (2026-02-16)
+
 ## v2.0.0 (2026-02-18)
 
 ### Refactor
