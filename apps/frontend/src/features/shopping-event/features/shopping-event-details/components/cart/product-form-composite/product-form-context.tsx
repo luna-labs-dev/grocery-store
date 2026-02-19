@@ -2,16 +2,17 @@ import { createContext, useContext } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 
-export const FormInputSchema = z.object({
+export const formInputSchema = z.object({
   name: z.string().min(2),
-  amount: z.coerce.number().gt(0),
-  wholesaleMinAmount: z.coerce.number().optional(),
-  price: z.coerce.number().min(0.01),
-  wholesalePrice: z.coerce.number().optional(),
+  amount: z.number().gt(0),
+  wholesaleMinAmount: z.number().optional(),
+  price: z.number().min(0.01),
+  wholesalePrice: z.number().optional(),
 });
 
-export type FormInput = z.input<typeof FormInputSchema>;
-export type FormOutput = z.output<typeof FormInputSchema>;
+export type FormInput = z.input<typeof formInputSchema>;
+
+export type FormOutput = z.output<typeof formInputSchema>;
 
 interface ProductFormContextValue {
   form: UseFormReturn<FormInput>;

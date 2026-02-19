@@ -3,8 +3,8 @@ import { type ReactNode, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   type FormInput,
-  FormInputSchema,
   type FormOutput,
+  formInputSchema,
   ProductFormProvider,
 } from './product-form-context';
 import type {
@@ -38,8 +38,8 @@ export const ProductFormRoot = ({
     setIsWholesale(!!product && !!product.wholesaleMinAmount);
   }, [product]);
 
-  const form = useForm<FormInput, FormOutput>({
-    resolver: zodResolver(FormInputSchema),
+  const form = useForm<FormInput, any, FormOutput>({
+    resolver: zodResolver(formInputSchema),
     mode: 'onChange',
     defaultValues: isUpdate
       ? {
@@ -67,7 +67,7 @@ export const ProductFormRoot = ({
 
   const isSubmitting = isAdding || isUpdating;
 
-  const onSubmit = async (values: FormOutput) => {
+  const onSubmit = handleSubmit(async (values: FormInput) => {
     let success: AddProductToCartSuccessResult | boolean;
     if (isUpdate) {
       await mutateUpdateProductAsync({
@@ -104,7 +104,7 @@ export const ProductFormRoot = ({
       reset();
       onSuccess?.();
     }
-  };
+  });
 
   return (
     <ProductFormProvider
@@ -117,10 +117,7 @@ export const ProductFormRoot = ({
         onCancel,
       }}
     >
-      <form
-        onSubmit={handleSubmit((data) => onSubmit(data as FormOutput))}
-        className="flex flex-col h-full w-full"
-      >
+      <form onSubmit={onSubmit} className="flex flex-col h-full w-full">
         {children}
       </form>
     </ProductFormProvider>
