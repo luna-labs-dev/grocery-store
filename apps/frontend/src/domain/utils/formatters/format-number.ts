@@ -28,19 +28,22 @@ export function fShortenNumber(number: InputValue, decimals = 2) {
     ? numeral(number).format(`0.${'0'.repeat(decimals)}a`)
     : '';
 
-  return result(format, '.00');
+  const resultValue = result(format);
+  return resultValue;
 }
 
 export function fData(number: InputValue) {
   const format = number ? numeral(number).format('0.0 b') : '';
 
-  return result(format, '.0');
+  return result(format);
 }
 
-function result(format: string, key = '.00') {
-  const isInteger = format.includes(key);
+function result(format: string) {
+  const [integerPart, decimalPart] = format.split('.');
 
-  return isInteger ? format.replace(key, '') : format;
+  const isAllZeros = decimalPart?.split('').every((char) => char === '0');
+
+  return isAllZeros ? integerPart : format;
 }
 
 export const milisecondsToSeconds = (miliseconds: number): string =>

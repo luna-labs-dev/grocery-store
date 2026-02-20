@@ -188,7 +188,7 @@ export function ShoppingEventDetailsTotals({
         <StatItem
           icon="solar:box-bold"
           label="Itens"
-          value={fShortenNumber(totals.totalItemsDistinct, 3)}
+          value={fShortenNumber(totals.totalItemsDistinct)}
         />
         <StatItem
           icon="solar:layers-bold"
@@ -198,7 +198,7 @@ export function ShoppingEventDetailsTotals({
         <StatItem
           icon="solar:chart-2-bold"
           label="Preço Médio/Un."
-          value={fCurrency(10)} // TODO: implementar
+          value={fCurrency(totals.averagePricePerUnit)}
         />
       </Section>
 
