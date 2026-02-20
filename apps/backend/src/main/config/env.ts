@@ -8,6 +8,7 @@ const envVariables = z.object({
   LOG_LEVEL: z.enum(['dev', 'debug', 'prod']).default('dev'),
   PORT: z.coerce.number().default(8000),
   DATABASE_URL: z.string(),
+  DATABASE_NAME: z.string(),
   CLERK_PUBLISHABLE_KEY: z.string(),
   CLERK_SECRET_KEY: z.string(),
   ORIGINS: z.string(),
@@ -31,6 +32,7 @@ const {
   LOG_LEVEL,
   PORT,
   DATABASE_URL,
+  DATABASE_NAME,
   CLERK_PUBLISHABLE_KEY,
   CLERK_SECRET_KEY,
   ORIGINS,
@@ -44,7 +46,9 @@ export const env = {
     origins: getOrigin(ORIGINS),
   },
   database: {
-    url: DATABASE_URL,
+    baseUrl: DATABASE_URL,
+    name: DATABASE_NAME,
+    url: DATABASE_URL.replace('/postgres', `/${DATABASE_NAME}`),
   },
   clerk: {
     publishableKey: CLERK_PUBLISHABLE_KEY,

@@ -68,34 +68,34 @@ import type {
   UpdateProductInCart,
 } from '@/domain';
 import {
-  PrismaFamilyRepository,
-  PrismaMarketRepository,
-  PrismaProductRepository,
-  PrismaShoppingEventRepository,
-  PrismaUserRepository,
+  DrizzleFamilyRepository,
+  DrizzleMarketRepository,
+  DrizzleProductRepository,
+  DrizzleShoppingEventRepository,
+  DrizzleUserRepository,
 } from '@/infrastructure';
 
 const { infra, usecases, controllers } = injection;
 // Infra
 container.register<MarketRepositories>(
   infra.marketRepositories,
-  PrismaMarketRepository,
+  DrizzleMarketRepository,
 );
 container.register<UserRepositories>(
   infra.userRepositories,
-  PrismaUserRepository,
+  DrizzleUserRepository,
 );
 container.register<FamilyRepositories>(
   infra.familyRepositories,
-  PrismaFamilyRepository,
+  DrizzleFamilyRepository,
 );
 container.register<ShoppingEventRepositories>(
   infra.shoppingEventRepositories,
-  PrismaShoppingEventRepository,
+  DrizzleShoppingEventRepository,
 );
 container.register<ProductRepositories>(
   infra.productRepositories,
-  PrismaProductRepository,
+  DrizzleProductRepository,
 );
 
 // Usecases
