@@ -1,4 +1,5 @@
 import { container } from 'tsyringe';
+import { env } from '../config';
 import { injection } from './injection-codes';
 import {
   AddFamillyController,
@@ -42,6 +43,7 @@ import {
 import type {
   FamilyRepositories,
   MarketRepositories,
+  Places,
   ProductRepositories,
   ShoppingEventRepositories,
   UserRepositories,
@@ -73,9 +75,13 @@ import {
   DrizzleProductRepository,
   DrizzleShoppingEventRepository,
   DrizzleUserRepository,
+  GooglePlaces,
+  GooglePlacesHttpClient,
 } from '@/infrastructure';
 
 const { infra, usecases, controllers } = injection;
+const { googlePlaces } = env;
+
 // Infra
 container.register<MarketRepositories>(
   infra.marketRepositories,
@@ -97,6 +103,17 @@ container.register<ProductRepositories>(
   infra.productRepositories,
   DrizzleProductRepository,
 );
+
+container.register<GooglePlacesHttpClient>(infra.placesHttpClient, {
+  useFactory: () => {
+    const { apiKey, baseURL } = googlePlaces;
+    return new GooglePlacesHttpClient({
+      apiKey,
+      baseURL,
+    });
+  },
+});
+container.register<Places>(infra.places, GooglePlaces);
 
 // Usecases
 container.register<AddMarket>(usecases.newMarket, DbAddMarket);

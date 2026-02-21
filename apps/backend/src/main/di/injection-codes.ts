@@ -6,6 +6,8 @@ export const injection = {
     shoppingEventRepositories: 'shopping-event-repositories',
     productRepositories: 'product-repositories',
     userInfo: 'user-info-service',
+    placesHttpClient: 'places-http-client',
+    places: 'places-service',
   },
   usecases: {
     newMarket: 'new-market-usecase',
