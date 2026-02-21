@@ -14,16 +14,17 @@ const runMigrate = async () => {
   const baseClient = postgres(baseConnectionString, { max: 1 });
   try {
     const dbExists =
-      await baseClient`SELECT datname FROM pg_database WHERE datname = ${env.database.name}`;
+      await baseClient`SELECT datname FROM pg_database WHERE datname = ${env.database.dbName}`;
     if (dbExists.length === 0) {
-      await baseClient.unsafe(`CREATE DATABASE "${env.database.name}"`);
+      console.log(`Database ${env.database.dbName} does not exist, creating it...`);
+      await baseClient.unsafe(`CREATE DATABASE "${env.database.dbName}"`);
     }
   } catch (err) {
     console.error('Error creating database:', err);
   } finally {
     await baseClient.end();
   }
-  console.log('Database exists and is accessible');
+  console.log(`Database ${env.database.dbName} is accessible`);
 
   const migrationClient = postgres(connectionString, { max: 1 });
   const db = drizzle(migrationClient);

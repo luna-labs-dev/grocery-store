@@ -2,6 +2,7 @@ import { relations } from 'drizzle-orm';
 import {
   bigint,
   customType,
+  decimal,
   pgEnum,
   pgTable,
   real,
@@ -48,11 +49,15 @@ export const userTable = pgTable('user', {
 });
 
 export const marketTable = pgTable('market', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  code: varchar('code', { length: 60 }).unique().notNull(),
+  id: varchar('id', { length: 320 }).primaryKey().notNull(),
   name: varchar('name', { length: 100 }).unique().notNull(),
+  address: varchar('address', { length: 320 }).notNull(),
+  latitude: decimal('latitude', { precision: 10, scale: 8 }).notNull(),
+  longitude: decimal('longitude', { precision: 11, scale: 8 }).notNull(),
   createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
-  createdBy: varchar('createdBy', { length: 320 }).notNull(),
+  lastUpdatedAt: timestamp('lastUpdatedAt', { precision: 6 })
+    .defaultNow()
+    .notNull(),
 });
 
 export const shopping_eventTable = pgTable('shopping_event', {

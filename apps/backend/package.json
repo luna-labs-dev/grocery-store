@@ -11,10 +11,8 @@
     "build": "tsup src/main/server.ts --clean --format esm --splitting false",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx src/infrastructure/repository/drizzle/setup/migrate.ts",
-    "db:studio": "drizzle-kit studio",
-    "db:up": "docker compose -f docker-compose.dev.yml up -d",
-    "db:down": "docker compose -f docker-compose.dev.yml down"
+    "db:migrate": "tsx src/infrastructure/repositories/drizzle/setup/migrate.ts",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@clerk/express": "^1.4.14",
