@@ -3,6 +3,7 @@ import {
   bigint,
   customType,
   decimal,
+  index,
   pgEnum,
   pgTable,
   real,
@@ -22,6 +23,12 @@ export const money = customType<{ data: number; driverData: string }>({
   },
   toDriver(value: number): string {
     return value.toString();
+  },
+});
+
+export const geography = customType<{ data: string }>({
+  dataType() {
+    return 'geography(Point, 4326)';
   },
 });
 
@@ -48,17 +55,22 @@ export const userTable = pgTable('user', {
   familyId: uuid('familyId'),
 });
 
-export const marketTable = pgTable('market', {
-  id: varchar('id', { length: 320 }).primaryKey().notNull(),
-  name: varchar('name', { length: 100 }).unique().notNull(),
-  address: varchar('address', { length: 320 }).notNull(),
-  latitude: decimal('latitude', { precision: 10, scale: 8 }).notNull(),
-  longitude: decimal('longitude', { precision: 11, scale: 8 }).notNull(),
-  createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
-  lastUpdatedAt: timestamp('lastUpdatedAt', { precision: 6 })
-    .defaultNow()
-    .notNull(),
-});
+export const marketTable = pgTable(
+  'market',
+  {
+    id: varchar('id', { length: 320 }).primaryKey().notNull(),
+    name: varchar('name', { length: 100 }).unique().notNull(),
+    address: varchar('address', { length: 320 }).notNull(),
+    latitude: decimal('latitude', { precision: 10, scale: 8 }).notNull(),
+    longitude: decimal('longitude', { precision: 11, scale: 8 }).notNull(),
+    location: geography('location').notNull(),
+    createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
+    lastUpdatedAt: timestamp('lastUpdatedAt', { precision: 6 })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [index('market_location_idx').using('gist', table.location)],
+);
 
 export const shopping_eventTable = pgTable('shopping_event', {
   id: uuid('id').primaryKey().defaultRandom(),
