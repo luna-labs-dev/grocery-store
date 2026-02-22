@@ -98,9 +98,11 @@ export class DrizzleMarketRepository implements MarketRepositories {
 
   getById = async ({
     id,
+    location,
   }: GetMarketByIdRepositoryParams): Promise<Market | undefined> => {
     const market = await db.query.marketTable.findFirst({
       where: eq(marketTable.id, id),
+      extras: location ? { distance: this.toDistance(location) } : undefined,
     });
 
     if (!market) return;

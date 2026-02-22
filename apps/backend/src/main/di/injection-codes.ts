@@ -10,8 +10,6 @@ export const injection = {
     places: 'places-service',
   },
   usecases: {
-    newMarket: 'new-market-usecase',
-    updateMarket: 'update-market-usecase',
     getMarketList: 'get-market-list-usecase',
     getMarketById: 'get-market-by-id-usecase',
     startShoppingEvent: 'start-shopping-event-usecase',
@@ -30,8 +28,6 @@ export const injection = {
     removeFamilyMember: 'remove-family-member-usecase',
   },
   controllers: {
-    newMarket: 'new-market-controller',
-    updateMarket: 'update-market-controller',
     getMarketList: 'get-market-list-controller',
     getMarketById: 'get-market-by-id-controller',
     startShoppingEvent: 'start-shopping-event-controller',

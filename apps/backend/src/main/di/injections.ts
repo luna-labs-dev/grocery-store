@@ -3,7 +3,6 @@ import { env } from '../config/env';
 import { injection } from './injection-codes';
 import {
   AddFamilyController,
-  AddMarketController,
   AddProductToCartController,
   type Controller,
   EndShoppingEventController,
@@ -17,13 +16,11 @@ import {
   RemoveFamilyMemberController,
   RemoveProductFromCartController,
   StartShoppingEventController,
-  UpdateMarketController,
   UpdateProductInCartController,
   WebhookExternalAuthAddUserController,
 } from '@/api';
 import {
   DbAddFamily,
-  DbAddMarket,
   DbAddProductToCart,
   DbAddUser,
   DbEndShoppingEvent,
@@ -38,7 +35,6 @@ import {
   DbRemoveFamilyMember,
   DbRemoveProductFromCart,
   DbStartShoppingEvent,
-  DbUpdateMarket,
 } from '@/application';
 import type {
   FamilyRepositories,
@@ -51,7 +47,6 @@ import type {
 import { DbUpdateProductInCart } from '@/application/usecases/shopping-event/cart/db-update-product-in-cart';
 import type {
   AddFamily,
-  AddMarket,
   AddProductToCart,
   AddUser,
   EndShoppingEvent,
@@ -66,7 +61,6 @@ import type {
   RemoveFamilyMember,
   RemoveProductFromCart,
   StartShoppingEvent,
-  UpdateMarket,
   UpdateProductInCart,
 } from '@/domain';
 import {
@@ -116,8 +110,6 @@ container.register<GooglePlacesHttpClient>(infra.placesHttpClient, {
 container.register<Places>(infra.places, GooglePlaces);
 
 // Usecases
-container.register<AddMarket>(usecases.newMarket, DbAddMarket);
-container.register<UpdateMarket>(usecases.updateMarket, DbUpdateMarket);
 container.register<GetMarketList>(usecases.getMarketList, DbGetMarketList);
 container.register<GetMarketById>(usecases.getMarketById, DbGetMarketById);
 container.register<StartShoppingEvent>(
@@ -160,11 +152,6 @@ container.register<RemoveFamilyMember>(
 );
 
 // Api
-container.register<Controller>(controllers.newMarket, AddMarketController);
-container.register<Controller>(
-  controllers.updateMarket,
-  UpdateMarketController,
-);
 container.register<Controller>(
   controllers.getMarketList,
   GetMarketListController,

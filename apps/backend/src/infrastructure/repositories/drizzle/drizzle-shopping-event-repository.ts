@@ -15,6 +15,15 @@ import { injection } from '@/main/di/injection-codes';
 
 const { infra } = injection;
 
+type ShoppingEventModel = typeof schema.shopping_eventTable.$inferSelect & {
+  family: typeof schema.familyTable.$inferSelect & {
+    owner: typeof schema.userTable.$inferSelect;
+    members: (typeof schema.userTable.$inferSelect)[];
+  };
+  market: typeof schema.marketTable.$inferSelect;
+  products: (typeof schema.productTable.$inferSelect)[];
+};
+
 @injectable()
 export class DrizzleShoppingEventRepository
   implements ShoppingEventRepositories
@@ -189,7 +198,7 @@ export class DrizzleShoppingEventRepository
     await Promise.allSettled(promises);
   };
 
-  private toDomain(shoppingEventModel: any): ShoppingEvent {
+  private toDomain(shoppingEventModel: ShoppingEventModel): ShoppingEvent {
     return ShoppingEvent.create(
       {
         familyId: shoppingEventModel.familyId,
@@ -226,9 +235,14 @@ export class DrizzleShoppingEventRepository
         market: Market.create(
           {
             name: shoppingEventModel.market.name,
-            code: shoppingEventModel.market.code,
+            formattedAddress: shoppingEventModel.market.formattedAddress,
+            city: shoppingEventModel.market.city,
+            neighborhood: shoppingEventModel.market.neighborhood,
+            latitude: Number(shoppingEventModel.market.latitude),
+            longitude: Number(shoppingEventModel.market.longitude),
             createdAt: shoppingEventModel.market.createdAt,
-            createdBy: shoppingEventModel.market.createdBy,
+            lastUpdatedAt: shoppingEventModel.market.lastUpdatedAt,
+            locationTypes: shoppingEventModel.market.locationTypes,
           },
           shoppingEventModel.market.id,
         ),

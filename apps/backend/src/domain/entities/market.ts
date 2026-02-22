@@ -14,6 +14,19 @@ export interface MarketProps {
   lastUpdatedAt: Date;
 }
 
+export interface MarketDto {
+  id: string;
+  name: string;
+  formattedAddress: string;
+  city: string;
+  neighborhood: string;
+  latitude: number;
+  longitude: number;
+  distance?: number;
+  createdAt: Date;
+  lastUpdatedAt: Date;
+}
+
 interface CreateMarketProps
   extends Pick<
     MarketProps,
@@ -91,6 +104,21 @@ export class Market extends Entity<MarketProps> {
 
   get lastUpdatedAt(): Date {
     return this.props.lastUpdatedAt;
+  }
+
+  public toDto(): MarketDto {
+    return {
+      id: this.id,
+      name: this.props.name,
+      formattedAddress: this.props.formattedAddress,
+      city: this.props.city,
+      neighborhood: this.props.neighborhood,
+      latitude: this.props.latitude,
+      longitude: this.props.longitude,
+      distance: this.props.distance,
+      createdAt: this.props.createdAt,
+      lastUpdatedAt: this.props.lastUpdatedAt,
+    };
   }
 
   public update(props: UpdateMarketProps): void {

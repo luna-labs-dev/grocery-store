@@ -4,7 +4,6 @@ export * from './family-owner-cannot-be-removed-error';
 export * from './family-without-members-error';
 export * from './invalid-family-name-error';
 export * from './invalid-invate-code-error';
-export * from './market-already-exists-error';
 export * from './market-list-search-error';
 export * from './market-not-found-error';
 export * from './product-not-found-error';

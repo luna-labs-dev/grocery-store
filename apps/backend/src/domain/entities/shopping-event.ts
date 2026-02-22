@@ -399,12 +399,7 @@ export class ShoppingEvent extends Entity<ShoppingEventProps> {
       id: this.id,
       status: this.status,
       market: this.market
-        ? {
-            id: this.marketId,
-            code: this.market.code,
-            name: this.market.name,
-            createdAt: this.market.createdAt,
-          }
+        ? this.market.toDto()
         : {
             id: this.marketId,
           },
