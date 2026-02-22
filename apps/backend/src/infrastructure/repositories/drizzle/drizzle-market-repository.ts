@@ -20,6 +20,7 @@ import type {
   MarketRepositories,
 } from '@/application';
 import { Market } from '@/domain';
+import { env } from '@/main/config/env';
 
 interface GeographicLocation {
   latitude: number | SQL;
@@ -29,9 +30,14 @@ interface GeographicLocation {
 interface GeographicLocationQuery extends GeographicLocation {
   radius?: number | SQL;
 }
-
+const { domain } = env;
 @injectable()
 export class DrizzleMarketRepository implements MarketRepositories {
+  private readonly radius: number;
+  constructor() {
+    this.radius = domain.marketRadius;
+  }
+
   count = async ({
     search,
     location,
@@ -42,7 +48,13 @@ export class DrizzleMarketRepository implements MarketRepositories {
     }
 
     if (location) {
-      query = query.where(this.toGeographicLocationQuery(location)) as any;
+      query = query.where(
+        this.toGeographicLocationQuery({
+          latitude: location.latitude,
+          longitude: location.longitude,
+          radius: this.radius,
+        }),
+      ) as any;
     }
 
     const result = await query;
@@ -63,7 +75,13 @@ export class DrizzleMarketRepository implements MarketRepositories {
     }
 
     if (location) {
-      query = query.where(this.toGeographicLocationQuery(location)) as any;
+      query = query.where(
+        this.toGeographicLocationQuery({
+          latitude: location.latitude,
+          longitude: location.longitude,
+          radius: this.radius,
+        }),
+      ) as any;
     }
 
     query = query.limit(pageSize).offset(pageIndex * pageSize) as any;
@@ -82,13 +100,16 @@ export class DrizzleMarketRepository implements MarketRepositories {
   getByProximity = async ({
     latitude,
     longitude,
-    radius,
   }: GetMarketsByProximityRepositoryParams): Promise<Market[] | undefined> => {
     const markets = await db.query.marketTable.findMany({
       extras: {
         distance: this.toDistance({ latitude, longitude }),
       },
-      where: this.toGeographicLocationQuery({ latitude, longitude, radius }),
+      where: this.toGeographicLocationQuery({
+        latitude: latitude,
+        longitude: longitude,
+        radius: this.radius,
+      }),
     });
 
     if (markets.length === 0) return [];

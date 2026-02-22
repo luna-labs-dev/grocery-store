@@ -22,7 +22,6 @@ export const getMarketListRequestSchema = z.object({
     .object({
       latitude: z.coerce.number(),
       longitude: z.coerce.number(),
-      radius: z.coerce.number(),
     })
     .optional(),
   expand: z

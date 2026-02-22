@@ -10,24 +10,33 @@ import type {
   GetNearByPlacesResult,
   Places,
 } from '@/application';
+import { env } from '@/main/config/env';
 import { injection } from '@/main/di/injection-codes';
 
 const { infra } = injection;
+const { domain } = env;
+export interface PlacesOptions {
+  radius: number;
+}
 
 @injectable()
 export class GooglePlaces implements Places {
   private readonly httpClient: AxiosInstance;
+  private readonly options: PlacesOptions;
 
   constructor(
     @inject(infra.placesHttpClient) httpFactory: GooglePlacesHttpClient,
   ) {
+    this.options = {
+      radius: domain.marketRadius,
+    };
     this.httpClient = httpFactory.getHttpClient();
   }
 
   async getNearByPlaces(
     params: GetNearByPlacesParams,
   ): Promise<GetNearByPlacesResult[]> {
-    const { latitude, longitude, radius, maxResults } = params;
+    const { latitude, longitude, maxResults } = params;
 
     const result = await this.httpClient.post<GooglePlacesResponse>(
       '/places:searchNearby',
@@ -36,10 +45,17 @@ export class GooglePlaces implements Places {
           'wholesaler',
           'supermarket',
           'hypermarket',
-          'market',
           'grocery_store',
         ],
-        excludedTypes: ['cake_shop', 'bakery', 'food_store', 'manufacturer'],
+        excludedTypes: [
+          'cake_shop',
+          'bakery',
+          'manufacturer',
+          'restaurant',
+          'pizza_restaurant',
+          'farm',
+          'building_materials_store',
+        ],
         maxResultCount: maxResults,
         rankPreference: 'DISTANCE',
         locationRestriction: {
@@ -48,7 +64,7 @@ export class GooglePlaces implements Places {
               latitude,
               longitude,
             },
-            radius,
+            radius: this.options.radius,
           },
         },
       },
@@ -62,7 +78,7 @@ export class GooglePlaces implements Places {
 
     const { places } = result.data;
 
-    return places.map((place) => this.toGetNearByPlacesResult(place));
+    return places?.map((place) => this.toGetNearByPlacesResult(place)) ?? [];
   }
 
   private toGetNearByPlacesResult(place: Place): GetNearByPlacesResult {

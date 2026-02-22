@@ -7,7 +7,6 @@ export interface GetMarketListParams {
   location?: {
     latitude: number;
     longitude: number;
-    radius: number;
   };
   expand?: boolean;
   pageIndex: number;

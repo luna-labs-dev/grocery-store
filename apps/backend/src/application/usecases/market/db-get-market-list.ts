@@ -34,12 +34,23 @@ export class DbGetMarketList implements GetMarketList {
   ): Promise<Either<GetMarketListPossibleErrors, GetMarketListResult>> => {
     try {
       const { expand } = params;
-      console.log({ expand });
+
       if (expand) {
         return await this.googleSearch(params);
       }
 
-      return await this.databaseSearch(params);
+      const result = await this.databaseSearch(params);
+      if (result.isLeft()) {
+        return result;
+      }
+
+      const { markets } = result.value;
+
+      if (markets.length === 0) {
+        return await this.googleSearch(params);
+      }
+
+      return result;
     } catch (error) {
       console.error(error);
 
@@ -92,7 +103,6 @@ export class DbGetMarketList implements GetMarketList {
     const googleMarkets = await this.places.getNearByPlaces({
       latitude: location.latitude,
       longitude: location.longitude,
-      radius: location.radius,
       maxResults: 20,
     });
 
@@ -110,6 +120,13 @@ export class DbGetMarketList implements GetMarketList {
         market.id,
       ),
     );
+
+    if (marketsToAdd.length === 0) {
+      return right({
+        total: 0,
+        markets: [],
+      });
+    }
     const markets = await this.repositories.addMany({
       markets: marketsToAdd,
       latitude: location.latitude,

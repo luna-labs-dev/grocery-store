@@ -5,7 +5,6 @@ export interface GetMarketListRepositoryParams {
   location?: {
     latitude: number;
     longitude: number;
-    radius: number;
   };
 
   pageIndex: number;
@@ -22,7 +21,6 @@ export type CountMarketListRepositoryParams = Pick<
 export interface GetMarketsByProximityRepositoryParams {
   latitude: number;
   longitude: number;
-  radius: number;
 }
 
 export interface GetMarketListRepository {

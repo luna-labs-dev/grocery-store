@@ -24,6 +24,9 @@ const envVariables = z.object({
   // Google Places
   GOOGLE_PLACES_BASE_URL: z.string(),
   GOOGLE_PLACES_API_KEY: z.string(),
+
+  // Domain
+  MARKET_RADIUS: z.coerce.number().default(1000),
 });
 
 const parsedVariables = envVariables.safeParse(process.env);
@@ -60,6 +63,9 @@ const {
   // Google Places
   GOOGLE_PLACES_BASE_URL,
   GOOGLE_PLACES_API_KEY,
+
+  // Domain
+  MARKET_RADIUS,
 } = parsedVariables.data;
 
 export const env = {
@@ -81,5 +87,8 @@ export const env = {
   googlePlaces: {
     baseURL: GOOGLE_PLACES_BASE_URL,
     apiKey: GOOGLE_PLACES_API_KEY,
+  },
+  domain: {
+    marketRadius: MARKET_RADIUS,
   },
 } as const;

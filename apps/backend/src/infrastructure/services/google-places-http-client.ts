@@ -1,7 +1,7 @@
 import axios, { type AxiosInstance } from 'axios';
 
 export interface GooglePlacesResponse {
-  places: Place[];
+  places?: Place[];
 }
 
 export interface Place {

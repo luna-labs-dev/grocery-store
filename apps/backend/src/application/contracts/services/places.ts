@@ -1,7 +1,6 @@
 export interface GetNearByPlacesParams {
   latitude: number;
   longitude: number;
-  radius: number;
   maxResults: number;
 }
 
