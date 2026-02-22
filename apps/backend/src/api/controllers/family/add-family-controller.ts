@@ -23,7 +23,7 @@ export type addFamilyControllerRequest = z.infer<typeof addFamilyRequestSchema>;
 @injectable()
 @controllerErrorHandling()
 @controllerValidationHandling(addFamilyRequestSchema)
-export class AddFamillyController implements Controller {
+export class AddFamilyController implements Controller {
   constructor(
     @inject(usecases.addFamily) private readonly addFamily: AddFamily,
   ) {}

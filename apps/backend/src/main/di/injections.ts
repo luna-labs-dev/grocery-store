@@ -1,8 +1,8 @@
 import { container } from 'tsyringe';
-import { env } from '../config';
+import { env } from '../config/env';
 import { injection } from './injection-codes';
 import {
-  AddFamillyController,
+  AddFamilyController,
   AddMarketController,
   AddProductToCartController,
   type Controller,
@@ -201,7 +201,7 @@ container.register<Controller>(
   controllers.removeProductFromCart,
   RemoveProductFromCartController,
 );
-container.register<Controller>(controllers.addFamily, AddFamillyController);
+container.register<Controller>(controllers.addFamily, AddFamilyController);
 container.register<Controller>(controllers.joinFamily, JoinFamilyController);
 container.register<Controller>(controllers.leaveFamily, LeaveFamilyController);
 container.register<Controller>(controllers.getFamily, GetFamilyController);

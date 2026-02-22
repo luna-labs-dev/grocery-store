@@ -22,6 +22,13 @@
       "when": 1771661244308,
       "tag": "0002_mushy_pride",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1771720895861,
+      "tag": "0003_free_praxagora",
+      "breakpoints": true
     }
   ]
 }

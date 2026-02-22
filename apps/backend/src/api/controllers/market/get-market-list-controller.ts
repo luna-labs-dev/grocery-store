@@ -18,6 +18,17 @@ export const getMarketListRequestSchema = z.object({
   pageSize: z.coerce.number().min(1).max(50).default(10),
   orderBy: z.enum(['createdAt']).default('createdAt'),
   orderDirection: z.enum(['desc', 'asc']).default('desc'),
+  location: z
+    .object({
+      latitude: z.coerce.number(),
+      longitude: z.coerce.number(),
+      radius: z.coerce.number(),
+    })
+    .optional(),
+  expand: z
+    .union([z.boolean(), z.string()])
+    .transform((val) => val === 'true' || val === true)
+    .optional(),
 });
 
 type GetMarketListControllerRequest = z.infer<
@@ -35,13 +46,24 @@ export class GetMarketListController implements Controller {
   ) {}
 
   async handle(request: GetMarketListControllerRequest): Promise<HttpResponse> {
-    const { search, pageIndex, pageSize, orderBy, orderDirection } = request;
-    const getMarketListResult = await this.getMarketList.execute({
+    const {
+      location,
       search,
       pageIndex,
       pageSize,
       orderBy,
       orderDirection,
+      expand,
+    } = request;
+
+    const getMarketListResult = await this.getMarketList.execute({
+      location,
+      search,
+      pageIndex,
+      pageSize,
+      orderBy,
+      orderDirection,
+      expand,
     });
 
     if (getMarketListResult.isLeft()) {
@@ -54,8 +76,13 @@ export class GetMarketListController implements Controller {
       total: market.total,
       items: market.markets.map((mkt) => ({
         id: mkt.id,
-        code: mkt.code,
         name: mkt.name,
+        formattedAddress: mkt.formattedAddress,
+        city: mkt.city,
+        neighborhood: mkt.neighborhood,
+        latitude: mkt.latitude,
+        longitude: mkt.longitude,
+        distance: mkt.distance,
         createdAt: mkt.createdAt,
       })),
     };

@@ -1,4 +1,5 @@
 import type { AxiosInstance } from 'axios';
+import { inject, injectable } from 'tsyringe';
 import type {
   GooglePlacesHttpClient,
   GooglePlacesResponse,
@@ -9,11 +10,17 @@ import type {
   GetNearByPlacesResult,
   Places,
 } from '@/application';
+import { injection } from '@/main/di/injection-codes';
 
+const { infra } = injection;
+
+@injectable()
 export class GooglePlaces implements Places {
   private readonly httpClient: AxiosInstance;
 
-  constructor(httpFactory: GooglePlacesHttpClient) {
+  constructor(
+    @inject(infra.placesHttpClient) httpFactory: GooglePlacesHttpClient,
+  ) {
     this.httpClient = httpFactory.getHttpClient();
   }
 
@@ -60,12 +67,12 @@ export class GooglePlaces implements Places {
 
   private toGetNearByPlacesResult(place: Place): GetNearByPlacesResult {
     const city = place.addressComponents.find((component) =>
-      component.types.includes('administrative_area_level_2'),
+      component.types?.includes('administrative_area_level_2'),
     )?.longText;
 
     const neighborhood = place.addressComponents.find((component) =>
       ['sublocality_level_1', 'sublocality'].some((item) =>
-        component.types.includes(item),
+        component.types?.includes(item),
       ),
     )?.longText;
 

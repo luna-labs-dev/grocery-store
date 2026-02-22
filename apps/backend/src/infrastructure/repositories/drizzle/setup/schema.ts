@@ -4,6 +4,7 @@ import {
   customType,
   decimal,
   index,
+  jsonb,
   pgEnum,
   pgTable,
   real,
@@ -59,17 +60,25 @@ export const marketTable = pgTable(
   'market',
   {
     id: varchar('id', { length: 320 }).primaryKey().notNull(),
-    name: varchar('name', { length: 100 }).unique().notNull(),
-    address: varchar('address', { length: 320 }).notNull(),
+    name: varchar('name', { length: 100 }).notNull(),
+    formattedAddress: varchar('formattedAddress', { length: 320 }).notNull(),
+    city: varchar('city', { length: 100 }).notNull(),
+    neighborhood: varchar('neighborhood', { length: 100 }).notNull(),
     latitude: decimal('latitude', { precision: 10, scale: 8 }).notNull(),
     longitude: decimal('longitude', { precision: 11, scale: 8 }).notNull(),
-    location: geography('location').notNull(),
+    geographicLocation: geography('geographicLocation').notNull(),
+    locationTypes: jsonb('locationTypes')
+      .$type<string[]>()
+      .notNull()
+      .default([]),
     createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
     lastUpdatedAt: timestamp('lastUpdatedAt', { precision: 6 })
       .defaultNow()
       .notNull(),
   },
-  (table) => [index('market_location_idx').using('gist', table.location)],
+  (table) => [
+    index('market_location_idx').using('gist', table.geographicLocation),
+  ],
 );
 
 export const shopping_eventTable = pgTable('shopping_event', {
