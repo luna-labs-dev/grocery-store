@@ -1,7 +1,7 @@
 import type { Product } from './product';
 import type { ShoppingEventStatus } from './status';
 import type { Entity, FetchListParams, FetchListResponse } from '@/domain';
-import type { MarketResponse } from '@/features/market';
+import type { Market } from '@/features/market';
 
 export interface ShoppingEventCalculatedTotals {
   retailTotal: number;
@@ -20,7 +20,7 @@ export interface ShoppingEventCalculatedTotals {
 
 export interface ShoppingEvent extends Entity {
   status: ShoppingEventStatus;
-  market: MarketResponse;
+  market: Market;
   totals: ShoppingEventCalculatedTotals;
   products: Product[];
   createdAt: Date;

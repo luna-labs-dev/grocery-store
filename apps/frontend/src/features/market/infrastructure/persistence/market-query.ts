@@ -1,6 +1,7 @@
-import { type FetchListParams, useQueryFactory } from '@/domain';
+import { useQueryFactory } from '@/domain';
 import type {
   GetMarketByIdParams,
+  GetMarketListParams,
   Market,
   MarketListResponse,
 } from '@/features/market';
@@ -9,8 +10,8 @@ import {
   httpGetMarketList,
 } from '@/features/market/infrastructure';
 
-export const useGetMarketListQuery = (params: FetchListParams) => {
-  const query = useQueryFactory<FetchListParams, MarketListResponse>({
+export const useGetMarketListQuery = (params: GetMarketListParams) => {
+  const query = useQueryFactory<GetMarketListParams, MarketListResponse>({
     queryKey: 'get-market-list',
     queryFunction: {
       fn: httpGetMarketList,
@@ -18,6 +19,8 @@ export const useGetMarketListQuery = (params: FetchListParams) => {
     },
     staleTime: 1000 * 60 * 1,
     keepPreviousData: true,
+    enabled:
+      params.location?.latitude !== 0 && params.location?.longitude !== 0,
   });
 
   return { ...query };

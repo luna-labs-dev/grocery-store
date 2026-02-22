@@ -1,35 +1,63 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MarketList } from './components/market-list';
+import type { GetMarketListParams } from './domain';
 import { useGetMarketListQuery } from './infrastructure';
 import { Button, CustomPagination } from '@/components';
 import { Page } from '@/components/layout/page-layout';
-import type { FetchListParams } from '@/domain';
+import { useGetPosition } from '@/hooks';
 
 export const MarketPage = () => {
-  const [paginationParams, setPaginationParams] = useState<FetchListParams>({
+  const { location, getPosition } = useGetPosition();
+  const [params, setParams] = useState<GetMarketListParams>({
+    location: {
+      latitude: location?.latitude ?? 0,
+      longitude: location?.longitude ?? 0,
+    },
+    expand: false,
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 20,
     orderBy: 'createdAt',
     orderDirection: 'desc',
   });
 
-  const { data } = useGetMarketListQuery(paginationParams);
+  useEffect(() => {
+    getPosition();
+  }, []);
+
+  useEffect(() => {
+    if (location) {
+      setParams((prev) => ({
+        ...prev,
+        location: {
+          ...prev.location,
+          ...location,
+        },
+      }));
+    }
+  }, [location]);
+
+  const { data } = useGetMarketListQuery(params);
 
   return (
     <Page>
       <Page.Header className="p-4">
         <div className="flex flex-col justify-end gap-2 sm:flex-row sm:gap-0">
-          <Button className="w-full">Novo Mercado</Button>
+          <Button
+            className="w-full"
+            onClick={() => setParams((prev) => ({ ...prev, expand: true }))}
+          >
+            Expandir Busca
+          </Button>
         </div>
       </Page.Header>
       <Page.Content className="px-4">
-        <MarketList paginationParams={paginationParams} />
+        <MarketList paginationParams={params} />
       </Page.Content>
       <Page.Footer className="p-4 border-t">
         <CustomPagination
           paginationProps={{
-            paginationParams,
-            setPaginationParams,
+            paginationParams: params,
+            setPaginationParams: setParams,
             listTotal: data?.total,
           }}
         />
