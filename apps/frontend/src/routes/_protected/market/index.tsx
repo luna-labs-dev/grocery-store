@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect } from 'react';
-import { MarketPage } from '@/features/market/features';
+import { MarketPage } from '@/features/market';
 import { useBreadCrumbs } from '@/hooks';
 
 export const Route = createFileRoute('/_protected/market/')({

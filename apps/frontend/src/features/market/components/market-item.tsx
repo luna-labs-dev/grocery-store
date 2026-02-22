@@ -2,7 +2,6 @@ import { useNavigate } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import {
   Button,
-  ButtonGroup,
   Card,
   CardContent,
   CardDescription,
@@ -41,43 +40,27 @@ export const MarketItem = ({ market }: MarketItemParams) => {
             </ItemContent>
           </Item>
           <div className="flex justify-end gap-2">
-            <ButtonGroup>
-              <Button
-                className="w-20"
-                onClick={() =>
-                  navigate({
-                    to: '/market/update/$marketId',
-                    params: {
-                      marketId: market.id,
-                    },
-                  })
-                }
-                size={'sm'}
-              >
-                Editar
-              </Button>
-              <Button
-                size={'sm'}
-                variant="secondary"
-                className="w-28"
-                disabled={isPending}
-                onClick={async () => {
-                  const shoppingEvent = await mutateAsync({
-                    marketId: market.id,
-                  });
-                  navigate({
-                    to: '/shopping-event/$shoppingEventId',
-                    params: {
-                      shoppingEventId: shoppingEvent.id,
-                    },
-                    replace: true,
-                  });
-                }}
-              >
-                {isPending && <HourglassIcon size={18} />}
-                Comprar
-              </Button>
-            </ButtonGroup>
+            <Button
+              size={'sm'}
+              variant="secondary"
+              className="w-28"
+              disabled={isPending}
+              onClick={async () => {
+                const shoppingEvent = await mutateAsync({
+                  marketId: market.id,
+                });
+                navigate({
+                  to: '/shopping-event/$shoppingEventId',
+                  params: {
+                    shoppingEventId: shoppingEvent.id,
+                  },
+                  replace: true,
+                });
+              }}
+            >
+              {isPending && <HourglassIcon size={18} />}
+              Comprar
+            </Button>
           </div>
         </div>
       </CardContent>
