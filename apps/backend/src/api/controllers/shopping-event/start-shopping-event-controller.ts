@@ -14,8 +14,8 @@ const { usecases } = injection;
 
 export const StartShoppingEventRequestSchema = z.object({
   user: z.string(),
-  familyId: z.string().uuid(),
-  marketId: z.string().uuid(),
+  familyId: z.uuid(),
+  marketId: z.string(),
 });
 
 export type StartShoppingEventControllerRequest = z.infer<
