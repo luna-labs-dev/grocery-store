@@ -23,6 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 .env*
+!.env.template
 
 
 .bkp
@@ -30,3 +31,4 @@ dist-ssr
 .venv
 .tanstack
 .temp
+.scripts
