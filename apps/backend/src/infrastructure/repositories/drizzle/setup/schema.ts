@@ -84,7 +84,7 @@ export const marketTable = pgTable(
 export const shopping_eventTable = pgTable('shopping_event', {
   id: uuid('id').primaryKey().defaultRandom(),
   familyId: uuid('familyId').notNull(),
-  marketId: uuid('marketId').notNull(),
+  marketId: varchar('marketId', { length: 320 }).notNull(),
   description: text('description'),
   totalPaid: money('totalPaid').notNull(),
   wholesaleTotal: money('wholesaleTotal').notNull(),
