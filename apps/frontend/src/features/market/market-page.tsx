@@ -15,7 +15,7 @@ export const MarketPage = () => {
     },
     expand: false,
     pageIndex: 0,
-    pageSize: 20,
+    pageSize: 10,
     orderBy: 'distance',
     orderDirection: 'asc',
   });
@@ -60,6 +60,7 @@ export const MarketPage = () => {
             setPaginationParams: setParams,
             listTotal: data?.total,
           }}
+          totalItemsPerPageOptions={[10, 25, 50]}
         />
       </Page.Footer>
     </Page>
