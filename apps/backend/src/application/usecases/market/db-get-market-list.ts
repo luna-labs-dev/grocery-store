@@ -26,7 +26,7 @@ export class DbGetMarketList implements GetMarketList {
     @inject(marketRepositories)
     private readonly repositories: GetMarketListRepository &
       AddMarketRepository,
-    @inject(places) private readonly places: Places,
+    @inject(places) private readonly placesService: Places,
   ) {}
 
   execute = async (
@@ -35,19 +35,16 @@ export class DbGetMarketList implements GetMarketList {
     try {
       const { expand } = params;
 
-      if (expand) {
-        return await this.googleSearch(params);
-      }
-
-      const result = await this.databaseSearch(params);
+      let result = await this.databaseSearch(params);
       if (result.isLeft()) {
         return result;
       }
 
       const { markets } = result.value;
 
-      if (markets.length === 0) {
-        return await this.googleSearch(params);
+      if (markets.length === 0 || expand) {
+        await this.googleSearch(params);
+        result = await this.databaseSearch(params);
       }
 
       return result;
@@ -93,14 +90,14 @@ export class DbGetMarketList implements GetMarketList {
 
   private async googleSearch(
     params: GetMarketListParams,
-  ): Promise<Either<GetMarketListPossibleErrors, GetMarketListResult>> {
+  ): Promise<Either<GetMarketListPossibleErrors, void>> {
     const { location } = params;
 
     if (!location) {
       return left(new MarketListSearchError());
     }
 
-    const googleMarkets = await this.places.getNearByPlaces({
+    const googleMarkets = await this.placesService.getNearByPlaces({
       latitude: location.latitude,
       longitude: location.longitude,
       maxResults: 20,
@@ -122,22 +119,14 @@ export class DbGetMarketList implements GetMarketList {
     );
 
     if (marketsToAdd.length === 0) {
-      return right({
-        total: 0,
-        markets: [],
-      });
+      return right(undefined);
     }
-    const markets = await this.repositories.addMany({
+    await this.repositories.addMany({
       markets: marketsToAdd,
       latitude: location.latitude,
       longitude: location.longitude,
     });
 
-    const response: GetMarketListResult = {
-      total: markets.length,
-      markets,
-    };
-
-    return right(response);
+    return right(undefined);
   }
 }
