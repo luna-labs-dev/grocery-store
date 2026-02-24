@@ -1,6 +1,6 @@
 import {
+  and,
   asc,
-  count,
   desc,
   eq,
   getTableColumns,
@@ -30,6 +30,10 @@ interface GeographicLocation {
 interface GeographicLocationQuery extends GeographicLocation {
   radius?: number | SQL;
 }
+
+type OrderByType = keyof (typeof marketTable.$inferSelect & {
+  distance: number;
+});
 const { domain } = env;
 @injectable()
 export class DrizzleMarketRepository implements MarketRepositories {
@@ -42,23 +46,21 @@ export class DrizzleMarketRepository implements MarketRepositories {
     search,
     location,
   }: CountMarketListRepositoryParams): Promise<number> => {
-    let query = db.select({ value: count() }).from(marketTable);
-    if (search) {
-      query = query.where(ilike(marketTable.name, `%${search}%`)) as any;
-    }
+    const marketCount = await db.$count(
+      marketTable,
+      and(
+        search ? ilike(marketTable.name, `%${search}%`) : undefined,
+        location
+          ? this.toGeographicLocationQuery({
+              latitude: location.latitude,
+              longitude: location.longitude,
+              radius: this.radius,
+            })
+          : undefined,
+      ),
+    );
 
-    if (location) {
-      query = query.where(
-        this.toGeographicLocationQuery({
-          latitude: location.latitude,
-          longitude: location.longitude,
-          radius: this.radius,
-        }),
-      ) as any;
-    }
-
-    const result = await query;
-    return result[0].value;
+    return marketCount;
   };
 
   getAll = async ({
@@ -69,29 +71,53 @@ export class DrizzleMarketRepository implements MarketRepositories {
     orderBy,
     orderDirection,
   }: GetMarketListRepositoryParams): Promise<Market[]> => {
-    let query = db.select().from(marketTable);
-    if (search) {
-      query = query.where(ilike(marketTable.name, `%${search}%`)) as any;
-    }
+    // function to get order by direction and order by column
+    const orderByFn = (
+      orderBy: OrderByType,
+      orderDirection: 'asc' | 'desc',
+    ) => {
+      // If ordering by the 'distance' alias created in select
+      if (orderBy === 'distance') {
+        return orderDirection === 'asc'
+          ? asc(sql`distance`)
+          : desc(sql`distance`);
+      }
 
-    if (location) {
-      query = query.where(
-        this.toGeographicLocationQuery({
-          latitude: location.latitude,
-          longitude: location.longitude,
-          radius: this.radius,
-        }),
-      ) as any;
-    }
+      // If ordering by a column on the table
+      const column = (marketTable as any)[orderBy];
 
-    query = query.limit(pageSize).offset(pageIndex * pageSize) as any;
+      return orderDirection === 'asc' ? asc(column) : desc(column);
+    };
 
-    if (orderBy) {
-      const orderFn = orderDirection === 'desc' ? desc : asc;
-      query = query.orderBy(orderFn((marketTable as any)[orderBy])) as any;
-    }
+    const markets = await db
+      .select({
+        ...getTableColumns(marketTable),
+        ...(location
+          ? {
+              distance: this.toDistance({
+                latitude: location.latitude,
+                longitude: location.longitude,
+              }),
+            }
+          : undefined),
+      })
+      .from(marketTable)
+      .where(
+        and(
+          search ? ilike(marketTable.name, `%${search}%`) : undefined,
+          location
+            ? this.toGeographicLocationQuery({
+                latitude: location.latitude,
+                longitude: location.longitude,
+                radius: this.radius,
+              })
+            : undefined,
+        ),
+      )
+      .limit(pageSize)
+      .offset(pageIndex * pageSize)
+      .orderBy(orderByFn(orderBy, orderDirection));
 
-    const markets = await query;
     if (markets.length === 0) return [];
 
     return markets.map((market) => this.toDomain(market));
