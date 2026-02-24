@@ -33,6 +33,15 @@ export interface GetMarketListParams extends FetchListParams {
 }
 
 export interface MarketListItem
-  extends Pick<Market, 'id' | 'name' | 'city' | 'neighborhood' | 'distance'> {}
+  extends Pick<
+    Market,
+    | 'id'
+    | 'name'
+    | 'city'
+    | 'neighborhood'
+    | 'distance'
+    | 'formattedAddress'
+    | 'createdAt'
+  > {}
 
 export interface MarketListResponse extends FetchListResponse<MarketListItem> {}

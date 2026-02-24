@@ -1,30 +1,95 @@
+import { Store } from 'lucide-react';
+import type { GetMarketListParams } from '../domain';
 import { MarketItem } from './market-item';
-import { Loading } from '@/components';
-import type { FetchListParams } from '@/domain';
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  Skeleton,
+  Spinner,
+} from '@/components';
 import { useGetMarketListQuery } from '@/features/market/infrastructure';
 
+export function MarketListLoading() {
+  return (
+    <div className="flex flex-col items-center justify-center gap-3 py-16">
+      <Spinner className="size-5 text-muted-foreground" />
+      <p className="text-sm text-muted-foreground">
+        Carregando lista de mercados
+      </p>
+    </div>
+  );
+}
+
+export function MarketListSkeleton() {
+  return (
+    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      {Array.from({ length: 6 }).map((_, i) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: is just a skeleton
+        <Skeleton key={i} className="h-[180px] w-full rounded-xl" />
+      ))}
+    </div>
+  );
+}
+
+export function MarketListError() {
+  return (
+    <Empty className="py-16">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <Store />
+        </EmptyMedia>
+        <EmptyTitle>Erro ao carregar</EmptyTitle>
+        <EmptyDescription>
+          Ocorreu um erro ao buscar os mercados. Tente novamente.
+        </EmptyDescription>
+      </EmptyHeader>
+    </Empty>
+  );
+}
+
+export function MarketListEmpty() {
+  return (
+    <Empty className="py-16">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <Store />
+        </EmptyMedia>
+        <EmptyTitle>Nenhum mercado encontrado</EmptyTitle>
+        <EmptyDescription>
+          Altere os filtros de busca para encontrar mercados.
+        </EmptyDescription>
+      </EmptyHeader>
+    </Empty>
+  );
+}
+
 interface MarketListProps {
-  paginationParams: FetchListParams;
+  paginationParams: GetMarketListParams;
 }
 
 export const MarketList = ({ paginationParams }: MarketListProps) => {
-  const { data, isFetching } = useGetMarketListQuery(paginationParams);
+  const { data, isLoading, isError } = useGetMarketListQuery(paginationParams);
 
-  if (isFetching) {
-    return (
-      <div className="w-full h-64 flex items-center justify-center gap-1">
-        <Loading text="Carregando lista de mercados" />
-      </div>
-    );
+  if (isLoading) {
+    return <MarketListLoading />;
+  }
+
+  if (isError) {
+    return <MarketListError />;
+  }
+
+  if (!data?.items?.length) {
+    return <MarketListEmpty />;
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {data?.items.map((item) => (
-          <MarketItem key={item.id} market={item} />
-        ))}
-      </div>
+    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      {data?.items.map((item) => (
+        <MarketItem key={item.id} market={item} />
+      ))}
     </div>
   );
 };

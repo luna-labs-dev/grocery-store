@@ -16,8 +16,8 @@ export const MarketPage = () => {
     expand: false,
     pageIndex: 0,
     pageSize: 20,
-    orderBy: 'createdAt',
-    orderDirection: 'desc',
+    orderBy: 'distance',
+    orderDirection: 'asc',
   });
 
   useEffect(() => {
