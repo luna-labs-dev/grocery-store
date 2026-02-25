@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: grocery-store-backend-postgres
+    ports:
+      - "5450:5433"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=ADMSTA
+    command: -p 5433
+volumes:
+  postgres-data:

@@ -24,7 +24,7 @@ export const handleAmountChange = (props: HandleAmountChangeProps) => {
 
     const numericValue = Number(digitsOnly);
 
-    if (isNaN(numericValue) || numericValue === 0) {
+    if (Number.isNaN(numericValue) || numericValue === 0) {
       changeFn(undefined);
       return;
     }
@@ -54,7 +54,7 @@ export const handleAmountChange = (props: HandleAmountChangeProps) => {
 
   const numericValue = Number(normalized);
 
-  if (isNaN(numericValue)) {
+  if (Number.isNaN(numericValue)) {
     changeFn(undefined);
     return;
   }

@@ -1,0 +1,1 @@
+ALTER TABLE "shopping_event" ALTER COLUMN "marketId" SET DATA TYPE varchar(320);

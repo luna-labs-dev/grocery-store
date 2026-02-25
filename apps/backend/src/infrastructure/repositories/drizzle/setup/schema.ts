@@ -2,6 +2,9 @@ import { relations } from 'drizzle-orm';
 import {
   bigint,
   customType,
+  decimal,
+  index,
+  jsonb,
   pgEnum,
   pgTable,
   real,
@@ -21,6 +24,12 @@ export const money = customType<{ data: number; driverData: string }>({
   },
   toDriver(value: number): string {
     return value.toString();
+  },
+});
+
+export const geography = customType<{ data: string }>({
+  dataType() {
+    return 'geography(Point, 4326)';
   },
 });
 
@@ -47,18 +56,35 @@ export const userTable = pgTable('user', {
   familyId: uuid('familyId'),
 });
 
-export const marketTable = pgTable('market', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  code: varchar('code', { length: 60 }).unique().notNull(),
-  name: varchar('name', { length: 100 }).unique().notNull(),
-  createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
-  createdBy: varchar('createdBy', { length: 320 }).notNull(),
-});
+export const marketTable = pgTable(
+  'market',
+  {
+    id: varchar('id', { length: 320 }).primaryKey().notNull(),
+    name: varchar('name', { length: 100 }).notNull(),
+    formattedAddress: varchar('formattedAddress', { length: 320 }).notNull(),
+    city: varchar('city', { length: 100 }).notNull(),
+    neighborhood: varchar('neighborhood', { length: 100 }).notNull(),
+    latitude: decimal('latitude', { precision: 10, scale: 8 }).notNull(),
+    longitude: decimal('longitude', { precision: 11, scale: 8 }).notNull(),
+    geographicLocation: geography('geographicLocation').notNull(),
+    locationTypes: jsonb('locationTypes')
+      .$type<string[]>()
+      .notNull()
+      .default([]),
+    createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
+    lastUpdatedAt: timestamp('lastUpdatedAt', { precision: 6 })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index('market_location_idx').using('gist', table.geographicLocation),
+  ],
+);
 
 export const shopping_eventTable = pgTable('shopping_event', {
   id: uuid('id').primaryKey().defaultRandom(),
   familyId: uuid('familyId').notNull(),
-  marketId: uuid('marketId').notNull(),
+  marketId: varchar('marketId', { length: 320 }).notNull(),
   description: text('description'),
   totalPaid: money('totalPaid').notNull(),
   wholesaleTotal: money('wholesaleTotal').notNull(),

@@ -6,6 +6,10 @@ export type GetMarketByIdErrors = UnexpectedError | MarketNotFoundError;
 
 export interface GetMarketByIdParams {
   marketId: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
 }
 export interface GetMarketById {
   execute: (

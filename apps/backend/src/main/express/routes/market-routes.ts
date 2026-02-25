@@ -13,11 +13,3 @@ marketRouter.get(
   '/:marketId',
   adaptRoute(container.resolve(injection.controllers.getMarketById)),
 );
-marketRouter.post(
-  '/',
-  adaptRoute(container.resolve(injection.controllers.newMarket)),
-);
-marketRouter.put(
-  '/:marketId',
-  adaptRoute(container.resolve(injection.controllers.updateMarket)),
-);

@@ -1,16 +1,23 @@
 import type { Either } from '../../core';
 import type { Market } from '../../entities';
-import type { UnexpectedError } from '../errors';
+import type { MarketListSearchError, UnexpectedError } from '../errors';
 
 export interface GetMarketListParams {
   search?: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
+  expand?: boolean;
   pageIndex: number;
   pageSize: number;
-  orderBy: 'createdAt';
+  orderBy: 'createdAt' | 'distance';
   orderDirection: 'desc' | 'asc';
 }
 
-type GetMarketListPossibleErrors = UnexpectedError;
+export type GetMarketListPossibleErrors =
+  | UnexpectedError
+  | MarketListSearchError;
 
 export interface GetMarketListResult {
   total: number;

@@ -1,8 +1,8 @@
 import { container } from 'tsyringe';
+import { env } from '../config/env';
 import { injection } from './injection-codes';
 import {
-  AddFamillyController,
-  AddMarketController,
+  AddFamilyController,
   AddProductToCartController,
   type Controller,
   EndShoppingEventController,
@@ -16,13 +16,11 @@ import {
   RemoveFamilyMemberController,
   RemoveProductFromCartController,
   StartShoppingEventController,
-  UpdateMarketController,
   UpdateProductInCartController,
   WebhookExternalAuthAddUserController,
 } from '@/api';
 import {
   DbAddFamily,
-  DbAddMarket,
   DbAddProductToCart,
   DbAddUser,
   DbEndShoppingEvent,
@@ -37,11 +35,11 @@ import {
   DbRemoveFamilyMember,
   DbRemoveProductFromCart,
   DbStartShoppingEvent,
-  DbUpdateMarket,
 } from '@/application';
 import type {
   FamilyRepositories,
   MarketRepositories,
+  Places,
   ProductRepositories,
   ShoppingEventRepositories,
   UserRepositories,
@@ -49,7 +47,6 @@ import type {
 import { DbUpdateProductInCart } from '@/application/usecases/shopping-event/cart/db-update-product-in-cart';
 import type {
   AddFamily,
-  AddMarket,
   AddProductToCart,
   AddUser,
   EndShoppingEvent,
@@ -64,7 +61,6 @@ import type {
   RemoveFamilyMember,
   RemoveProductFromCart,
   StartShoppingEvent,
-  UpdateMarket,
   UpdateProductInCart,
 } from '@/domain';
 import {
@@ -73,9 +69,13 @@ import {
   DrizzleProductRepository,
   DrizzleShoppingEventRepository,
   DrizzleUserRepository,
+  GooglePlaces,
+  GooglePlacesHttpClient,
 } from '@/infrastructure';
 
 const { infra, usecases, controllers } = injection;
+const { googlePlaces } = env;
+
 // Infra
 container.register<MarketRepositories>(
   infra.marketRepositories,
@@ -98,9 +98,18 @@ container.register<ProductRepositories>(
   DrizzleProductRepository,
 );
 
+container.register<GooglePlacesHttpClient>(infra.placesHttpClient, {
+  useFactory: () => {
+    const { apiKey, baseURL } = googlePlaces;
+    return new GooglePlacesHttpClient({
+      apiKey,
+      baseURL,
+    });
+  },
+});
+container.register<Places>(infra.places, GooglePlaces);
+
 // Usecases
-container.register<AddMarket>(usecases.newMarket, DbAddMarket);
-container.register<UpdateMarket>(usecases.updateMarket, DbUpdateMarket);
 container.register<GetMarketList>(usecases.getMarketList, DbGetMarketList);
 container.register<GetMarketById>(usecases.getMarketById, DbGetMarketById);
 container.register<StartShoppingEvent>(
@@ -143,11 +152,6 @@ container.register<RemoveFamilyMember>(
 );
 
 // Api
-container.register<Controller>(controllers.newMarket, AddMarketController);
-container.register<Controller>(
-  controllers.updateMarket,
-  UpdateMarketController,
-);
 container.register<Controller>(
   controllers.getMarketList,
   GetMarketListController,
@@ -184,7 +188,7 @@ container.register<Controller>(
   controllers.removeProductFromCart,
   RemoveProductFromCartController,
 );
-container.register<Controller>(controllers.addFamily, AddFamillyController);
+container.register<Controller>(controllers.addFamily, AddFamilyController);
 container.register<Controller>(controllers.joinFamily, JoinFamilyController);
 container.register<Controller>(controllers.leaveFamily, LeaveFamilyController);
 container.register<Controller>(controllers.getFamily, GetFamilyController);

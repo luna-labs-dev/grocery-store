@@ -23,9 +23,12 @@ dist-ssr
 *.sln
 *.sw?
 .env*
+!.env.template
 
 
 .bkp
 .yarn
 .venv
 .tanstack
+.temp
+.scripts

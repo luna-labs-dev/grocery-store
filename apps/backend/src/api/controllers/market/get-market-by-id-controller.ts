@@ -13,7 +13,13 @@ import { injection } from '@/main/di/injection-codes';
 const { usecases } = injection;
 
 export const getMarketByIdRequestSchema = z.object({
-  marketId: z.string().uuid(),
+  marketId: z.uuid(),
+  location: z
+    .object({
+      latitude: z.number(),
+      longitude: z.number(),
+    })
+    .optional(),
 });
 
 type GetMarketByIdControllerParams = z.infer<typeof getMarketByIdRequestSchema>;
@@ -30,9 +36,11 @@ export class GetMarketByIdController implements Controller {
 
   async handle({
     marketId,
+    location,
   }: GetMarketByIdControllerParams): Promise<HttpResponse> {
     const result = await this.getMarketById.execute({
       marketId,
+      location,
     });
 
     if (result.isLeft()) {
@@ -43,9 +51,14 @@ export class GetMarketByIdController implements Controller {
 
     const response = {
       id: market.id,
-      code: market.code,
       name: market.name,
-      createdAt: market.createdAt,
+      formattedAddress: market.formattedAddress,
+      city: market.city,
+      neighborhood: market.neighborhood,
+      latitude: market.latitude,
+      longitude: market.longitude,
+      lastUpdatedAt: market.lastUpdatedAt,
+      distance: market.distance,
     };
 
     return ok(response);

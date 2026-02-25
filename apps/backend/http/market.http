@@ -1,4 +1,4 @@
-GET http://localhost:8000/api/grocery-shopping/v1/market
+GET http://localhost:8000/api/grocery-shopping/v1/market?location[latitude]=-23.555537&location[longitude]=-46.825409&location[radius]=3000&expand=true
 Content-Type: application/json
 x-authorization-token: {{token}}
 
@@ -6,7 +6,10 @@ x-authorization-token: {{token}}
 GET http://localhost:8000/api/grocery-shopping/v1/market/1
 Content-Type: application/json
 x-authorization-token: {{token}}
-
+-23.656763, -47.053584
+-23.528884, -46.834878
+-23.551956, -46.948736
+-23.555537, -46.825409
 ### get market list
 GET http://localhost:8000/api/grocery-shopping/v1/market
 Content-Type: application/json

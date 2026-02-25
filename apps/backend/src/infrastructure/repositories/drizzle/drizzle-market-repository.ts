@@ -1,52 +1,143 @@
-import { asc, count, desc, eq, ilike } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  getTableColumns,
+  ilike,
+  type SQL,
+  sql,
+} from 'drizzle-orm';
 import { injectable } from 'tsyringe';
 import { db } from './setup/connection';
-import * as schema from './setup/schema';
+import { marketTable } from './setup/schema';
 import type {
+  AddMarketsRepositoryParams,
   CountMarketListRepositoryParams,
-  GetMarketByCodeRepositoryParams,
   GetMarketByIdRepositoryParams,
   GetMarketListRepositoryParams,
+  GetMarketsByProximityRepositoryParams,
   MarketRepositories,
 } from '@/application';
 import { Market } from '@/domain';
+import { env } from '@/main/config/env';
 
+interface GeographicLocation {
+  latitude: number | SQL;
+  longitude: number | SQL;
+}
+
+interface GeographicLocationQuery extends GeographicLocation {
+  radius?: number | SQL;
+}
+
+type OrderByType = keyof (typeof marketTable.$inferSelect & {
+  distance: number;
+});
+const { domain } = env;
 @injectable()
 export class DrizzleMarketRepository implements MarketRepositories {
+  private readonly radius: number;
+  constructor() {
+    this.radius = domain.marketRadius;
+  }
+
   count = async ({
     search,
+    location,
   }: CountMarketListRepositoryParams): Promise<number> => {
-    let query = db.select({ value: count() }).from(schema.marketTable);
-    if (search) {
-      query = query.where(ilike(schema.marketTable.name, `%${search}%`)) as any;
-    }
+    const marketCount = await db.$count(
+      marketTable,
+      and(
+        search ? ilike(marketTable.name, `%${search}%`) : undefined,
+        location
+          ? this.toGeographicLocationQuery({
+              latitude: location.latitude,
+              longitude: location.longitude,
+              radius: this.radius,
+            })
+          : undefined,
+      ),
+    );
 
-    const result = await query;
-    return result[0].value;
+    return marketCount;
   };
 
   getAll = async ({
     search,
+    location,
     pageIndex,
     pageSize,
     orderBy,
     orderDirection,
   }: GetMarketListRepositoryParams): Promise<Market[]> => {
-    let query = db.select().from(schema.marketTable);
-    if (search) {
-      query = query.where(ilike(schema.marketTable.name, `%${search}%`)) as any;
-    }
+    // function to get order by direction and order by column
+    const orderByFn = (
+      orderBy: OrderByType,
+      orderDirection: 'asc' | 'desc',
+    ) => {
+      // If ordering by the 'distance' alias created in select
+      if (orderBy === 'distance') {
+        return orderDirection === 'asc'
+          ? asc(sql`distance`)
+          : desc(sql`distance`);
+      }
 
-    query = query.limit(pageSize).offset(pageIndex * pageSize) as any;
+      // If ordering by a column on the table
+      const column = (marketTable as any)[orderBy];
 
-    if (orderBy) {
-      const orderFn = orderDirection === 'desc' ? desc : asc;
-      query = query.orderBy(
-        orderFn((schema.marketTable as any)[orderBy]),
-      ) as any;
-    }
+      return orderDirection === 'asc' ? asc(column) : desc(column);
+    };
 
-    const markets = await query;
+    const markets = await db
+      .select({
+        ...getTableColumns(marketTable),
+        ...(location
+          ? {
+              distance: this.toDistance({
+                latitude: location.latitude,
+                longitude: location.longitude,
+              }),
+            }
+          : undefined),
+      })
+      .from(marketTable)
+      .where(
+        and(
+          search ? ilike(marketTable.name, `%${search}%`) : undefined,
+          location
+            ? this.toGeographicLocationQuery({
+                latitude: location.latitude,
+                longitude: location.longitude,
+                radius: this.radius,
+              })
+            : undefined,
+        ),
+      )
+      .limit(pageSize)
+      .offset(pageIndex * pageSize)
+      .orderBy(orderByFn(orderBy, orderDirection));
+
+    if (markets.length === 0) return [];
+
+    return markets.map((market) => this.toDomain(market));
+  };
+
+  getByProximity = async ({
+    latitude,
+    longitude,
+  }: GetMarketsByProximityRepositoryParams): Promise<Market[] | undefined> => {
+    const markets = await db.query.marketTable.findMany({
+      extras: {
+        distance: this.toDistance({ latitude, longitude }),
+      },
+      where: this.toGeographicLocationQuery({
+        latitude: latitude,
+        longitude: longitude,
+        radius: this.radius,
+      }),
+    });
+
     if (markets.length === 0) return [];
 
     return markets.map((market) => this.toDomain(market));
@@ -54,20 +145,11 @@ export class DrizzleMarketRepository implements MarketRepositories {
 
   getById = async ({
     id,
+    location,
   }: GetMarketByIdRepositoryParams): Promise<Market | undefined> => {
     const market = await db.query.marketTable.findFirst({
-      where: eq(schema.marketTable.id, id),
-    });
-
-    if (!market) return;
-    return this.toDomain(market);
-  };
-
-  getByCode = async ({
-    code,
-  }: GetMarketByCodeRepositoryParams): Promise<Market | undefined> => {
-    const market = await db.query.marketTable.findFirst({
-      where: eq(schema.marketTable.code, code),
+      where: eq(marketTable.id, id),
+      extras: location ? { distance: this.toDistance(location) } : undefined,
     });
 
     if (!market) return;
@@ -75,34 +157,141 @@ export class DrizzleMarketRepository implements MarketRepositories {
   };
 
   add = async (market: Market): Promise<void> => {
-    await db.insert(schema.marketTable).values({
-      id: market.id,
-      code: market.code,
-      name: market.name,
-      createdAt: market.createdAt,
-      createdBy: market.createdBy,
-    });
+    await db
+      .insert(marketTable)
+      .values(this.ToInsert(market))
+      .onConflictDoUpdate({
+        target: marketTable.id,
+        set: this.onConflictDoUpdate(market),
+      });
+  };
+
+  addMany = async ({
+    markets,
+    latitude,
+    longitude,
+  }: AddMarketsRepositoryParams): Promise<Market[]> => {
+    const marketsResult = await db
+      .insert(marketTable)
+      .values(this.toInsertMany(markets))
+      .onConflictDoUpdate({
+        target: marketTable.id,
+        set: this.onConflictDoUpdate(),
+      })
+      .returning({
+        ...getTableColumns(marketTable),
+        distance: this.toDistance({ latitude, longitude }),
+      });
+
+    return marketsResult.map((market) => this.toDomain(market));
   };
 
   update = async (market: Market): Promise<void> => {
     await db
-      .update(schema.marketTable)
+      .update(marketTable)
       .set({
-        code: market.code,
         name: market.name,
+        formattedAddress: market.formattedAddress,
+        city: market.city,
+        neighborhood: market.neighborhood,
+        latitude: market.latitude.toString(),
+        longitude: market.longitude.toString(),
+        geographicLocation: this.toGeographicLocation(market),
+        lastUpdatedAt: market.lastUpdatedAt,
       })
-      .where(eq(schema.marketTable.id, market.id));
+      .where(eq(marketTable.id, market.id));
   };
 
-  private toDomain(marketModel: any): Market {
+  private toDomain(
+    marketModel: typeof marketTable.$inferSelect & { distance?: number },
+  ): Market {
     return Market.create(
       {
         name: marketModel.name,
-        code: marketModel.code,
+        formattedAddress: marketModel.formattedAddress,
+        city: marketModel.city,
+        neighborhood: marketModel.neighborhood,
+        latitude: Number(marketModel.latitude),
+        longitude: Number(marketModel.longitude),
+        geographicLocation: marketModel.geographicLocation,
+        locationTypes: marketModel.locationTypes,
         createdAt: marketModel.createdAt,
-        createdBy: marketModel.createdBy,
+        lastUpdatedAt: marketModel.lastUpdatedAt,
+        distance: marketModel.distance,
       },
       marketModel.id,
+    );
+  }
+  private ToInsert(market: Market) {
+    return {
+      id: market.id,
+      name: market.name,
+      formattedAddress: market.formattedAddress,
+      city: market.city,
+      neighborhood: market.neighborhood,
+      latitude: market.latitude.toString(),
+      longitude: market.longitude.toString(),
+      geographicLocation: this.toGeographicLocation(market),
+      locationTypes: market.locationTypes,
+      createdAt: market.createdAt,
+      lastUpdatedAt: market.lastUpdatedAt,
+    };
+  }
+
+  private toInsertMany(markets: Market[]) {
+    return markets.map((market) => this.ToInsert(market));
+  }
+  private onConflictDoUpdate(market?: Market) {
+    if (market) {
+      return {
+        name: market.name,
+        formattedAddress: market.formattedAddress,
+        city: market.city,
+        neighborhood: market.neighborhood,
+        latitude: market.latitude.toString(),
+        longitude: market.longitude.toString(),
+        geographicLocation: this.toGeographicLocation(market),
+        locationTypes: market.locationTypes,
+        lastUpdatedAt: market.lastUpdatedAt,
+      };
+    }
+    return {
+      name: sql`EXCLUDED.name`,
+      formattedAddress: sql`EXCLUDED."formattedAddress"`,
+      city: sql`EXCLUDED.city`,
+      neighborhood: sql`EXCLUDED.neighborhood`,
+      latitude: sql`EXCLUDED.latitude`,
+      longitude: sql`EXCLUDED.longitude`,
+      geographicLocation: this.toGeographicLocation({
+        latitude: sql`EXCLUDED.latitude`,
+        longitude: sql`EXCLUDED.longitude`,
+      }),
+      locationTypes: sql`EXCLUDED."locationTypes"`,
+      lastUpdatedAt: sql`EXCLUDED."lastUpdatedAt"`,
+    };
+  }
+
+  private toGeographicLocationQuery({
+    latitude,
+    longitude,
+    radius,
+  }: GeographicLocationQuery): SQL {
+    return sql`ST_DWithin(${marketTable.geographicLocation}, ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography, ${radius})`;
+  }
+
+  private toGeographicLocation({
+    latitude,
+    longitude,
+  }: GeographicLocation): SQL {
+    return sql`ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography`;
+  }
+
+  private toDistance({
+    latitude,
+    longitude,
+  }: GeographicLocation): SQL.Aliased<number> {
+    return sql<number>`ST_Distance(${marketTable.geographicLocation}, ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography)`.as(
+      'distance',
     );
   }
 }

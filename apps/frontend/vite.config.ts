@@ -8,6 +8,7 @@ import { defineConfig, loadEnv } from 'vite';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const port = env.PORT ? Number(env.PORT) : 3000;
+  const allowedHosts = env.ALLOWED_HOSTS ? env.ALLOWED_HOSTS.split(',') : [];
 
   return {
     plugins: [
@@ -22,6 +23,7 @@ export default defineConfig(({ mode }) => {
     ],
     server: {
       port,
+      allowedHosts,
       proxy: {
         '/api': {
           target: 'https://dev-grocery-store-backend.lunalabs.com.br',

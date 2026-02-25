@@ -18,8 +18,6 @@ import { Route as ProtectedMarketIndexRouteImport } from './routes/_protected/ma
 import { Route as ProtectedFamilyIndexRouteImport } from './routes/_protected/family/index'
 import { Route as ProtectedShoppingEventStartShoppingEventRouteImport } from './routes/_protected/shopping-event/start-shopping-event'
 import { Route as ProtectedShoppingEventShoppingEventIdRouteImport } from './routes/_protected/shopping-event/$shoppingEventId'
-import { Route as ProtectedMarketNewMarketRouteImport } from './routes/_protected/market/new-market'
-import { Route as ProtectedMarketUpdateMarketIdRouteImport } from './routes/_protected/market/update/$marketId'
 
 const ProtectedRoute = ProtectedRouteImport.update({
   id: '/_protected',
@@ -68,42 +66,26 @@ const ProtectedShoppingEventShoppingEventIdRoute =
     path: '/shopping-event/$shoppingEventId',
     getParentRoute: () => ProtectedRoute,
   } as any)
-const ProtectedMarketNewMarketRoute =
-  ProtectedMarketNewMarketRouteImport.update({
-    id: '/market/new-market',
-    path: '/market/new-market',
-    getParentRoute: () => ProtectedRoute,
-  } as any)
-const ProtectedMarketUpdateMarketIdRoute =
-  ProtectedMarketUpdateMarketIdRouteImport.update({
-    id: '/market/update/$marketId',
-    path: '/market/update/$marketId',
-    getParentRoute: () => ProtectedRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/dashboard': typeof ProtectedDashboardRoute
   '/signin': typeof PublicSigninRoute
-  '/market/new-market': typeof ProtectedMarketNewMarketRoute
   '/shopping-event/$shoppingEventId': typeof ProtectedShoppingEventShoppingEventIdRoute
   '/shopping-event/start-shopping-event': typeof ProtectedShoppingEventStartShoppingEventRoute
   '/family/': typeof ProtectedFamilyIndexRoute
   '/market/': typeof ProtectedMarketIndexRoute
   '/shopping-event/': typeof ProtectedShoppingEventIndexRoute
-  '/market/update/$marketId': typeof ProtectedMarketUpdateMarketIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/dashboard': typeof ProtectedDashboardRoute
   '/signin': typeof PublicSigninRoute
-  '/market/new-market': typeof ProtectedMarketNewMarketRoute
   '/shopping-event/$shoppingEventId': typeof ProtectedShoppingEventShoppingEventIdRoute
   '/shopping-event/start-shopping-event': typeof ProtectedShoppingEventStartShoppingEventRoute
   '/family': typeof ProtectedFamilyIndexRoute
   '/market': typeof ProtectedMarketIndexRoute
   '/shopping-event': typeof ProtectedShoppingEventIndexRoute
-  '/market/update/$marketId': typeof ProtectedMarketUpdateMarketIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -111,13 +93,11 @@ export interface FileRoutesById {
   '/_protected/dashboard': typeof ProtectedDashboardRoute
   '/_public/signin': typeof PublicSigninRoute
   '/_public/': typeof PublicIndexRoute
-  '/_protected/market/new-market': typeof ProtectedMarketNewMarketRoute
   '/_protected/shopping-event/$shoppingEventId': typeof ProtectedShoppingEventShoppingEventIdRoute
   '/_protected/shopping-event/start-shopping-event': typeof ProtectedShoppingEventStartShoppingEventRoute
   '/_protected/family/': typeof ProtectedFamilyIndexRoute
   '/_protected/market/': typeof ProtectedMarketIndexRoute
   '/_protected/shopping-event/': typeof ProtectedShoppingEventIndexRoute
-  '/_protected/market/update/$marketId': typeof ProtectedMarketUpdateMarketIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -125,38 +105,32 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/signin'
-    | '/market/new-market'
     | '/shopping-event/$shoppingEventId'
     | '/shopping-event/start-shopping-event'
     | '/family/'
     | '/market/'
     | '/shopping-event/'
-    | '/market/update/$marketId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/dashboard'
     | '/signin'
-    | '/market/new-market'
     | '/shopping-event/$shoppingEventId'
     | '/shopping-event/start-shopping-event'
     | '/family'
     | '/market'
     | '/shopping-event'
-    | '/market/update/$marketId'
   id:
     | '__root__'
     | '/_protected'
     | '/_protected/dashboard'
     | '/_public/signin'
     | '/_public/'
-    | '/_protected/market/new-market'
     | '/_protected/shopping-event/$shoppingEventId'
     | '/_protected/shopping-event/start-shopping-event'
     | '/_protected/family/'
     | '/_protected/market/'
     | '/_protected/shopping-event/'
-    | '/_protected/market/update/$marketId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -230,37 +204,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedShoppingEventShoppingEventIdRouteImport
       parentRoute: typeof ProtectedRoute
     }
-    '/_protected/market/new-market': {
-      id: '/_protected/market/new-market'
-      path: '/market/new-market'
-      fullPath: '/market/new-market'
-      preLoaderRoute: typeof ProtectedMarketNewMarketRouteImport
-      parentRoute: typeof ProtectedRoute
-    }
-    '/_protected/market/update/$marketId': {
-      id: '/_protected/market/update/$marketId'
-      path: '/market/update/$marketId'
-      fullPath: '/market/update/$marketId'
-      preLoaderRoute: typeof ProtectedMarketUpdateMarketIdRouteImport
-      parentRoute: typeof ProtectedRoute
-    }
   }
 }
 
 interface ProtectedRouteChildren {
   ProtectedDashboardRoute: typeof ProtectedDashboardRoute
-  ProtectedMarketNewMarketRoute: typeof ProtectedMarketNewMarketRoute
   ProtectedShoppingEventShoppingEventIdRoute: typeof ProtectedShoppingEventShoppingEventIdRoute
   ProtectedShoppingEventStartShoppingEventRoute: typeof ProtectedShoppingEventStartShoppingEventRoute
   ProtectedFamilyIndexRoute: typeof ProtectedFamilyIndexRoute
   ProtectedMarketIndexRoute: typeof ProtectedMarketIndexRoute
   ProtectedShoppingEventIndexRoute: typeof ProtectedShoppingEventIndexRoute
-  ProtectedMarketUpdateMarketIdRoute: typeof ProtectedMarketUpdateMarketIdRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedDashboardRoute: ProtectedDashboardRoute,
-  ProtectedMarketNewMarketRoute: ProtectedMarketNewMarketRoute,
   ProtectedShoppingEventShoppingEventIdRoute:
     ProtectedShoppingEventShoppingEventIdRoute,
   ProtectedShoppingEventStartShoppingEventRoute:
@@ -268,7 +225,6 @@ const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedFamilyIndexRoute: ProtectedFamilyIndexRoute,
   ProtectedMarketIndexRoute: ProtectedMarketIndexRoute,
   ProtectedShoppingEventIndexRoute: ProtectedShoppingEventIndexRoute,
-  ProtectedMarketUpdateMarketIdRoute: ProtectedMarketUpdateMarketIdRoute,
 }
 
 const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(

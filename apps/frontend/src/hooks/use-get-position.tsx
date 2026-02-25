@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export interface LocationData {
   latitude?: number;
@@ -6,8 +6,27 @@ export interface LocationData {
   error?: string;
 }
 
+export type CustomPermissionState = PermissionState | 'prompted' | 'loading';
+
 export const useGetPosition = () => {
   const [location, setLocation] = useState<LocationData>({});
+  const [permissionStatus, setPermissionStatus] =
+    useState<CustomPermissionState>('loading');
+
+  useEffect(() => {
+    if (!navigator.permissions) {
+      setPermissionStatus('prompt');
+      return;
+    }
+
+    navigator.permissions.query({ name: 'geolocation' }).then((status) => {
+      setPermissionStatus(status.state);
+
+      status.onchange = () => {
+        setPermissionStatus(status.state);
+      };
+    });
+  }, []);
 
   const getPosition = () => {
     if (!navigator.geolocation) {
@@ -48,5 +67,10 @@ export const useGetPosition = () => {
     );
   };
 
-  return { location, getPosition };
+  const promptUser = () => {
+    setPermissionStatus('prompted');
+    getPosition();
+  };
+
+  return { location, getPosition, permissionStatus, promptUser };
 };
