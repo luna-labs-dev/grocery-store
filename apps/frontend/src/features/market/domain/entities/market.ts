@@ -30,6 +30,7 @@ export interface GetMarketListParams extends FetchListParams {
     longitude: number;
   };
   expand?: boolean;
+  search?: string;
 }
 
 export interface MarketListItem

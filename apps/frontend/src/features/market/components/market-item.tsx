@@ -17,6 +17,17 @@ export interface MarketItemParams {
   market: MarketListItem;
 }
 
+const getDistanceVariant = (distance: number) => {
+  if (distance <= 1000) {
+    return 'success';
+  }
+  if (distance <= 5000) {
+    return 'info';
+  }
+
+  return 'warning';
+};
+
 export const MarketItem = ({ market }: MarketItemParams) => {
   const { mutateAsync, isPending } = useStartShoppingEventMutation();
   const navigate = useNavigate();
@@ -34,13 +45,7 @@ export const MarketItem = ({ market }: MarketItemParams) => {
           </div>
           {market.distance !== undefined && (
             <Badge
-              variant={
-                market.distance <= 1000
-                  ? 'success'
-                  : market.distance <= 3000
-                    ? 'info'
-                    : 'warning'
-              }
+              variant={getDistanceVariant(market.distance)}
               className="whitespace-nowrap shrink-0 px-2 py-0 text-[10px] sm:text-xs"
             >
               {(market.distance / 1000).toFixed(1)} km
