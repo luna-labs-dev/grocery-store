@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "tsx watch src/main/server.ts",
     "start": "node dist/src/main/server.js",
-    "build": "tsup src/main/server.ts --clean --format esm --splitting false",
+    "build": "tsup src/main/server.ts src/infrastructure/repositories/drizzle/setup/migrate.ts --clean --format esm --splitting false",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/infrastructure/repositories/drizzle/setup/migrate.ts",
