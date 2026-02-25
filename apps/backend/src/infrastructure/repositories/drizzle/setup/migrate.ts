@@ -56,7 +56,6 @@ const applyMigrations = async (migrationClient: postgres.Sql) => {
 const runMigrate = async () => {
   const baseConnectionString = `${env.database.baseUrl}/postgres`;
   const connectionString = env.database.url;
-  console.log({ baseConnectionString, connectionString });
 
   const baseClient = postgres(baseConnectionString, { max: 1 });
   try {

@@ -92,5 +92,3 @@ export const env = {
     marketRadius: MARKET_RADIUS,
   },
 } as const;
-
-console.log({ env });
