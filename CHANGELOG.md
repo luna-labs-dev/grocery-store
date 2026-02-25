@@ -1,3 +1,34 @@
+## v2.2.0 (2026-02-24)
+
+### Feat
+
+- add google places nearBy service
+- add getPosition Hook
+
+### Fix
+
+- adjust number formatting logic
+
+### Refactor
+
+- lint
+- adjust average logic
+- add  location permission flow
+- improve get market logic
+- ensure market list route accepts and work with orderby distance
+- small adjustments / vitest update
+- fix shoppingEvent table marketId foreign key reference
+- adjust frontend to meet the new market by location way
+- remove radius from request flow and add it as a env var instead
+- remove all market related routes that won't be necessary anymore from frontend
+- remove all market related routes that won't be necessary anymore
+- ensure markets are fetched from google (by proximity)
+- enabled postgis for geographic proximity filter
+- modify market table for geolocation registration
+- replace prisma with drizzle
+
+## v2.1.0 (2026-02-19)
+
 ## v2.0.1-test-1 (2026-02-19)
 
 ### Feat
