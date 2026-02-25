@@ -26,12 +26,7 @@ export const StartShoppingEvent = () => {
 
   const [value, setValue] = useState<MarketListItem | null>(null);
 
-  const { data, isLoading } = useGetMarketListQuery({
-    pageIndex: 0,
-    pageSize: 50,
-    orderBy: 'createdAt',
-    orderDirection: 'asc',
-  });
+  const { data, isLoading } = useGetMarketListQuery();
 
   const marketList: MarketListItem[] = data?.items ?? [];
   const loadingIcon = (
@@ -53,9 +48,9 @@ export const StartShoppingEvent = () => {
             items={marketList}
             value={value}
             itemToStringLabel={(item: MarketListItem) => item.name}
-            itemToStringValue={(item: MarketListItem) => item.code}
+            itemToStringValue={(item: MarketListItem) => item.id}
             isItemEqualToValue={(itemValue, selectedValue) =>
-              itemValue.code === selectedValue.code
+              itemValue.id === selectedValue.id
             }
             onValueChange={(item) => {
               setValue(item);
@@ -109,7 +104,6 @@ export const StartShoppingEvent = () => {
                 }
               }}
             >
-              {' '}
               {isPending && <HourglassIcon />}
               Iniciar
             </Button>
