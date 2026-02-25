@@ -1,9 +1,7 @@
 import { Icon } from '@iconify/react';
 import { useDebouncedCallback } from '@mantine/hooks';
-import { useEffect, useState } from 'react';
-import { LocationPermissionDialog } from './components/location-permission-dialog';
+import { useState } from 'react';
 import { MarketList } from './components/market-list';
-import type { GetMarketListParams } from './domain';
 import { useGetMarketListQuery } from './infrastructure';
 import {
   Button,
@@ -19,13 +17,14 @@ import {
   Spinner,
 } from '@/components';
 import { Page } from '@/components/layout/page-layout';
-import { useGetPosition } from '@/hooks';
+import { GetPositionPermissinDialog } from '@/components/shared/get-position';
 
 export const MarketPage = () => {
-  const [open, setOpen] = useState(false);
-  const { location, getPosition, permissionStatus } = useGetPosition();
   const [search, setSearch] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const { data, isFetching, setParams, params } = useGetMarketListQuery();
+
   const handleSearchDebounced = useDebouncedCallback((search: string) => {
     setParams((prev) => ({ ...prev, search }));
   }, 500);
@@ -34,45 +33,6 @@ export const MarketPage = () => {
     setSearch(e.target.value);
     handleSearchDebounced(e.target.value);
   };
-
-  const [params, setParams] = useState<GetMarketListParams>({
-    location: {
-      latitude: location?.latitude ?? 0,
-      longitude: location?.longitude ?? 0,
-    },
-    expand: false,
-    pageIndex: 0,
-    pageSize: 10,
-    orderBy: 'distance',
-    orderDirection: 'asc',
-  });
-
-  useEffect(() => {
-    if (permissionStatus === 'granted') {
-      getPosition();
-      return;
-    }
-
-    if (permissionStatus === 'loading') {
-      return;
-    }
-
-    setOpen(true);
-  }, [permissionStatus]);
-
-  useEffect(() => {
-    if (location) {
-      setParams((prev) => ({
-        ...prev,
-        location: {
-          ...prev.location,
-          ...location,
-        },
-      }));
-    }
-  }, [location]);
-
-  const { data, isFetching } = useGetMarketListQuery(params);
 
   return (
     <>
@@ -128,7 +88,7 @@ export const MarketPage = () => {
           </div>
         </Page.Header>
         <Page.Content className="px-4 rounded-lg">
-          <MarketList paginationParams={params} />
+          <MarketList />
         </Page.Content>
         <Page.Footer className="p-4">
           <CustomPagination
@@ -141,7 +101,7 @@ export const MarketPage = () => {
           />
         </Page.Footer>
       </Page>
-      <LocationPermissionDialog open={open} onOpenChange={setOpen} />
+      <GetPositionPermissinDialog />
     </>
   );
 };

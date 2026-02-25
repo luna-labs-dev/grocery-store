@@ -9,6 +9,7 @@ export interface LocationData {
 export type CustomPermissionState = PermissionState | 'prompted' | 'loading';
 
 export const useGetPosition = () => {
+  const [permissionDialogOpen, setPermissionDialogOpen] = useState(false);
   const [location, setLocation] = useState<LocationData>({});
   const [permissionStatus, setPermissionStatus] =
     useState<CustomPermissionState>('loading');
@@ -27,6 +28,20 @@ export const useGetPosition = () => {
       };
     });
   }, []);
+
+  useEffect(() => {
+    if (permissionStatus === 'granted') {
+      setPermissionDialogOpen(false);
+      getPosition();
+      return;
+    }
+
+    if (permissionStatus === 'loading') {
+      return;
+    }
+
+    setPermissionDialogOpen(true);
+  }, [permissionStatus]);
 
   const getPosition = () => {
     if (!navigator.geolocation) {
@@ -72,5 +87,11 @@ export const useGetPosition = () => {
     getPosition();
   };
 
-  return { location, getPosition, permissionStatus, promptUser };
+  return {
+    location,
+    permissionStatus,
+    promptUser,
+    permissionDialogOpen,
+    setPermissionDialogOpen,
+  };
 };

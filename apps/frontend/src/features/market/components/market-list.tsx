@@ -1,5 +1,4 @@
 import { Store } from 'lucide-react';
-import type { GetMarketListParams } from '../domain';
 import { MarketItem } from './market-item';
 import {
   Empty,
@@ -66,12 +65,8 @@ export function MarketListEmpty() {
   );
 }
 
-interface MarketListProps {
-  paginationParams: GetMarketListParams;
-}
-
-export const MarketList = ({ paginationParams }: MarketListProps) => {
-  const { data, isLoading, isError } = useGetMarketListQuery(paginationParams);
+export const MarketList = () => {
+  const { data, isLoading, isError } = useGetMarketListQuery();
 
   if (isLoading) {
     return <MarketListLoading />;

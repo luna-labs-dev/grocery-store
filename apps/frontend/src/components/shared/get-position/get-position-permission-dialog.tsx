@@ -1,4 +1,5 @@
 import { Icon } from '@iconify/react';
+import { useGetPosition } from './use-get-position';
 import {
   Button,
   Dialog,
@@ -9,21 +10,20 @@ import {
   DialogTitle,
   Spinner,
 } from '@/components';
-import { useGetPosition } from '@/hooks';
 
-interface Props {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-export const LocationPermissionDialog = ({ open, onOpenChange }: Props) => {
-  const { permissionStatus, promptUser } = useGetPosition();
+export const GetPositionPermissinDialog = () => {
+  const {
+    permissionStatus,
+    promptUser,
+    permissionDialogOpen,
+    setPermissionDialogOpen,
+  } = useGetPosition();
 
   const handleAllow = () => {
     promptUser();
-    onOpenChange(false);
   };
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={permissionDialogOpen} onOpenChange={setPermissionDialogOpen}>
       {/* <DialogTrigger>Abrir</DialogTrigger> */}
       <DialogContent showCloseButton={false}>
         <DialogHeader>

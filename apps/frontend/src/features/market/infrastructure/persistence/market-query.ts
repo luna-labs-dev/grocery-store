@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { useGetPosition } from '@/components/shared/get-position';
 import { useQueryFactory } from '@/domain';
 import type {
   GetMarketByIdParams,
@@ -10,7 +12,20 @@ import {
   httpGetMarketList,
 } from '@/features/market/infrastructure';
 
-export const useGetMarketListQuery = (params: GetMarketListParams) => {
+export const useGetMarketListQuery = () => {
+  const { location } = useGetPosition();
+  const [params, setParams] = useState<GetMarketListParams>({
+    location: {
+      latitude: location?.latitude ?? 0,
+      longitude: location?.longitude ?? 0,
+    },
+    expand: false,
+    pageIndex: 0,
+    pageSize: 10,
+    orderBy: 'distance',
+    orderDirection: 'asc',
+  });
+
   const query = useQueryFactory<GetMarketListParams, MarketListResponse>({
     queryKey: 'get-market-list',
     queryFunction: {
@@ -23,7 +38,23 @@ export const useGetMarketListQuery = (params: GetMarketListParams) => {
       params.location?.latitude !== 0 && params.location?.longitude !== 0,
   });
 
-  return { ...query };
+  useEffect(() => {
+    if (location) {
+      setParams((prev) => ({
+        ...prev,
+        location: {
+          ...prev.location,
+          ...location,
+        },
+      }));
+    }
+  }, [location]);
+
+  return {
+    ...query,
+    setParams,
+    params,
+  };
 };
 
 export const useGetMarketByIdQuery = (params: GetMarketByIdParams) => {
