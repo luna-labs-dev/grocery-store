@@ -1,4 +1,4 @@
-## v2.2.0 (2026-02-24)
+## v2.2.0-test-5 (2026-02-25)
 
 ### Feat
 
@@ -11,6 +11,9 @@
 
 ### Refactor
 
+- add drizzle migrations folder
+- get rid of useless code and fix typescript errors
+- isolate get-position code and getMarketList related query semanticaly
 - lint
 - adjust average logic
 - add  location permission flow
@@ -29,8 +32,6 @@
 
 ## v2.1.0 (2026-02-19)
 
-## v2.0.1-test-1 (2026-02-19)
-
 ### Feat
 
 - add amount-handler helper function
@@ -44,6 +45,9 @@
 ### Refactor
 
 - fix zod validation for number fields
+- fix zod validation for number fields
+
+## v1.0.4 (2026-02-16)
 
 ## v2.0.0 (2026-02-18)
 
