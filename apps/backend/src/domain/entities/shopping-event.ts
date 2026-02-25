@@ -318,7 +318,12 @@ export class ShoppingEvent extends Entity<ShoppingEventProps> {
    */
   private calculateAveragePrice(): void {
     // Determine which value to use for average calculation (Paid > Wholesale)
-    const paidValue = this.props.totalPaid ?? this.props.wholesaleTotal;
+    const paidValue =
+      (this.props.totalPaid ?? 0) > 0
+        ? this.props.totalPaid
+        : this.props.wholesaleTotal;
+
+    this.props.averagePricePerUnit = 0;
 
     // Avoid division by zero
     if (this.props.totalItemsQuantity && this.props.totalItemsQuantity > 0) {
@@ -326,8 +331,6 @@ export class ShoppingEvent extends Entity<ShoppingEventProps> {
         (paidValue ?? 0) / this.props.totalItemsQuantity;
       return;
     }
-
-    this.props.averagePricePerUnit = 0;
   }
 
   /**
