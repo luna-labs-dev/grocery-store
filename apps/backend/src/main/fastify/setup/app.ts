@@ -3,6 +3,7 @@ import { type FastifyTypeProvider, fastify } from 'fastify';
 import { v4 as uuidv4 } from 'uuid';
 import { env } from '../../config/env';
 import { setupDocsAndPrototipation } from './docs-and-prototipation';
+import { setupErrorHandler } from './error-handler';
 import { setupLogger } from './logger';
 import { setupServer } from './server';
 
@@ -16,6 +17,8 @@ export const setupFastifyApp = () => {
 
   setupServer(app);
   setupDocsAndPrototipation(app);
+
+  app.setErrorHandler(setupErrorHandler);
 
   // Clerk
   app.register(clerkPlugin, {
