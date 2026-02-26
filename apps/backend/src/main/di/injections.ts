@@ -1,6 +1,8 @@
 import { container } from 'tsyringe';
 import { env } from '../config/env';
-import { injection } from './injection-codes';
+import type { FastifyTypedInstance } from '../fastify/types';
+import { app } from '../fastify-server';
+import { injection } from './injection-tokens';
 import {
   AddFamilyController,
   AddProductToCartController,
@@ -19,6 +21,9 @@ import {
   UpdateProductInCartController,
   WebhookExternalAuthAddUserController,
 } from '@/api';
+import type { FastifyController } from '@/api/contracts/fastify-controller';
+import { FamilyController } from '@/api/controllers/family-controller';
+import { MarketController } from '@/api/controllers/market-controller';
 import {
   DbAddFamily,
   DbAddProductToCart,
@@ -73,131 +78,143 @@ import {
   GooglePlacesHttpClient,
 } from '@/infrastructure';
 
-const { infra, usecases, controllers } = injection;
+const { application, infra, usecases, controllers } = injection;
 const { googlePlaces } = env;
 
-// Infra
-container.register<MarketRepositories>(
-  infra.marketRepositories,
-  DrizzleMarketRepository,
-);
-container.register<UserRepositories>(
-  infra.userRepositories,
-  DrizzleUserRepository,
-);
-container.register<FamilyRepositories>(
-  infra.familyRepositories,
-  DrizzleFamilyRepository,
-);
-container.register<ShoppingEventRepositories>(
-  infra.shoppingEventRepositories,
-  DrizzleShoppingEventRepository,
-);
-container.register<ProductRepositories>(
-  infra.productRepositories,
-  DrizzleProductRepository,
-);
+export const registerInjections = () => {
+  // Application
+  container.registerInstance<FastifyTypedInstance>(application.fastify, app);
 
-container.register<GooglePlacesHttpClient>(infra.placesHttpClient, {
-  useFactory: () => {
-    const { apiKey, baseURL } = googlePlaces;
-    return new GooglePlacesHttpClient({
-      apiKey,
-      baseURL,
-    });
-  },
-});
-container.register<Places>(infra.places, GooglePlaces);
+  // Infra
+  container.register<MarketRepositories>(
+    infra.marketRepositories,
+    DrizzleMarketRepository,
+  );
+  container.register<UserRepositories>(
+    infra.userRepositories,
+    DrizzleUserRepository,
+  );
+  container.register<FamilyRepositories>(
+    infra.familyRepositories,
+    DrizzleFamilyRepository,
+  );
+  container.register<ShoppingEventRepositories>(
+    infra.shoppingEventRepositories,
+    DrizzleShoppingEventRepository,
+  );
+  container.register<ProductRepositories>(
+    infra.productRepositories,
+    DrizzleProductRepository,
+  );
 
-// Usecases
-container.register<GetMarketList>(usecases.getMarketList, DbGetMarketList);
-container.register<GetMarketById>(usecases.getMarketById, DbGetMarketById);
-container.register<StartShoppingEvent>(
-  usecases.startShoppingEvent,
-  DbStartShoppingEvent,
-);
-container.register<EndShoppingEvent>(
-  usecases.endShoppingEvent,
-  DbEndShoppingEvent,
-);
-container.register<GetShoppingEventList>(
-  usecases.getShoppingEventList,
-  DbGetShoppingEventList,
-);
-container.register<GetShoppingEventById>(
-  usecases.getShoppingEventById,
-  DbGetShoppingEventById,
-);
-container.register<AddProductToCart>(
-  usecases.addProductToCart,
-  DbAddProductToCart,
-);
-container.register<UpdateProductInCart>(
-  usecases.updateProductInCart,
-  DbUpdateProductInCart,
-);
-container.register<RemoveProductFromCart>(
-  usecases.removeProductFromCart,
-  DbRemoveProductFromCart,
-);
-container.register<GetUser>(usecases.getUser, DbGetUser);
-container.register<AddUser>(usecases.addUser, DbAddUser);
-container.register<AddFamily>(usecases.addFamily, DbAddFamily);
-container.register<JoinFamily>(usecases.joinFamily, DbJoinFamily);
-container.register<LeaveFamily>(usecases.leaveFamily, DbLeaveFamily);
-container.register<GetFamily>(usecases.getFamily, DbGetFamily);
-container.register<RemoveFamilyMember>(
-  usecases.removeFamilyMember,
-  DbRemoveFamilyMember,
-);
+  container.register<GooglePlacesHttpClient>(infra.placesHttpClient, {
+    useFactory: () => {
+      const { apiKey, baseURL } = googlePlaces;
+      return new GooglePlacesHttpClient({
+        apiKey,
+        baseURL,
+      });
+    },
+  });
+  container.register<Places>(infra.places, GooglePlaces);
 
-// Api
-container.register<Controller>(
-  controllers.getMarketList,
-  GetMarketListController,
-);
-container.register<Controller>(
-  controllers.getMarketById,
-  GetMarketByIdController,
-);
-container.register<Controller>(
-  controllers.startShoppingEvent,
-  StartShoppingEventController,
-);
-container.register<Controller>(
-  controllers.endShoppingEvent,
-  EndShoppingEventController,
-);
-container.register<Controller>(
-  controllers.getShoppingEventList,
-  GetShoppingEventListController,
-);
-container.register<Controller>(
-  controllers.getShoppingEventById,
-  GetShoppingEventByIdController,
-);
-container.register<Controller>(
-  controllers.addProductToCart,
-  AddProductToCartController,
-);
-container.register<Controller>(
-  controllers.updateProductInCart,
-  UpdateProductInCartController,
-);
-container.register<Controller>(
-  controllers.removeProductFromCart,
-  RemoveProductFromCartController,
-);
-container.register<Controller>(controllers.addFamily, AddFamilyController);
-container.register<Controller>(controllers.joinFamily, JoinFamilyController);
-container.register<Controller>(controllers.leaveFamily, LeaveFamilyController);
-container.register<Controller>(controllers.getFamily, GetFamilyController);
-container.register<Controller>(
-  controllers.removeFamilyMember,
-  RemoveFamilyMemberController,
-);
+  // Usecases
+  container.register<GetMarketList>(usecases.getMarketList, DbGetMarketList);
+  container.register<GetMarketById>(usecases.getMarketById, DbGetMarketById);
+  container.register<StartShoppingEvent>(
+    usecases.startShoppingEvent,
+    DbStartShoppingEvent,
+  );
+  container.register<EndShoppingEvent>(
+    usecases.endShoppingEvent,
+    DbEndShoppingEvent,
+  );
+  container.register<GetShoppingEventList>(
+    usecases.getShoppingEventList,
+    DbGetShoppingEventList,
+  );
+  container.register<GetShoppingEventById>(
+    usecases.getShoppingEventById,
+    DbGetShoppingEventById,
+  );
+  container.register<AddProductToCart>(
+    usecases.addProductToCart,
+    DbAddProductToCart,
+  );
+  container.register<UpdateProductInCart>(
+    usecases.updateProductInCart,
+    DbUpdateProductInCart,
+  );
+  container.register<RemoveProductFromCart>(
+    usecases.removeProductFromCart,
+    DbRemoveProductFromCart,
+  );
+  container.register<GetUser>(usecases.getUser, DbGetUser);
+  container.register<AddUser>(usecases.addUser, DbAddUser);
+  container.register<AddFamily>(usecases.addFamily, DbAddFamily);
+  container.register<JoinFamily>(usecases.joinFamily, DbJoinFamily);
+  container.register<LeaveFamily>(usecases.leaveFamily, DbLeaveFamily);
+  container.register<GetFamily>(usecases.getFamily, DbGetFamily);
+  container.register<RemoveFamilyMember>(
+    usecases.removeFamilyMember,
+    DbRemoveFamilyMember,
+  );
 
-container.register<Controller>(
-  controllers.webhooks.externalAuthService.addUser,
-  WebhookExternalAuthAddUserController,
-);
+  // Api
+  container.register<Controller>(
+    controllers.getMarketList,
+    GetMarketListController,
+  );
+  container.register<Controller>(
+    controllers.getMarketById,
+    GetMarketByIdController,
+  );
+  container.register<Controller>(
+    controllers.startShoppingEvent,
+    StartShoppingEventController,
+  );
+  container.register<Controller>(
+    controllers.endShoppingEvent,
+    EndShoppingEventController,
+  );
+  container.register<Controller>(
+    controllers.getShoppingEventList,
+    GetShoppingEventListController,
+  );
+  container.register<Controller>(
+    controllers.getShoppingEventById,
+    GetShoppingEventByIdController,
+  );
+  container.register<Controller>(
+    controllers.addProductToCart,
+    AddProductToCartController,
+  );
+  container.register<Controller>(
+    controllers.updateProductInCart,
+    UpdateProductInCartController,
+  );
+  container.register<Controller>(
+    controllers.removeProductFromCart,
+    RemoveProductFromCartController,
+  );
+  container.register<Controller>(controllers.addFamily, AddFamilyController);
+  container.register<Controller>(controllers.joinFamily, JoinFamilyController);
+  container.register<Controller>(
+    controllers.leaveFamily,
+    LeaveFamilyController,
+  );
+  container.register<Controller>(controllers.getFamily, GetFamilyController);
+  container.register<Controller>(
+    controllers.removeFamilyMember,
+    RemoveFamilyMemberController,
+  );
+
+  container.register<Controller>(
+    controllers.webhooks.externalAuthService.addUser,
+    WebhookExternalAuthAddUserController,
+  );
+
+  // Fastify Controllers
+  container.register<FastifyController>(controllers.fastify, FamilyController);
+  container.register<FastifyController>(controllers.fastify, MarketController);
+};

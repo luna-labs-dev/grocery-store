@@ -5,7 +5,7 @@ config();
 
 const envVariables = z.object({
   // App
-  ENVIRONMENT: z.enum(['local', 'dev', 'prod']).default('local'),
+  NODE_ENV: z.enum(['local', 'development', 'production']).default('local'),
   LOG_LEVEL: z.enum(['dev', 'debug', 'prod']).default('dev'),
   PORT: z.coerce.number().default(8000),
   ORIGINS: z.string(),
@@ -44,7 +44,7 @@ const getOrigin = (origins: string): string | string[] => {
 
 const {
   // App
-  ENVIRONMENT,
+  NODE_ENV,
   LOG_LEVEL,
   PORT,
   ORIGINS,
@@ -70,10 +70,11 @@ const {
 
 export const env = {
   baseConfig: {
-    environment: ENVIRONMENT,
+    environment: NODE_ENV,
     logLevel: LOG_LEVEL,
     port: PORT,
     origins: getOrigin(ORIGINS),
+    host: '0.0.0.0',
   },
   database: {
     baseUrl: `postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}`,
