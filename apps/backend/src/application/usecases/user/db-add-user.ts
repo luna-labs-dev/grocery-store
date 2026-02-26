@@ -11,7 +11,7 @@ import {
   User,
   UserAlreadyExistsError,
 } from '@/domain';
-import { injection } from '@/main/di/injection-codes';
+import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
 

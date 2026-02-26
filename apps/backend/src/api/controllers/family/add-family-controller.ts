@@ -8,7 +8,7 @@ import {
   controllerErrorHandling,
   controllerValidationHandling,
 } from '@/main/decorators';
-import { injection } from '@/main/di/injection-codes';
+import { injection } from '@/main/di/injection-tokens';
 
 const { usecases } = injection;
 

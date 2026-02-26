@@ -4,7 +4,7 @@ import { authWebhooksTypeList } from './types';
 import type { Controller, HttpResponse } from '@/api/contracts';
 import { mapErrorByCode, ok } from '@/api/helpers';
 import type { AddUser } from '@/domain';
-import { injection } from '@/main/di/injection-codes';
+import { injection } from '@/main/di/injection-tokens';
 
 const { usecases } = injection;
 

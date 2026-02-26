@@ -16,7 +16,7 @@ import {
   type UpdateProductInCartErrors,
   type UpdateProductInCartParams,
 } from '@/domain';
-import { injection } from '@/main/di/injection-codes';
+import { injection } from '@/main/di/injection-tokens';
 
 type UpdateProductInCartRepositories = GetShoppingEventByIdRepository &
   UpdateShoppingEventRepository;

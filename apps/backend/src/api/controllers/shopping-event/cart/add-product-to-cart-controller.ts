@@ -8,7 +8,7 @@ import {
   controllerFamilyBarrierHandling,
   controllerValidationHandling,
 } from '@/main/decorators';
-import { injection } from '@/main/di/injection-codes';
+import { injection } from '@/main/di/injection-tokens';
 
 export const addProductToCartRequestSchema = z.object({
   user: z.string(),
