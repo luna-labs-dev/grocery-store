@@ -11,7 +11,7 @@ import type {
   Places,
 } from '@/application';
 import { env } from '@/main/config/env';
-import { injection } from '@/main/di/injection-codes';
+import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
 const { domain } = env;

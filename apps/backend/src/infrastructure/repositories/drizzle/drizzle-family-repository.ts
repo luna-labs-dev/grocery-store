@@ -9,7 +9,7 @@ import type {
   UpdateUserRepository,
 } from '@/application';
 import { type Either, Family, left, right, User } from '@/domain';
-import { injection } from '@/main/di/injection-codes';
+import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
 

@@ -1,4 +1,7 @@
 export const injection = {
+  application: {
+    fastify: 'fastify-app',
+  },
   infra: {
     marketRepositories: 'market-repositories',
     userRepositories: 'user-repositories',
@@ -28,6 +31,7 @@ export const injection = {
     removeFamilyMember: 'remove-family-member-usecase',
   },
   controllers: {
+    fastify: 'fastify-controllers',
     getMarketList: 'get-market-list-controller',
     getMarketById: 'get-market-by-id-controller',
     startShoppingEvent: 'start-shopping-event-controller',

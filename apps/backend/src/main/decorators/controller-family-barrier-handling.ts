@@ -1,5 +1,5 @@
 import { container } from 'tsyringe';
-import { injection } from '../di/injection-codes';
+import { injection } from '../di/injection-tokens';
 import type { Constructor } from './decorator-types';
 import { type Controller, unauthorized } from '@/api';
 import type { GetUser } from '@/domain';
