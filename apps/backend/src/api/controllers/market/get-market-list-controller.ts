@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import { z } from 'zod';
 import type { Controller, HttpResponse } from '@/api/contracts';
-import { mapErrorByCode, ok } from '@/api/helpers';
+import { ok } from '@/api/helpers';
 import type { GetMarketList } from '@/domain';
 import {
   controllerErrorHandling,
@@ -55,7 +55,7 @@ export class GetMarketListController implements Controller {
       expand,
     } = request;
 
-    const getMarketListResult = await this.getMarketList.execute({
+    const market = await this.getMarketList.execute({
       location,
       search,
       pageIndex,
@@ -64,12 +64,6 @@ export class GetMarketListController implements Controller {
       orderDirection,
       expand,
     });
-
-    if (getMarketListResult.isLeft()) {
-      return mapErrorByCode(getMarketListResult.value);
-    }
-
-    const market = getMarketListResult.value;
 
     const response = {
       total: market.total,

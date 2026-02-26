@@ -1,16 +1,14 @@
 import { inject, injectable } from 'tsyringe';
 import type { GetShoppingEventByIdRepository } from '../../contracts';
-import {
-  type Either,
-  type GetShoppingEventById,
-  type GetShoppingEventByIdErrors,
-  type GetShoppingEventByIdParams,
-  left,
-  right,
-  type ShoppingEvent,
-  ShoppingEventNotFoundError,
-  UnexpectedError,
+import type {
+  GetShoppingEventById,
+  GetShoppingEventByIdParams,
+  ShoppingEvent,
 } from '@/domain';
+import {
+  ShoppingEventNotFoundException,
+  UnexpectedException,
+} from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
@@ -25,9 +23,7 @@ export class DbGetShoppingEventById implements GetShoppingEventById {
   execute = async ({
     familyId,
     shoppingEventId,
-  }: GetShoppingEventByIdParams): Promise<
-    Either<GetShoppingEventByIdErrors, ShoppingEvent>
-  > => {
+  }: GetShoppingEventByIdParams): Promise<ShoppingEvent> => {
     try {
       const shoppingEvent = await this.repository.getById({
         shoppingEventId,
@@ -35,14 +31,14 @@ export class DbGetShoppingEventById implements GetShoppingEventById {
       });
 
       if (!shoppingEvent) {
-        return left(new ShoppingEventNotFoundError());
+        throw new ShoppingEventNotFoundException();
       }
 
-      return right(shoppingEvent);
+      return shoppingEvent;
     } catch (error) {
       console.error(error);
 
-      return left(new UnexpectedError());
+      throw new UnexpectedException();
     }
   };
 }

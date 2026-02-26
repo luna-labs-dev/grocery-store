@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import { z } from 'zod';
 import type { Controller, HttpResponse } from '@/api/contracts';
-import { mapErrorByCode, noContent } from '@/api/helpers';
+import { noContent } from '@/api/helpers';
 import type { RemoveProductFromCart } from '@/domain';
 import {
   controllerErrorHandling,
@@ -43,10 +43,6 @@ export class RemoveProductFromCartController implements Controller {
         shoppingEventId,
         productId,
       });
-
-    if (removeProductFromCartResult.isLeft()) {
-      return mapErrorByCode(removeProductFromCartResult.value);
-    }
 
     return noContent();
   }

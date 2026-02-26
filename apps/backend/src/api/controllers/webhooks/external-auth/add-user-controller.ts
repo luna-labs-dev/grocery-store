@@ -2,7 +2,7 @@ import { inject, injectable } from 'tsyringe';
 import { z } from 'zod';
 import { authWebhooksTypeList } from './types';
 import type { Controller, HttpResponse } from '@/api/contracts';
-import { mapErrorByCode, ok } from '@/api/helpers';
+import { ok } from '@/api/helpers';
 import type { AddUser } from '@/domain';
 import { injection } from '@/main/di/injection-tokens';
 
@@ -32,13 +32,9 @@ export class WebhookExternalAuthAddUserController implements Controller {
   ): Promise<HttpResponse> {
     const { data } = request;
 
-    const result = await this.addUser.execute({
+    await this.addUser.execute({
       externalId: data.id,
     });
-
-    if (result.isLeft()) {
-      return mapErrorByCode(result.value);
-    }
 
     return ok();
   }

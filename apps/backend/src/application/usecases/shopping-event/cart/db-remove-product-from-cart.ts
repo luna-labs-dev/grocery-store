@@ -4,17 +4,15 @@ import type {
   UpdateShoppingEventRepository,
 } from '../../../contracts';
 import {
-  type Either,
-  left,
   ProductNotFoundError,
   type RemoveProductFromCart,
-  type RemoveProductFromCartErrors,
   type RemoveProductFromCartParams,
-  right,
-  ShoppingEventAlreadyEndedError,
-  ShoppingEventNotFoundError,
-  UnexpectedError,
 } from '@/domain';
+import {
+  ShoppingEventAlreadyEndedException,
+  ShoppingEventNotFoundException,
+  UnexpectedException,
+} from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
 type RemoveProductFromCartRepositories = GetShoppingEventByIdRepository &
@@ -33,9 +31,7 @@ export class DbRemoveProductFromCart implements RemoveProductFromCart {
     familyId,
     shoppingEventId,
     productId,
-  }: RemoveProductFromCartParams): Promise<
-    Either<RemoveProductFromCartErrors, void>
-  > => {
+  }: RemoveProductFromCartParams): Promise<void> => {
     try {
       // Get shoppingEvent by ID
       const shoppingEvent = await this.repository.getById({
@@ -45,16 +41,11 @@ export class DbRemoveProductFromCart implements RemoveProductFromCart {
 
       // Return ShoppingEventNotFoundError if shoppingEvent is undefined
       if (!shoppingEvent) {
-        return left(new ShoppingEventNotFoundError());
+        throw new ShoppingEventNotFoundException();
       }
 
       if (shoppingEvent.status !== 'ONGOING') {
-        return left(
-          new ShoppingEventAlreadyEndedError(
-            shoppingEvent.status,
-            shoppingEvent.id,
-          ),
-        );
+        throw new ShoppingEventAlreadyEndedException();
       }
 
       // Retrieve Product from shoppingEvent
@@ -62,7 +53,7 @@ export class DbRemoveProductFromCart implements RemoveProductFromCart {
 
       // Return ProductNotFoundError if no product is found
       if (!product) {
-        return left(new ProductNotFoundError());
+        throw new ProductNotFoundError();
       }
 
       // remove the product from the list
@@ -72,11 +63,11 @@ export class DbRemoveProductFromCart implements RemoveProductFromCart {
       await this.repository.update(shoppingEvent);
 
       // Return right void
-      return right(undefined);
+      return;
     } catch (error) {
       console.error(error);
 
-      return left(new UnexpectedError());
+      throw new UnexpectedException();
     }
   };
 }

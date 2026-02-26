@@ -8,7 +8,8 @@ import type {
   GetFamilyByInviteCodeRepositoryParams,
   UpdateUserRepository,
 } from '@/application';
-import { type Either, Family, left, right, User } from '@/domain';
+import { Family, User } from '@/domain';
+import { FamilyAlreadyExistsException } from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
@@ -20,7 +21,7 @@ export class DrizzleFamilyRepository implements FamilyRepositories {
     private readonly userRepositories: UpdateUserRepository,
   ) {}
 
-  add = async (family: Family): Promise<Either<void, void>> => {
+  add = async (family: Family): Promise<void> => {
     try {
       await db.insert(schema.familyTable).values({
         id: family.id,
@@ -32,10 +33,10 @@ export class DrizzleFamilyRepository implements FamilyRepositories {
         createdBy: family.createdBy,
       });
       await this.userRepositories.update(family.owner);
-      return right(undefined);
     } catch (error: any) {
       if (error.code === '23505') {
-        return left(undefined);
+        // If a family with the same name already exists, throw an exception
+        throw new FamilyAlreadyExistsException();
       }
       throw error;
     }

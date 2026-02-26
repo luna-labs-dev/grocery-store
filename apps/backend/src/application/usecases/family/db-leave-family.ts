@@ -3,17 +3,12 @@ import type {
   FamilyRepositories,
   UserRepositories,
 } from '@/application/contracts';
+import type { LeaveFamily, LeaveFamilyParams } from '@/domain';
 import {
-  type Either,
-  type LeaveFamily,
-  type LeaveFamilyErrors,
-  type LeaveFamilyParams,
-  left,
-  right,
-  UnexpectedError,
-  UserNotAFamilyMemberError,
-  UserNotFoundError,
-} from '@/domain';
+  UnexpectedException,
+  UserNotAFamilyMemberException,
+  UserNotFoundException,
+} from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
@@ -26,29 +21,25 @@ export class DbLeaveFamily implements LeaveFamily {
     @inject(infra.familyRepositories)
     readonly _familyRepository: FamilyRepositories,
   ) {}
-  async execute({
-    userId,
-  }: LeaveFamilyParams): Promise<Either<LeaveFamilyErrors, void>> {
+  async execute({ userId }: LeaveFamilyParams): Promise<void> {
     try {
       const user = await this.userRepository.getByExternalId(userId);
 
       if (!user) {
-        return left(new UserNotFoundError());
+        throw new UserNotFoundException();
       }
 
       if (!user.family) {
-        return left(new UserNotAFamilyMemberError());
+        throw new UserNotAFamilyMemberException();
       }
 
       user.familyId = undefined;
 
       await this.userRepository.update(user);
-
-      return right(undefined);
     } catch (error) {
       console.error(error);
 
-      return left(new UnexpectedError());
+      throw new UnexpectedException();
     }
   }
 }

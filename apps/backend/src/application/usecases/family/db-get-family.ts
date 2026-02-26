@@ -1,19 +1,13 @@
 import { clerkClient } from '@clerk/express';
 import { inject, injectable } from 'tsyringe';
 import type { UserRepositories } from '@/application/contracts';
+import type { Family, GetFamily, GetFamilyParams } from '@/domain';
 import {
-  type Either,
-  type Family,
-  FamilyWithoutMembersError,
-  type GetFamily,
-  type GetFamilyErrors,
-  type GetFamilyParams,
-  left,
-  right,
-  UnexpectedError,
-  UserNotAFamilyMemberError,
-  UserNotFoundError,
-} from '@/domain';
+  FamilyWithoutMembersException,
+  UnexpectedException,
+  UserNotAFamilyMemberException,
+  UserNotFoundException,
+} from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
@@ -26,22 +20,20 @@ export class DbGetFamily implements GetFamily {
     // @inject(infra.userInfo) private readonly userinfo: UserInfo,
   ) {}
 
-  async execute({
-    userId,
-  }: GetFamilyParams): Promise<Either<GetFamilyErrors, Family>> {
+  async execute({ userId }: GetFamilyParams): Promise<Family> {
     try {
       const user = await this.userRepository.getByExternalId(userId);
 
       if (!user) {
-        return left(new UserNotFoundError());
+        throw new UserNotFoundException();
       }
 
       if (!user.family) {
-        return left(new UserNotAFamilyMemberError());
+        throw new UserNotAFamilyMemberException();
       }
 
       if (!user.family.members) {
-        return left(new FamilyWithoutMembersError());
+        throw new FamilyWithoutMembersException();
       }
 
       for (const member of user.family.members) {
@@ -60,11 +52,11 @@ export class DbGetFamily implements GetFamily {
         picture: userInfo.imageUrl,
       });
 
-      return right(user.family);
+      return user.family;
     } catch (error) {
       console.error(error);
 
-      return left(new UnexpectedError());
+      throw new UnexpectedException();
     }
   }
 }

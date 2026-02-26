@@ -19,20 +19,9 @@ export const controllerFamilyBarrierHandling = () => {
           return unauthorized();
         }
 
-        const dbUserResult = await getUser.execute({
+        const dbUser = await getUser.execute({
           externalId: externalUserId,
         });
-
-        if (dbUserResult.isLeft()) {
-          console.error(
-            `[AuthSync] User authenticated in Clerk (id: ${externalUserId}) but not found in local database. Possible webhook sync delay or failure.`,
-          );
-          return unauthorized({
-            requiredAction: 'register-user',
-          });
-        }
-
-        const dbUser = dbUserResult.value;
 
         if (!dbUser.familyId) {
           // if user is not member of any family, return unauthorized with required action to add user to family

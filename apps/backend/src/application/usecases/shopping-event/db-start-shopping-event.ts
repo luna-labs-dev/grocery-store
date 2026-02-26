@@ -5,17 +5,15 @@ import type {
   GetMarketByIdRepository,
 } from '@/application/contracts';
 import {
-  type Either,
-  left,
-  MarketNotFoundError,
-  right,
   ShoppingEvent,
   type StartShoppingEvent,
-  type StartShoppingEventErrors,
   type StartShoppingEventParams,
-  UnexpectedError,
 } from '@/domain';
 import { Products } from '@/domain/entities/products';
+import {
+  MarketNotFoundException,
+  UnexpectedException,
+} from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
@@ -34,9 +32,7 @@ export class DbStartShoppingEvent implements StartShoppingEvent {
     user,
     familyId,
     marketId,
-  }: StartShoppingEventParams): Promise<
-    Either<StartShoppingEventErrors, ShoppingEvent>
-  > => {
+  }: StartShoppingEventParams): Promise<ShoppingEvent> => {
     try {
       // Calls GetMarketById
       const market = await this.marketRepository.getById({
@@ -45,7 +41,7 @@ export class DbStartShoppingEvent implements StartShoppingEvent {
 
       // If Market doesnt exists returns MarketNotFoundError
       if (!market) {
-        return left(new MarketNotFoundError());
+        throw new MarketNotFoundException();
       }
 
       // Create ShoppingEvent instance
@@ -64,11 +60,11 @@ export class DbStartShoppingEvent implements StartShoppingEvent {
       await this.shoppingEventRepository.add(shoppingEvent);
 
       // Returns ShoppingEvent
-      return right(shoppingEvent);
+      return shoppingEvent;
     } catch (error) {
       console.error(error);
 
-      return left(new UnexpectedError());
+      throw new UnexpectedException();
     }
   };
 }

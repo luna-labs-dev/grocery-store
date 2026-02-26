@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import { z } from 'zod';
 import type { Controller, HttpResponse } from '@/api/contracts';
-import { mapErrorByCode, ok } from '@/api/helpers';
+import { ok } from '@/api/helpers';
 import type { RemoveFamilyMember } from '@/domain';
 import {
   controllerErrorHandling,
@@ -33,14 +33,10 @@ export class RemoveFamilyMemberController implements Controller {
     user,
     userToBeRemovedId,
   }: RemoveFamilyMemberControllerRequest): Promise<HttpResponse> {
-    const result = await this.removeFamilyController.execute({
+    await this.removeFamilyController.execute({
       userId: user,
-      userToBeRemovedId,
+      targetUserId: userToBeRemovedId,
     });
-
-    if (result.isLeft()) {
-      return mapErrorByCode(result.value);
-    }
 
     return ok();
   }

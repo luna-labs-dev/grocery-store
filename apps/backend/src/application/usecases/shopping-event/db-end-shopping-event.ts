@@ -3,19 +3,17 @@ import type {
   GetShoppingEventByIdRepository,
   UpdateShoppingEventRepository,
 } from '../../contracts';
-import {
-  type Either,
-  EmptyCartError,
-  type EndShoppingEvent,
-  type EndShoppingEventErrors,
-  type EndShoppingEventParams,
-  left,
-  right,
-  type ShoppingEvent,
-  ShoppingEventAlreadyEndedError,
-  ShoppingEventNotFoundError,
-  UnexpectedError,
+import type {
+  EndShoppingEvent,
+  EndShoppingEventParams,
+  ShoppingEvent,
 } from '@/domain';
+import {
+  ShoppingEventAlreadyEndedException,
+  ShoppingEventEmptyCartException,
+  ShoppingEventNotFoundException,
+  UnexpectedException,
+} from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
 type EndShoppingEventRepositories = GetShoppingEventByIdRepository &
@@ -33,9 +31,7 @@ export class DbEndShoppingEvent implements EndShoppingEvent {
     shoppingEventId,
     familyId,
     totalPaid,
-  }: EndShoppingEventParams): Promise<
-    Either<EndShoppingEventErrors, ShoppingEvent>
-  > => {
+  }: EndShoppingEventParams): Promise<ShoppingEvent> => {
     try {
       // Get Shopping Event by Id
       const shoppingEvent = await this.shoppingRepository.getById({
@@ -45,20 +41,15 @@ export class DbEndShoppingEvent implements EndShoppingEvent {
 
       // Returns ShoppingEventNotFoundError if ShoppingEvent is undefined
       if (!shoppingEvent) {
-        return left(new ShoppingEventNotFoundError());
+        throw new ShoppingEventNotFoundException();
       }
 
       if (shoppingEvent.status !== 'ONGOING') {
-        return left(
-          new ShoppingEventAlreadyEndedError(
-            shoppingEvent.status,
-            shoppingEvent.id,
-          ),
-        );
+        throw new ShoppingEventAlreadyEndedException();
       }
 
       if (shoppingEvent.products.getItems().length <= 0) {
-        return left(new EmptyCartError());
+        throw new ShoppingEventEmptyCartException();
       }
 
       // Update ShoppingEvent object with new values
@@ -68,11 +59,11 @@ export class DbEndShoppingEvent implements EndShoppingEvent {
       await this.shoppingRepository.update(shoppingEvent);
 
       // Returns Updated ShoppingEvent
-      return right(shoppingEvent);
+      return shoppingEvent;
     } catch (error) {
       console.error(error);
 
-      return left(new UnexpectedError());
+      throw new UnexpectedException();
     }
   };
 }

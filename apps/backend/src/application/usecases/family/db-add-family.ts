@@ -4,19 +4,12 @@ import type {
   GetUserByIdRepository,
   UpdateUserRepository,
 } from '@/application/contracts';
+import { type AddFamily, type AddFamilyParams, Family } from '@/domain';
 import {
-  type AddFamily,
-  type AddFamilyErrors,
-  type AddFamilyParams,
-  type Either,
-  Family,
-  InvalidFamilyNameError,
-  left,
-  right,
-  UnexpectedError,
-  UserAlreadyAFamilyMemberError,
-  UserNotFoundError,
-} from '@/domain';
+  UnexpectedException,
+  UserAlreadyAFamilyMemberException,
+  UserNotFoundException,
+} from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
@@ -34,17 +27,17 @@ export class DbAddFamily implements AddFamily {
     userId,
     name,
     description,
-  }: AddFamilyParams): Promise<Either<AddFamilyErrors, Family>> {
+  }: AddFamilyParams): Promise<Family> {
     try {
       // Fetch user
       const user = await this.userRepository.getByExternalId(userId);
 
       if (!user) {
-        return left(new UserNotFoundError());
+        throw new UserNotFoundException();
       }
 
       if (user.family) {
-        return left(new UserAlreadyAFamilyMemberError());
+        throw new UserAlreadyAFamilyMemberException();
       }
 
       // Create Family entity
@@ -60,18 +53,14 @@ export class DbAddFamily implements AddFamily {
       user.familyId = family.id;
 
       // Save Family to database
-      const createResult = await this.familyRepository.add(family);
-
-      if (createResult.isLeft()) {
-        return left(new InvalidFamilyNameError());
-      }
+      await this.familyRepository.add(family);
 
       // Return Family entity
-      return right(family);
+      return family;
     } catch (error) {
       console.error(error);
 
-      return left(new UnexpectedError());
+      throw new UnexpectedException();
     }
   }
 }

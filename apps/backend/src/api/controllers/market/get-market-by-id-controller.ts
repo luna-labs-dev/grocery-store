@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import { z } from 'zod';
 import type { Controller, HttpResponse } from '@/api/contracts';
-import { mapErrorByCode, ok } from '@/api/helpers';
+import { ok } from '@/api/helpers';
 import type { GetMarketById } from '@/domain';
 import {
   controllerErrorHandling,
@@ -38,16 +38,10 @@ export class GetMarketByIdController implements Controller {
     marketId,
     location,
   }: GetMarketByIdControllerParams): Promise<HttpResponse> {
-    const result = await this.getMarketById.execute({
+    const market = await this.getMarketById.execute({
       marketId,
       location,
     });
-
-    if (result.isLeft()) {
-      return mapErrorByCode(result.value);
-    }
-
-    const market = result.value;
 
     const response = {
       id: market.id,

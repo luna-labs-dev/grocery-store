@@ -2,7 +2,7 @@ import { inject, injectable } from 'tsyringe';
 import { z } from 'zod';
 import { familyMapper } from './helpers';
 import type { Controller, HttpResponse } from '@/api/contracts';
-import { mapErrorByCode, ok } from '@/api/helpers';
+import { ok } from '@/api/helpers';
 import type { GetFamily } from '@/domain';
 import {
   controllerErrorHandling,
@@ -27,12 +27,7 @@ export class GetFamilyController implements Controller {
   ) {}
 
   async handle({ user }: GetFamilyControllerRequest): Promise<HttpResponse> {
-    const result = await this.getFamily.execute({ userId: user });
-
-    if (result.isLeft()) {
-      return mapErrorByCode(result.value);
-    }
-    const family = result.value;
+    const family = await this.getFamily.execute({ userId: user });
 
     const response = familyMapper.toResponse(family);
 

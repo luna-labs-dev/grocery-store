@@ -1,18 +1,14 @@
 import { inject, injectable } from 'tsyringe';
 import type { UserRepositories } from '@/application/contracts';
+import type { RemoveFamilyMember, RemoveFamilyMemberParams } from '@/domain';
 import {
-  type Either,
-  FamilyOwnerCannotBeRemovedError,
-  left,
-  type RemoveFamilyMember,
-  type RemoveFamilyMemberErrors,
-  type RemoveFamilyMemberParams,
-  right,
-  UnexpectedError,
-  UserNotAFamilyMemberError,
-  UserNotFamilyOwnerError,
-  UserNotFoundError,
-} from '@/domain';
+  FamilyOwnerCannotBeRemovedException,
+  TargetUserNotAFamilyMemberException,
+  UnexpectedException,
+  UserNotAFamilyMemberException,
+  UserNotAFamilyOwnerException,
+  UserNotFoundException,
+} from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
@@ -26,59 +22,41 @@ export class DbRemoveFamilyMember implements RemoveFamilyMember {
 
   async execute({
     userId,
-    userToBeRemovedId,
-  }: RemoveFamilyMemberParams): Promise<
-    Either<RemoveFamilyMemberErrors, void>
-  > {
+    targetUserId,
+  }: RemoveFamilyMemberParams): Promise<void> {
     try {
       const user = await this.userRepository.getByExternalId(userId);
       if (!user) {
-        return left(
-          new UserNotFoundError(userId, {
-            context: 'request-user',
-          }),
-        );
+        throw new UserNotFoundException();
       }
 
       if (!user.family) {
-        return left(
-          new UserNotAFamilyMemberError(userId, {
-            context: 'request-user',
-          }),
-        );
+        throw new UserNotAFamilyMemberException();
       }
 
       if (user.id !== user.family.ownerId) {
-        return left(
-          new UserNotFamilyOwnerError(userId, { context: 'request-user' }),
-        );
+        throw new UserNotAFamilyOwnerException();
       }
 
       const memberInFamily = user.family.members?.find(
-        (member) => member.id === userToBeRemovedId,
+        (member) => member.id === targetUserId,
       );
 
       if (!memberInFamily) {
-        return left(
-          new UserNotAFamilyMemberError(userToBeRemovedId, {
-            context: 'user-to-be-removed',
-          }),
-        );
+        throw new TargetUserNotAFamilyMemberException();
       }
 
       if (memberInFamily.id === user.id) {
-        return left(new FamilyOwnerCannotBeRemovedError());
+        throw new FamilyOwnerCannotBeRemovedException();
       }
 
       memberInFamily.familyId = undefined;
 
       await this.userRepository.update(memberInFamily);
-
-      return right(undefined);
     } catch (error) {
       console.error(error);
 
-      return left(new UnexpectedError());
+      throw new UnexpectedException();
     }
   }
 }

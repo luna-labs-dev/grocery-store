@@ -4,17 +4,13 @@ import type {
   GetUserByIdRepository,
   UpdateUserRepository,
 } from '@/application/contracts';
+import type { JoinFamily, JoinFamilyParams } from '@/domain';
 import {
-  type Either,
-  InvalidInviteCodeError,
-  type JoinFamily,
-  type JoinFamilyErrors,
-  type JoinFamilyParams,
-  left,
-  right,
-  UserAlreadyAFamilyMemberError,
-  UserNotFoundError,
-} from '@/domain';
+  InvalidFamilyInvitationCodeException,
+  UnexpectedException,
+  UserAlreadyAFamilyMemberException,
+  UserNotFoundException,
+} from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
@@ -29,36 +25,36 @@ export class DbJoinFamily implements JoinFamily {
     private readonly familyRepository: GetFamilyByInviteCodeRepository,
   ) {}
 
-  async execute({
-    userId,
-    inviteCode,
-  }: JoinFamilyParams): Promise<Either<JoinFamilyErrors, void>> {
-    // Get user
-    const user = await this.userRepository.getByExternalId(userId);
+  async execute({ userId, inviteCode }: JoinFamilyParams): Promise<void> {
+    try {
+      // Get user
+      const user = await this.userRepository.getByExternalId(userId);
 
-    if (!user) {
-      return left(new UserNotFoundError(userId));
+      if (!user) {
+        throw new UserNotFoundException();
+      }
+
+      // If user already a family member, return error
+      if (user.family) {
+        throw new UserAlreadyAFamilyMemberException();
+      }
+
+      // Get family by invite code
+      const family = await this.familyRepository.getByInviteCode({
+        inviteCode,
+      });
+
+      if (!family) {
+        throw new InvalidFamilyInvitationCodeException();
+      }
+
+      user.familyId = family.id;
+
+      await this.userRepository.update(user);
+    } catch (error) {
+      console.error(error);
+
+      throw new UnexpectedException();
     }
-
-    // If user already a family member, return error
-    if (user.family) {
-      return left(new UserAlreadyAFamilyMemberError());
-    }
-
-    // Get family by invite code
-    const family = await this.familyRepository.getByInviteCode({
-      inviteCode,
-    });
-
-    if (!family) {
-      return left(new InvalidInviteCodeError());
-    }
-
-    user.familyId = family.id;
-
-    await this.userRepository.update(user);
-
-    // Add user to family
-    return right(undefined);
   }
 }

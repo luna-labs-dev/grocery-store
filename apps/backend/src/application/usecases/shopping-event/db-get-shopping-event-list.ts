@@ -1,15 +1,11 @@
 import { inject, injectable } from 'tsyringe';
 import type { GetShoppingEventListRepository } from '../../contracts';
-import {
-  type Either,
-  type GetShoppingEventList,
-  type GetShoppingEventListErrors,
-  type GetShoppingEventListParams,
-  type GetShoppingEventListResult,
-  left,
-  right,
-  UnexpectedError,
+import type {
+  GetShoppingEventList,
+  GetShoppingEventListParams,
+  GetShoppingEventListResult,
 } from '@/domain';
+import { UnexpectedException } from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
@@ -28,9 +24,7 @@ export class DbGetShoppingEventList implements GetShoppingEventList {
     pageSize,
     orderBy,
     orderDirection,
-  }: GetShoppingEventListParams): Promise<
-    Either<GetShoppingEventListErrors, GetShoppingEventListResult>
-  > => {
+  }: GetShoppingEventListParams): Promise<GetShoppingEventListResult> => {
     try {
       // Get the ShoppingEvent List count based on the filters
       const shoppingEventListCount = await this.repository.count({
@@ -62,11 +56,11 @@ export class DbGetShoppingEventList implements GetShoppingEventList {
       }
 
       // Return the object
-      return right(response);
+      return response;
     } catch (error) {
       console.error(error);
 
-      return left(new UnexpectedError());
+      throw new UnexpectedException();
     }
   };
 }

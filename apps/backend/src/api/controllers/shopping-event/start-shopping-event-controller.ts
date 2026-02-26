@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import { z } from 'zod';
 import type { Controller, HttpResponse } from '@/api/contracts';
-import { mapErrorByCode, ok } from '@/api/helpers';
+import { ok } from '@/api/helpers';
 import type { StartShoppingEvent } from '@/domain';
 import {
   controllerErrorHandling,
@@ -37,17 +37,11 @@ export class StartShoppingEventController implements Controller {
     familyId,
     marketId,
   }: StartShoppingEventControllerRequest): Promise<HttpResponse> {
-    const startShoppingEventResult = await this.startShoppingEvent.execute({
+    const shoppingEvent = await this.startShoppingEvent.execute({
       user,
       familyId,
       marketId,
     });
-
-    if (startShoppingEventResult.isLeft()) {
-      return mapErrorByCode(startShoppingEventResult.value);
-    }
-
-    const shoppingEvent = startShoppingEventResult.value;
 
     const response = {
       id: shoppingEvent.id,

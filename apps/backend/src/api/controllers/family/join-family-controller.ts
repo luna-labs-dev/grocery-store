@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import { z } from 'zod';
 import type { Controller, HttpResponse } from '@/api/contracts';
-import { mapErrorByCode, ok } from '@/api/helpers';
+import { ok } from '@/api/helpers';
 import type { JoinFamily } from '@/domain';
 import {
   controllerErrorHandling,
@@ -32,11 +32,7 @@ export class JoinFamilyController implements Controller {
     user,
     inviteCode,
   }: JoinFamilyControllerRequest): Promise<HttpResponse> {
-    const result = await this.joinFamily.execute({ userId: user, inviteCode });
-
-    if (result.isLeft()) {
-      return mapErrorByCode(result.value);
-    }
+    await this.joinFamily.execute({ userId: user, inviteCode });
 
     return ok();
   }

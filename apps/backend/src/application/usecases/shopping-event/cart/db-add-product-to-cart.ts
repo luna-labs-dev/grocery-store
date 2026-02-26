@@ -5,16 +5,14 @@ import type {
 } from '@/application';
 import {
   type AddProductToCart,
-  type AddProductToCartErrors,
   type AddProductToCartParams,
-  type Either,
-  left,
   Product,
-  right,
-  ShoppingEventAlreadyEndedError,
-  ShoppingEventNotFoundError,
-  UnexpectedError,
 } from '@/domain';
+import {
+  ShoppingEventAlreadyEndedException,
+  ShoppingEventNotFoundException,
+  UnexpectedException,
+} from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
 type ShoppingEventRepositories = GetShoppingEventByIdRepository &
@@ -38,9 +36,7 @@ export class DbAddProductToCart implements AddProductToCart {
     price,
     wholesaleMinAmount,
     wholesalePrice,
-  }: AddProductToCartParams): Promise<
-    Either<AddProductToCartErrors, Product>
-  > => {
+  }: AddProductToCartParams): Promise<Product> => {
     try {
       // Fetch ShoppingEvent
       const shoppingEvent = await this.shoppingEventRepository.getById({
@@ -50,16 +46,11 @@ export class DbAddProductToCart implements AddProductToCart {
 
       // Returns ShoppingEventNotFoundError fetch returns undefined
       if (!shoppingEvent) {
-        return left(new ShoppingEventNotFoundError());
+        throw new ShoppingEventNotFoundException();
       }
 
       if (shoppingEvent.status !== 'ONGOING') {
-        return left(
-          new ShoppingEventAlreadyEndedError(
-            shoppingEvent.status,
-            shoppingEvent.id,
-          ),
-        );
+        throw new ShoppingEventAlreadyEndedException();
       }
 
       // Created the Product Entity
@@ -81,11 +72,11 @@ export class DbAddProductToCart implements AddProductToCart {
       await this.shoppingEventRepository.update(shoppingEvent);
 
       // Returns the recently created product
-      return right(product);
+      return product;
     } catch (error) {
       console.error(error);
 
-      return left(new UnexpectedError());
+      throw new UnexpectedException();
     }
   };
 }

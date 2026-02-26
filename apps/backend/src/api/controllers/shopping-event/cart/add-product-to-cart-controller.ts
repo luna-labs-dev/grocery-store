@@ -2,7 +2,7 @@ import { inject, injectable } from 'tsyringe';
 import { z } from 'zod';
 import type { AddProductToCart } from '../../../../domain/usecases/shopping-event/cart/add-product-to-cart';
 import type { Controller, HttpResponse } from '@/api/contracts';
-import { mapErrorByCode, ok } from '@/api/helpers';
+import { ok } from '@/api/helpers';
 import {
   controllerErrorHandling,
   controllerFamilyBarrierHandling,
@@ -49,7 +49,7 @@ export class AddProductToCartController implements Controller {
       wholesalePrice,
     } = request;
 
-    const addProductResult = await this.addProductToCart.execute({
+    const product = await this.addProductToCart.execute({
       user,
       familyId,
       shoppingEventId,
@@ -59,12 +59,6 @@ export class AddProductToCartController implements Controller {
       price,
       wholesalePrice,
     });
-
-    if (addProductResult.isLeft()) {
-      return mapErrorByCode(addProductResult.value);
-    }
-
-    const product = addProductResult.value;
 
     const response = {
       id: product.id,

@@ -1,14 +1,7 @@
 import { clerkClient } from '@clerk/express';
 import { inject, injectable } from 'tsyringe';
 import type { UserRepositories } from '@/application';
-import {
-  type Either,
-  type GetUser,
-  type GetUserErrors,
-  type GetUserParams,
-  right,
-  User,
-} from '@/domain';
+import { type GetUser, type GetUserParams, User } from '@/domain';
 import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
@@ -20,9 +13,7 @@ export class DbGetUser implements GetUser {
     private readonly userRepository: UserRepositories,
   ) {}
 
-  execute = async ({
-    externalId,
-  }: GetUserParams): Promise<Either<GetUserErrors, User>> => {
+  execute = async ({ externalId }: GetUserParams): Promise<User> => {
     let user = await this.userRepository.getByExternalId(externalId);
 
     if (!user) {
@@ -38,6 +29,6 @@ export class DbGetUser implements GetUser {
       await this.userRepository.add(user);
     }
 
-    return right(user);
+    return user;
   };
 }

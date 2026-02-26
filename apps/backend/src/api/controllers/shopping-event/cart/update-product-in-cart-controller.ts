@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import { z } from 'zod';
 import type { Controller, HttpResponse } from '@/api/contracts';
-import { mapErrorByCode, noContent } from '@/api/helpers';
+import { noContent } from '@/api/helpers';
 import type { UpdateProductInCart } from '@/domain';
 import {
   controllerErrorHandling,
@@ -56,12 +56,6 @@ export class UpdateProductInCartController implements Controller {
       wholesaleMinAmount,
       wholesalePrice,
     });
-
-    if (updateProductInCartResult.isLeft()) {
-      return mapErrorByCode(updateProductInCartResult.value);
-    }
-
-    const _product = updateProductInCartResult.value;
 
     return noContent();
   }

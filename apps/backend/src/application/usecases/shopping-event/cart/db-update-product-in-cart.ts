@@ -4,18 +4,16 @@ import type {
   UpdateShoppingEventRepository,
 } from '../../../contracts';
 import {
-  type Either,
-  left,
   Product,
-  ProductNotFoundError,
-  right,
-  ShoppingEventAlreadyEndedError,
-  ShoppingEventNotFoundError,
-  UnexpectedError,
   type UpdateProductInCart,
-  type UpdateProductInCartErrors,
   type UpdateProductInCartParams,
 } from '@/domain';
+import {
+  ProductNotFoundException,
+  ShoppingEventAlreadyEndedException,
+  ShoppingEventNotFoundException,
+  UnexpectedException,
+} from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
 type UpdateProductInCartRepositories = GetShoppingEventByIdRepository &
@@ -38,9 +36,7 @@ export class DbUpdateProductInCart implements UpdateProductInCart {
     price,
     wholesaleMinAmount,
     wholesalePrice,
-  }: UpdateProductInCartParams): Promise<
-    Either<UpdateProductInCartErrors, Product>
-  > => {
+  }: UpdateProductInCartParams): Promise<Product> => {
     try {
       // Fetch shoppingEvent
       const shoppingEvent = await this.repository.getById({
@@ -50,23 +46,18 @@ export class DbUpdateProductInCart implements UpdateProductInCart {
 
       // Return shoppingEventNotFoundError if shoppingEvent is undefined
       if (!shoppingEvent) {
-        return left(new ShoppingEventNotFoundError());
+        throw new ShoppingEventNotFoundException();
       }
 
       if (shoppingEvent.status !== 'ONGOING') {
-        return left(
-          new ShoppingEventAlreadyEndedError(
-            shoppingEvent.status,
-            shoppingEvent.id,
-          ),
-        );
+        throw new ShoppingEventAlreadyEndedException();
       }
 
       // Return productNotFoundError if product not in list
       const currentProduct = shoppingEvent.products.getItemById(productId);
 
       if (!currentProduct) {
-        return left(new ProductNotFoundError());
+        throw new ProductNotFoundException();
       }
 
       // Update product with new values
@@ -89,11 +80,11 @@ export class DbUpdateProductInCart implements UpdateProductInCart {
       await this.repository.update(shoppingEvent);
 
       // return product object
-      return right(product);
+      return product;
     } catch (error) {
       console.error(error);
 
-      return left(new UnexpectedError());
+      throw new UnexpectedException();
     }
   };
 }

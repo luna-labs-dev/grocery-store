@@ -1,9 +1,4 @@
-import type { Either } from '../../../core';
 import type { Product } from '../../../entities';
-import type { ShoppingEventNotFoundError, UnexpectedError } from '../../errors';
-
-export type AddProductToCartErrors = UnexpectedError &
-  ShoppingEventNotFoundError;
 
 export interface AddProductToCartParams {
   user: string;
@@ -17,7 +12,5 @@ export interface AddProductToCartParams {
 }
 
 export interface AddProductToCart {
-  execute: (
-    params: AddProductToCartParams,
-  ) => Promise<Either<AddProductToCartErrors, Product>>;
+  execute(params: AddProductToCartParams): Promise<Product>;
 }
