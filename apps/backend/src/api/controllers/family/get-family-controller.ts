@@ -1,6 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 import { z } from 'zod';
-import { familyMapper } from './helpers';
+import { familyMapper } from '../helpers';
 import type { Controller, HttpResponse } from '@/api/contracts';
 import { ok } from '@/api/helpers';
 import type { GetFamily } from '@/domain';
