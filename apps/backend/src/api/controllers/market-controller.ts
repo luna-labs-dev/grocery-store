@@ -1,7 +1,12 @@
 import { inject, injectable } from 'tsyringe';
 import { z } from 'zod';
 import { FastifyController } from '../contracts/fastify-controller';
-import { exceptionResultSchema, type GetMarketList } from '@/domain';
+import {
+  type GetMarketById,
+  type GetMarketList,
+  getPossibleExceptionsSchemas,
+} from '@/domain';
+import { MarketNotFoundException } from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 import { clerkAuthorizationMiddleware } from '@/main/fastify/middlewares';
 import type { FastifyTypedInstance } from '@/main/fastify/types';
@@ -25,21 +30,30 @@ export const getMarketListRequestSchema = z.object({
     .optional(),
 });
 
-export const marketResponseSchema = z.object({
+export const marketItemResponseSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  formattedAddress: z.string(),
+  city: z.string(),
+  neighborhood: z.string(),
+  latitude: z.number(),
+  longitude: z.number(),
+  distance: z.number().optional(),
+});
+
+export const marketListResponseSchema = z.object({
   total: z.number(),
-  items: z.array(
-    z.object({
-      id: z.string(),
-      name: z.string(),
-      formattedAddress: z.string(),
-      city: z.string(),
-      neighborhood: z.string(),
+  items: z.array(marketItemResponseSchema),
+});
+
+export const getMarketByIdRequestSchema = z.object({
+  marketId: z.uuid(),
+  location: z
+    .object({
       latitude: z.number(),
       longitude: z.number(),
-      distance: z.number().optional(),
-      createdAt: z.date(),
-    }),
-  ),
+    })
+    .optional(),
 });
 
 @injectable()
@@ -47,26 +61,24 @@ export class MarketController extends FastifyController {
   constructor(
     @inject(usecases.getMarketList)
     private readonly getMarketList: GetMarketList,
+    @inject(usecases.getMarketById)
+    private readonly getMarketById: GetMarketById,
   ) {
     super();
   }
 
   registerRoutes(app: FastifyTypedInstance): void {
+    app.addHook('preHandler', clerkAuthorizationMiddleware);
     app.get(
-      '/markets',
+      '',
       {
-        preHandler: clerkAuthorizationMiddleware,
         schema: {
-          tags: ['markets'],
+          tags: [this.prefix],
           description: 'List all markets',
           querystring: getMarketListRequestSchema,
           response: {
-            200: marketResponseSchema,
-            400: exceptionResultSchema.describe('Invalid request'),
-            401: exceptionResultSchema.describe('Unauthorized'),
-            404: exceptionResultSchema.describe('Not found'),
-            409: exceptionResultSchema.describe('Conflict'),
-            500: exceptionResultSchema.describe('Internal server error'),
+            ...getPossibleExceptionsSchemas([]),
+            200: marketListResponseSchema,
           },
         },
       },
@@ -106,6 +118,40 @@ export class MarketController extends FastifyController {
             distance: mkt.distance,
             createdAt: mkt.createdAt,
           })),
+        };
+
+        reply.status(200).send(response);
+      },
+    );
+
+    app.get(
+      '/:marketId',
+      {
+        schema: {
+          tags: [this.prefix],
+          description: 'Get market by id',
+          params: getMarketByIdRequestSchema,
+          response: {
+            ...getPossibleExceptionsSchemas([new MarketNotFoundException()]),
+            200: marketItemResponseSchema,
+          },
+        },
+      },
+      async (request, reply) => {
+        const { marketId } = request.params;
+
+        const market = await this.getMarketById.execute({ marketId });
+
+        const response = {
+          id: market.id,
+          name: market.name,
+          formattedAddress: market.formattedAddress,
+          city: market.city,
+          neighborhood: market.neighborhood,
+          latitude: market.latitude,
+          longitude: market.longitude,
+          distance: market.distance,
+          createdAt: market.createdAt,
         };
 
         reply.status(200).send(response);
