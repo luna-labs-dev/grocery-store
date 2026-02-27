@@ -1,14 +1,14 @@
 import 'reflect-metadata';
 import { env } from './config/env';
 import { registerInjections } from './di';
-import { controllers } from './fastify';
+import { registerControllers } from './fastify';
 import { setupFastifyApp } from './fastify/setup/app';
 
 const { baseConfig } = env;
 export const { app } = setupFastifyApp();
 
 registerInjections();
-app.register(controllers);
+app.register(registerControllers);
 
 app
   .listen({
