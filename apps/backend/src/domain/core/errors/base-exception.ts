@@ -1,4 +1,4 @@
-import z from 'zod';
+import z, { type ZodObject } from 'zod';
 import type { HttpStatusCode } from '../enums/http-status-code';
 import { env } from '@/main/config/env';
 
@@ -8,47 +8,59 @@ export interface IBaseException<TErrorType = any> extends Error {
   statusCode: HttpStatusCode;
   code: string;
   extras?: TErrorType;
+  schema: ZodObject;
 }
 
 interface IBaseExceptionProps<TErrorType = any> {
-  statusCode: HttpStatusCode;
   extras?: TErrorType;
+  schema?: ZodObject;
 }
 
-export const exceptionResultSchema = z
-  .object({
-    name: z.string(),
-    code: z.string(),
-    message: z.string(),
-    stack: z.string().optional(),
-  })
-  .loose();
+export const exceptionResultSchema = z.object({
+  code: z.string(),
+  message: z.string(),
+});
 
-export type ExceptionResult = z.infer<typeof exceptionResultSchema>;
+const getExceptionSchema = () => {
+  if (baseConfig.environment !== 'production') {
+    return exceptionResultSchema.extend({
+      stack: z.string().optional(),
+    });
+  }
+
+  return exceptionResultSchema;
+};
+
+const exceptionSchema = getExceptionSchema();
+
+export type ExceptionResult = z.infer<typeof exceptionSchema> & {
+  stack?: string;
+};
 
 export abstract class BaseException<TErrorType = any>
   extends Error
   implements IBaseException<TErrorType>
 {
+  abstract statusCode: HttpStatusCode;
   name: string;
   code: string;
-  statusCode: HttpStatusCode;
   extras?: TErrorType;
+  schema: z.ZodObject<any, any>;
 
-  constructor(message: string, props: IBaseExceptionProps<TErrorType>) {
+  constructor(message: string, props?: IBaseExceptionProps<TErrorType>) {
     super(message);
 
-    const { statusCode, extras } = props;
+    const { extras, schema } = props || {};
 
+    this.schema = schema?.extend(exceptionSchema.shape) || exceptionSchema;
     this.name = Object.getPrototypeOf(this).constructor.name;
     this.code = this.generateExceptionCode(this.name);
-    this.statusCode = statusCode;
+
     this.extras = extras;
   }
 
   toJSON(): ExceptionResult {
     let result: ExceptionResult = {
-      name: this.name,
       code: this.code,
       message: this.message,
     };

@@ -2,73 +2,73 @@ import { BaseException } from '../core';
 import { HttpStatusCode } from '../core/enums';
 
 export class FamilyNotFoundException extends BaseException {
+  statusCode = HttpStatusCode.NotFound;
+
   constructor() {
-    super('A família não foi encontrada', {
-      statusCode: HttpStatusCode.NotFound,
-    });
+    super('A família não foi encontrada');
   }
 }
 
 export class InvalidFamilyInvitationCodeException extends BaseException {
+  statusCode = HttpStatusCode.UnprocessableEntity;
+
   constructor() {
-    super('O código de convite da família é inválido', {
-      statusCode: HttpStatusCode.UnprocessableEntity,
-    });
+    super('O código de convite da família é inválido');
   }
 }
 
 export class FamilyAlreadyExistsException extends BaseException {
+  statusCode = HttpStatusCode.UnprocessableEntity;
+
   constructor() {
-    super('A família já existe', {
-      statusCode: HttpStatusCode.UnprocessableEntity,
-    });
+    super('A família já existe');
   }
 }
 
 export class UserNotAFamilyOwnerException extends BaseException {
+  statusCode = HttpStatusCode.UnprocessableEntity;
+
   constructor() {
-    super('O usuário não é dono da família', {
-      statusCode: HttpStatusCode.UnprocessableEntity,
-    });
+    super('O usuário não é dono da família');
   }
 }
 
 export class FamilyOwnerCannotBeRemovedException extends BaseException {
+  statusCode = HttpStatusCode.UnprocessableEntity;
+
   constructor() {
-    super('O dono da família não pode ser removido', {
-      statusCode: HttpStatusCode.UnprocessableEntity,
-    });
+    super('O dono da família não pode ser removido');
   }
 }
 
 export class FamilyWithoutMembersException extends BaseException {
+  statusCode = HttpStatusCode.UnprocessableEntity;
+
   constructor() {
-    super('A família não possui membros', {
-      statusCode: HttpStatusCode.UnprocessableEntity,
-    });
+    super('A família não possui membros');
   }
 }
 
 export class UserAlreadyAFamilyMemberException extends BaseException {
+  statusCode = HttpStatusCode.UnprocessableEntity;
+
   constructor() {
-    super('O usuário já é membro da família', {
-      statusCode: HttpStatusCode.UnprocessableEntity,
-    });
+    super('O usuário já é membro da família');
   }
 }
 
 export class TargetUserNotAFamilyMemberException extends BaseException {
+  statusCode = HttpStatusCode.UnprocessableEntity;
+
   constructor() {
-    super('O usuário não é membro da família', {
-      statusCode: HttpStatusCode.UnprocessableEntity,
-    });
+    super('O usuário não é membro da família');
   }
 }
 
 export class UserNotAFamilyMemberException extends BaseException {
+  statusCode = HttpStatusCode.UnprocessableEntity;
+
   constructor() {
-    super('O usuário não é membro da família', {
-      statusCode: HttpStatusCode.UnprocessableEntity,
-    });
+    super('O usuário não é membro da família');
   }
 }

@@ -2,9 +2,9 @@ import { BaseException } from '../core';
 import { HttpStatusCode } from '../core/enums';
 
 export class ProductNotFoundException extends BaseException {
+  statusCode = HttpStatusCode.NotFound;
+
   constructor() {
-    super('O produto não foi encontrado', {
-      statusCode: HttpStatusCode.NotFound,
-    });
+    super('O produto não foi encontrado');
   }
 }
