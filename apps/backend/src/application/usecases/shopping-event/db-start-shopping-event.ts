@@ -29,7 +29,7 @@ export class DbStartShoppingEvent implements StartShoppingEvent {
   ) {}
 
   execute = async ({
-    user,
+    userId,
     familyId,
     marketId,
   }: StartShoppingEventParams): Promise<ShoppingEvent> => {
@@ -51,7 +51,7 @@ export class DbStartShoppingEvent implements StartShoppingEvent {
         market,
         status: 'ONGOING',
         createdAt: new Date(),
-        createdBy: user,
+        createdBy: userId,
         products: Products.create([]),
       });
 

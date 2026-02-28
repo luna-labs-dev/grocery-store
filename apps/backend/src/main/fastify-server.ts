@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { env } from './config/env';
-import { registerInjections } from './di';
+import { registerInjections } from './di/injections';
 import { registerControllers } from './fastify';
 import { setupFastifyApp } from './fastify/setup/app';
 
@@ -15,7 +15,8 @@ app
     port: baseConfig.port,
     host: baseConfig.host,
   })
-  .then(() => {
+  .then(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 100));
     console.log(
       `🔥 HTTP server running on http://localhost:${baseConfig.port}`,
     );

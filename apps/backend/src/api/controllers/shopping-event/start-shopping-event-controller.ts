@@ -38,7 +38,7 @@ export class StartShoppingEventController implements Controller {
     marketId,
   }: StartShoppingEventControllerRequest): Promise<HttpResponse> {
     const shoppingEvent = await this.startShoppingEvent.execute({
-      user,
+      userId: user,
       familyId,
       marketId,
     });

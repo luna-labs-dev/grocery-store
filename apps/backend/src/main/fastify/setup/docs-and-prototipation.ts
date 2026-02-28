@@ -17,8 +17,21 @@ export const setupDocsAndPrototipation = (app: FastifyTypedInstance) => {
       info: {
         title: 'Grocery Store API',
         description: 'API de gerenciamento de compras',
+        contact: {
+          name: 'Tiago',
+          email: 'tiago@tiago.com',
+          url: 'https://tiago.com',
+        },
         version: '1.0.0',
       },
+      tags: [
+        {
+          name: 'shopping-event',
+          description: 'Endpoints relacionados a eventos de compra',
+        },
+        { name: 'market', description: 'Endpoints relacionados a mercados' },
+        { name: 'family', description: 'Endpoints relacionados a familias' },
+      ],
     },
     transform: jsonSchemaTransform,
   });

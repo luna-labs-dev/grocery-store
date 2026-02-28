@@ -1,12 +1,14 @@
 import type { FastifyPluginOptions } from 'fastify';
+import { nameHelper } from '@/domain/helper';
 import type { FastifyTypedInstance } from '@/main/fastify/types';
 
 export abstract class FastifyController {
   readonly prefix: string;
 
   constructor() {
-    console.log(this.constructor.name);
-    this.prefix = this.constructor.name.replace('Controller', '').toLowerCase();
+    this.prefix = nameHelper.toKebabCase(
+      this.constructor.name.replace('Controller', ''),
+    );
   }
   abstract registerRoutes(
     app: FastifyTypedInstance,

@@ -24,6 +24,7 @@ import {
 import type { FastifyController } from '@/api/contracts/fastify-controller';
 import { FamilyController } from '@/api/controllers/family-controller';
 import { MarketController } from '@/api/controllers/market-controller';
+import { ShoppingEventController } from '@/api/controllers/shopping-event-controller';
 import {
   DbAddFamily,
   DbAddProductToCart,
@@ -217,4 +218,8 @@ export const registerInjections = () => {
   // Fastify Controllers
   container.register<FastifyController>(controllers.fastify, FamilyController);
   container.register<FastifyController>(controllers.fastify, MarketController);
+  container.register<FastifyController>(
+    controllers.fastify,
+    ShoppingEventController,
+  );
 };

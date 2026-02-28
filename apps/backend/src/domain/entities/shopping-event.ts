@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { Entity, TimerHelper } from '../core';
 import { monetaryCalc } from '../helper';
 import type { Family } from './family';
@@ -397,7 +398,7 @@ export class ShoppingEvent extends Entity<ShoppingEventProps> {
    * Converts the entity to a comprehensive summary DTO used by the API.
    * Includes nested calculated totals for consistency.
    */
-  public toSummaryDto() {
+  public toSummaryDto(): ShoppingEventSummaryDto {
     return {
       id: this.id,
       status: this.status,
@@ -430,3 +431,53 @@ export class ShoppingEvent extends Entity<ShoppingEventProps> {
     };
   }
 }
+
+export const shoppingEventSummaryDtoSchema = z.object({
+  id: z.uuid(),
+  status: z.enum(validShoppingEventStatus),
+  market: z.object({
+    id: z.uuid(),
+    name: z.string().optional(),
+    description: z.string().optional(),
+    address: z.string().optional(),
+    createdAt: z.date().optional(),
+    updatedAt: z.date().optional(),
+    deletedAt: z.date().optional(),
+  }),
+  totals: z.object({
+    retailTotal: z.number().optional(),
+    wholesaleTotal: z.number().optional(),
+    paidValue: z.number().optional(),
+    savingsValue: z.number().optional(),
+    savingsPercentage: z.number().optional(),
+    retailPaidDifferenceValue: z.number().optional(),
+    wholesalePaidDifferenceValue: z.number().optional(),
+    totalItemsDistinct: z.number().optional(),
+    totalItemsQuantity: z.number().optional(),
+    averagePricePerUnit: z.number().optional(),
+    highestPrice: z.number().optional(),
+    lowestPrice: z.number().optional(),
+  }),
+  products: z.array(
+    z.object({
+      id: z.uuid(),
+      name: z.string(),
+      amount: z.number().optional(),
+      wholesaleMinAmount: z.number().optional(),
+      price: z.number().optional(),
+      wholesalePrice: z.number().optional(),
+      totalRetailPrice: z.number(),
+      totalWholesalePrice: z.number(),
+      totalDifference: z.number(),
+      addedAt: z.date(),
+    }),
+  ),
+  elapsedTime: z.number().optional(),
+  createdAt: z.date(),
+  finishedAt: z.date().optional(),
+  createdBy: z.string(),
+});
+
+export type ShoppingEventSummaryDto = z.infer<
+  typeof shoppingEventSummaryDtoSchema
+>;
