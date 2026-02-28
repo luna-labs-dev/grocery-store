@@ -46,7 +46,7 @@ export class UpdateProductInCartController implements Controller {
     wholesaleMinAmount,
     wholesalePrice,
   }: UpdateProductInCartParams): Promise<HttpResponse> {
-    const updateProductInCartResult = await this.updateProductInCart.execute({
+    await this.updateProductInCart.execute({
       familyId,
       shoppingEventId,
       productId,

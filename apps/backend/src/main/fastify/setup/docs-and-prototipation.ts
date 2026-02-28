@@ -29,6 +29,7 @@ export const setupDocsAndPrototipation = (app: FastifyTypedInstance) => {
           name: 'shopping-event',
           description: 'Endpoints relacionados a eventos de compra',
         },
+        { name: 'cart', description: 'Endpoints relacionados ao carrinho' },
         { name: 'market', description: 'Endpoints relacionados a mercados' },
         { name: 'family', description: 'Endpoints relacionados a familias' },
       ],

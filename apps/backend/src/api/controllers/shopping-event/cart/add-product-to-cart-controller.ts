@@ -50,7 +50,7 @@ export class AddProductToCartController implements Controller {
     } = request;
 
     const product = await this.addProductToCart.execute({
-      user,
+      userId: user,
       familyId,
       shoppingEventId,
       name,

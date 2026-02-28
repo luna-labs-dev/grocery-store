@@ -22,6 +22,7 @@ import {
   WebhookExternalAuthAddUserController,
 } from '@/api';
 import type { FastifyController } from '@/api/contracts/fastify-controller';
+import { CartController } from '@/api/controllers/cart-controller';
 import { FamilyController } from '@/api/controllers/family-controller';
 import { MarketController } from '@/api/controllers/market-controller';
 import { ShoppingEventController } from '@/api/controllers/shopping-event-controller';
@@ -222,4 +223,5 @@ export const registerInjections = () => {
     controllers.fastify,
     ShoppingEventController,
   );
+  container.register<FastifyController>(controllers.fastify, CartController);
 };

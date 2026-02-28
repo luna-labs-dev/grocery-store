@@ -28,7 +28,7 @@ export class DbAddProductToCart implements AddProductToCart {
   ) {}
 
   execute = async ({
-    user,
+    userId,
     familyId,
     shoppingEventId,
     name,
@@ -62,7 +62,7 @@ export class DbAddProductToCart implements AddProductToCart {
         wholesaleMinAmount,
         wholesalePrice,
         addedAt: new Date(),
-        addedBy: user,
+        addedBy: userId,
       });
 
       // Push the product to the shoppingEvent product list

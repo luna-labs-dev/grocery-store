@@ -37,12 +37,11 @@ export class RemoveProductFromCartController implements Controller {
     shoppingEventId,
     productId,
   }: RemoveProductFromCartControllerParams): Promise<HttpResponse> {
-    const removeProductFromCartResult =
-      await this.removeProductFromCart.execute({
-        familyId,
-        shoppingEventId,
-        productId,
-      });
+    await this.removeProductFromCart.execute({
+      familyId,
+      shoppingEventId,
+      productId,
+    });
 
     return noContent();
   }
