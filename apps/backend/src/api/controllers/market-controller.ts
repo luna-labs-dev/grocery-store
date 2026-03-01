@@ -81,6 +81,7 @@ export class MarketController extends FastifyController {
           tags: [this.prefix],
           description: 'List all markets',
           summary: 'Listar mercados',
+          operationId: 'listMarkets',
           querystring: getMarketListRequestSchema,
           response: {
             ...getPossibleExceptionsSchemas([]),
@@ -137,6 +138,7 @@ export class MarketController extends FastifyController {
           tags: [this.prefix],
           description: 'Get market by id',
           summary: 'Obter mercado por id',
+          operationId: 'getMarketById',
           params: getMarketByIdRequestSchema,
           response: {
             ...getPossibleExceptionsSchemas([new MarketNotFoundException()]),

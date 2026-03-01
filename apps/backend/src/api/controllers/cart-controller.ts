@@ -77,6 +77,7 @@ export class CartController extends FastifyController {
           tags: [this.prefix],
           description: 'Add a product to the cart',
           summary: 'Adicionar produto',
+          operationId: 'addProductToCart',
           params: cartCommonRequestParamsSchema,
           body: addProductToCartRequestSchema,
           response: {
@@ -115,6 +116,7 @@ export class CartController extends FastifyController {
           tags: [this.prefix],
           description: 'Update a product in the cart',
           summary: 'Atualizar produto',
+          operationId: 'updateProductInCart',
           params: mutateProductInCartRequestParamsSchema,
           body: updateProductInCartRequestSchema,
           response: {
@@ -154,6 +156,7 @@ export class CartController extends FastifyController {
           tags: [this.prefix],
           description: 'Remove a product from the cart',
           summary: 'Remover produto',
+          operationId: 'removeProductFromCart',
           params: mutateProductInCartRequestParamsSchema,
           response: {
             204: z.void().describe('No Content'),

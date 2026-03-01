@@ -110,6 +110,7 @@ export class ShoppingEventController extends FastifyController {
           tags: [this.prefix],
           description: 'Start a shopping event',
           summary: 'Iniciar evento de compras',
+          operationId: 'startShoppingEvent',
           body: startShoppingEventRequestSchema,
           response: {
             200: startShoppingEventResponseSchema,
@@ -145,6 +146,7 @@ export class ShoppingEventController extends FastifyController {
           tags: [this.prefix],
           description: 'End a shopping event',
           summary: 'Finalizar evento de compras',
+          operationId: 'endShoppingEvent',
           body: endShoppingEventRequestSchema,
           response: {
             200: shoppingEventSummaryDtoSchema,
@@ -177,6 +179,7 @@ export class ShoppingEventController extends FastifyController {
           tags: [this.prefix],
           description: 'Get a list of shopping events',
           summary: 'Listar eventos de compras',
+          operationId: 'getShoppingEventList',
           querystring: getShoppingEventListRequestSchema,
           response: {
             200: getShoppingEventListResponseSchema,
@@ -232,6 +235,7 @@ export class ShoppingEventController extends FastifyController {
           tags: [this.prefix],
           description: 'Get a shopping event by id',
           summary: 'Obter evento de compras por id',
+          operationId: 'getShoppingEventById',
           params: getShoppingEventByIdRequestSchema,
           response: {
             200: shoppingEventSummaryDtoSchema,

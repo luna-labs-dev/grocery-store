@@ -32,6 +32,7 @@ export class WebhookAuthController extends FastifyController {
         schema: {
           tags: [this.prefix],
           summary: 'Clerk - Adiciona um usuario',
+          operationId: 'addUser',
           description: 'Adiciona um usuario externo',
           body: webhookExternalAuthAddUserRequestSchema,
           response: {

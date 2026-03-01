@@ -64,6 +64,7 @@ export class FamilyController extends FastifyController {
           tags: [this.prefix],
           description: 'List all families',
           summary: 'Listar famílias',
+          operationId: 'listFamilies',
           response: {
             ...getPossibleExceptionsSchemas([
               new FamilyNotFoundException(),
@@ -94,6 +95,7 @@ export class FamilyController extends FastifyController {
           tags: [this.prefix],
           description: 'Create a new family',
           summary: 'Criar família',
+          operationId: 'createFamily',
           body: addFamilyRequestSchema,
           response: {
             ...getPossibleExceptionsSchemas([
@@ -126,6 +128,7 @@ export class FamilyController extends FastifyController {
           tags: [this.prefix],
           description: 'Join a family',
           summary: 'Entrar em uma família',
+          operationId: 'joinFamily',
           body: joinFamilyRequestSchema,
           response: {
             ...getPossibleExceptionsSchemas([
@@ -159,6 +162,7 @@ export class FamilyController extends FastifyController {
           tags: [this.prefix],
           description: 'Leave a family',
           summary: 'Sair da família',
+          operationId: 'leaveFamily',
           response: {
             ...getPossibleExceptionsSchemas([
               new UserNotFoundException(),
@@ -188,6 +192,7 @@ export class FamilyController extends FastifyController {
           tags: [this.prefix],
           description: 'Remove a family member',
           summary: 'Remover membro',
+          operationId: 'removeFamilyMember',
           params: removeFamilyMemberRequestSchema,
           response: {
             ...getPossibleExceptionsSchemas([
