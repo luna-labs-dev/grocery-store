@@ -8,7 +8,10 @@ import {
 } from '@/domain';
 import { MarketNotFoundException } from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
-import { clerkAuthorizationMiddleware } from '@/main/fastify/middlewares';
+import {
+  clerkAuthorizationMiddleware,
+  familyBarrierMiddleware,
+} from '@/main/fastify/middlewares';
 import type { FastifyTypedInstance } from '@/main/fastify/types';
 
 const { usecases } = injection;
@@ -69,12 +72,15 @@ export class MarketController extends FastifyController {
 
   registerRoutes(app: FastifyTypedInstance): void {
     app.addHook('preHandler', clerkAuthorizationMiddleware);
+    app.addHook('preHandler', familyBarrierMiddleware);
+
     app.get(
       '',
       {
         schema: {
           tags: [this.prefix],
           description: 'List all markets',
+          summary: 'Listar mercados',
           querystring: getMarketListRequestSchema,
           response: {
             ...getPossibleExceptionsSchemas([]),
@@ -130,6 +136,7 @@ export class MarketController extends FastifyController {
         schema: {
           tags: [this.prefix],
           description: 'Get market by id',
+          summary: 'Obter mercado por id',
           params: getMarketByIdRequestSchema,
           response: {
             ...getPossibleExceptionsSchemas([new MarketNotFoundException()]),

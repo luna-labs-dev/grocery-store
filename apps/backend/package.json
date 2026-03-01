@@ -13,8 +13,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/infrastructure/repositories/drizzle/setup/migrate.ts",
     "db:studio": "drizzle-kit studio",
-    "test": "vitest",
-    "f:dev": "tsx watch src/main/fastify-server.ts"
+    "test": "vitest"
   },
   "dependencies": {
     "@clerk/express": "^1.4.14",

@@ -17,10 +17,10 @@ export const setupDocsAndPrototipation = (app: FastifyTypedInstance) => {
       info: {
         title: 'Grocery Store API',
         description: 'API de gerenciamento de compras',
+        summary: 'API de gerenciamento de compras',
         contact: {
           name: 'Tiago',
-          email: 'tiago@tiago.com',
-          url: 'https://tiago.com',
+          url: 'https://tiagoluizpoli.lunalabs.com.br/',
         },
         version: '1.0.0',
       },

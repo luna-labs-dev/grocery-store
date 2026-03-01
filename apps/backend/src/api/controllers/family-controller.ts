@@ -56,13 +56,14 @@ export class FamilyController extends FastifyController {
 
   registerRoutes(app: FastifyTypedInstance): void {
     app.addHook('preHandler', clerkAuthorizationMiddleware);
+
     app.get(
       '',
       {
         schema: {
           tags: [this.prefix],
           description: 'List all families',
-
+          summary: 'Listar famílias',
           response: {
             ...getPossibleExceptionsSchemas([
               new FamilyNotFoundException(),
@@ -75,9 +76,7 @@ export class FamilyController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { auth } = request;
-
-        const { userId } = auth;
+        const { userId } = request.context.auth;
 
         const family = await this.getFamily.execute({
           userId,
@@ -94,6 +93,7 @@ export class FamilyController extends FastifyController {
         schema: {
           tags: [this.prefix],
           description: 'Create a new family',
+          summary: 'Criar família',
           body: addFamilyRequestSchema,
           response: {
             ...getPossibleExceptionsSchemas([
@@ -105,10 +105,8 @@ export class FamilyController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { auth, body } = request;
-
-        const { name, description } = body;
-        const { userId } = auth;
+        const { name, description } = request.body;
+        const { userId } = request.context.auth;
 
         const family = await this.addFamily.execute({
           userId,
@@ -127,6 +125,7 @@ export class FamilyController extends FastifyController {
         schema: {
           tags: [this.prefix],
           description: 'Join a family',
+          summary: 'Entrar em uma família',
           body: joinFamilyRequestSchema,
           response: {
             ...getPossibleExceptionsSchemas([
@@ -141,10 +140,8 @@ export class FamilyController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { auth, body } = request;
-
-        const { inviteCode } = body;
-        const { userId } = auth;
+        const { inviteCode } = request.body;
+        const { userId } = request.context.auth;
 
         await this.joinFamily.execute({
           userId,
@@ -161,6 +158,7 @@ export class FamilyController extends FastifyController {
         schema: {
           tags: [this.prefix],
           description: 'Leave a family',
+          summary: 'Sair da família',
           response: {
             ...getPossibleExceptionsSchemas([
               new UserNotFoundException(),
@@ -173,9 +171,7 @@ export class FamilyController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { auth } = request;
-
-        const { userId } = auth;
+        const { userId } = request.context.auth;
 
         await this.leaveFamily.execute({
           userId,
@@ -191,6 +187,7 @@ export class FamilyController extends FastifyController {
         schema: {
           tags: [this.prefix],
           description: 'Remove a family member',
+          summary: 'Remover membro',
           params: removeFamilyMemberRequestSchema,
           response: {
             ...getPossibleExceptionsSchemas([
@@ -208,10 +205,8 @@ export class FamilyController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { auth, params } = request;
-
-        const { memberId } = params;
-        const { userId: authUserId } = auth;
+        const { memberId } = request.params;
+        const { userId: authUserId } = request.context.auth;
 
         await this.removeFamilyMember.execute({
           userId: authUserId,

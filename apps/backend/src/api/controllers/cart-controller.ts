@@ -14,7 +14,10 @@ import {
 } from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 import type { FastifyTypedInstance } from '@/main/fastify';
-import { clerkAuthorizationMiddleware } from '@/main/fastify/middlewares';
+import {
+  clerkAuthorizationMiddleware,
+  familyBarrierMiddleware,
+} from '@/main/fastify/middlewares';
 
 const { usecases } = injection;
 
@@ -23,7 +26,6 @@ export const cartCommonRequestParamsSchema = z.object({
 });
 
 export const addProductToCartRequestSchema = z.object({
-  familyId: z.uuid(),
   name: z.string().min(1),
   amount: z.number().gt(0),
   price: z.number().gt(0),
@@ -42,16 +44,11 @@ export const mutateProductInCartRequestParamsSchema =
   });
 
 export const updateProductInCartRequestSchema = z.object({
-  familyId: z.uuid(),
   name: z.string().min(1),
   amount: z.number().gt(0),
   price: z.number().gt(0),
   wholesaleMinAmount: z.number().gt(0).optional(),
   wholesalePrice: z.number().gt(0).optional(),
-});
-
-const removeProductFromCartRequestSchema = z.object({
-  familyId: z.uuid(),
 });
 
 @injectable()
@@ -71,6 +68,7 @@ export class CartController extends FastifyController {
   }
   registerRoutes(app: FastifyTypedInstance) {
     app.addHook('preHandler', clerkAuthorizationMiddleware);
+    app.addHook('preHandler', familyBarrierMiddleware);
 
     app.post(
       '/add-product/:shoppingEventId',
@@ -78,6 +76,7 @@ export class CartController extends FastifyController {
         schema: {
           tags: [this.prefix],
           description: 'Add a product to the cart',
+          summary: 'Adicionar produto',
           params: cartCommonRequestParamsSchema,
           body: addProductToCartRequestSchema,
           response: {
@@ -90,16 +89,11 @@ export class CartController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { userId } = request.auth;
+        const { userId } = request.context.auth;
+        const { familyId } = request.context;
         const { shoppingEventId } = request.params;
-        const {
-          familyId,
-          name,
-          amount,
-          price,
-          wholesaleMinAmount,
-          wholesalePrice,
-        } = request.body;
+        const { name, amount, price, wholesaleMinAmount, wholesalePrice } =
+          request.body;
         const product = await this.addProductToCart.execute({
           userId,
           shoppingEventId,
@@ -120,6 +114,7 @@ export class CartController extends FastifyController {
         schema: {
           tags: [this.prefix],
           description: 'Update a product in the cart',
+          summary: 'Atualizar produto',
           params: mutateProductInCartRequestParamsSchema,
           body: updateProductInCartRequestSchema,
           response: {
@@ -133,16 +128,10 @@ export class CartController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { shoppingEventId } = request.params;
-        const { productId } = request.params;
-        const {
-          familyId,
-          name,
-          amount,
-          price,
-          wholesaleMinAmount,
-          wholesalePrice,
-        } = request.body;
+        const { familyId } = request.context;
+        const { shoppingEventId, productId } = request.params;
+        const { name, amount, price, wholesaleMinAmount, wholesalePrice } =
+          request.body;
 
         await this.updateProductInCart.execute({
           shoppingEventId,
@@ -164,8 +153,8 @@ export class CartController extends FastifyController {
         schema: {
           tags: [this.prefix],
           description: 'Remove a product from the cart',
+          summary: 'Remover produto',
           params: mutateProductInCartRequestParamsSchema,
-          body: removeProductFromCartRequestSchema,
           response: {
             204: z.void().describe('No Content'),
             ...getPossibleExceptionsSchemas([
@@ -178,7 +167,7 @@ export class CartController extends FastifyController {
       },
       async (request, reply) => {
         const { shoppingEventId, productId } = request.params;
-        const { familyId } = request.body;
+        const { familyId } = request.context;
 
         await this.removeProductFromCart.execute({
           shoppingEventId,

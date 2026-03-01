@@ -19,11 +19,13 @@ import {
 } from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 import type { FastifyTypedInstance } from '@/main/fastify';
-import { clerkAuthorizationMiddleware } from '@/main/fastify/middlewares';
+import {
+  clerkAuthorizationMiddleware,
+  familyBarrierMiddleware,
+} from '@/main/fastify/middlewares';
 
 const { usecases } = injection;
 export const startShoppingEventRequestSchema = z.object({
-  familyId: z.uuid(),
   marketId: z.string().max(320),
 });
 
@@ -35,13 +37,11 @@ export const startShoppingEventResponseSchema = z.object({
 });
 
 export const endShoppingEventRequestSchema = z.object({
-  shoppingEventId: z.string().uuid(),
-  familyId: z.uuid(),
+  shoppingEventId: z.uuid(),
   totalPaid: z.number().min(0),
 });
 
 export const getShoppingEventListRequestSchema = z.object({
-  familyId: z.string().uuid(),
   status: z.enum(validShoppingEventStatus).optional(),
   period: z
     .object({
@@ -101,6 +101,7 @@ export class ShoppingEventController extends FastifyController {
   }
   registerRoutes(app: FastifyTypedInstance): void {
     app.addHook('preHandler', clerkAuthorizationMiddleware);
+    app.addHook('preHandler', familyBarrierMiddleware);
 
     app.post(
       '/start',
@@ -108,6 +109,7 @@ export class ShoppingEventController extends FastifyController {
         schema: {
           tags: [this.prefix],
           description: 'Start a shopping event',
+          summary: 'Iniciar evento de compras',
           body: startShoppingEventRequestSchema,
           response: {
             200: startShoppingEventResponseSchema,
@@ -116,8 +118,9 @@ export class ShoppingEventController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { familyId, marketId } = request.body;
-        const { userId } = request.auth;
+        const { familyId } = request.context;
+        const { marketId } = request.body;
+        const { userId } = request.context.auth;
         const shoppingEvent = await this.startShoppingEvent.execute({
           userId,
           familyId,
@@ -141,6 +144,7 @@ export class ShoppingEventController extends FastifyController {
         schema: {
           tags: [this.prefix],
           description: 'End a shopping event',
+          summary: 'Finalizar evento de compras',
           body: endShoppingEventRequestSchema,
           response: {
             200: shoppingEventSummaryDtoSchema,
@@ -153,7 +157,8 @@ export class ShoppingEventController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { shoppingEventId, familyId, totalPaid } = request.body;
+        const { shoppingEventId, totalPaid } = request.body;
+        const { familyId } = request.context;
 
         const shoppingEvent = await this.endShoppingEvent.execute({
           familyId,
@@ -171,6 +176,7 @@ export class ShoppingEventController extends FastifyController {
         schema: {
           tags: [this.prefix],
           description: 'Get a list of shopping events',
+          summary: 'Listar eventos de compras',
           querystring: getShoppingEventListRequestSchema,
           response: {
             200: getShoppingEventListResponseSchema,
@@ -183,15 +189,9 @@ export class ShoppingEventController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const {
-          familyId,
-          status,
-          period,
-          pageIndex,
-          pageSize,
-          orderBy,
-          orderDirection,
-        } = request.query;
+        const { familyId } = request.context;
+        const { status, period, pageIndex, pageSize, orderBy, orderDirection } =
+          request.query;
         const shoppingEvents = await this.getShoppingEventList.execute({
           familyId,
           status,
@@ -231,6 +231,7 @@ export class ShoppingEventController extends FastifyController {
         schema: {
           tags: [this.prefix],
           description: 'Get a shopping event by id',
+          summary: 'Obter evento de compras por id',
           params: getShoppingEventByIdRequestSchema,
           response: {
             200: shoppingEventSummaryDtoSchema,

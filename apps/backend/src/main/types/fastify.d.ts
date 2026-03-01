@@ -1,9 +1,12 @@
 import '@clerk/fastify';
 declare module 'fastify' {
   interface FastifyRequest {
-    auth: {
-      userId: string;
-      isAuthenticated: boolean;
+    context: {
+      auth: {
+        userId: string;
+        isAuthenticated: boolean;
+      };
+      familyId: string;
     };
   }
 }
