@@ -10,7 +10,7 @@ export class FamilyNotFoundException extends BaseException {
 }
 
 export class InvalidFamilyInvitationCodeException extends BaseException {
-  statusCode = HttpStatusCode.UnprocessableEntity;
+  statusCode = HttpStatusCode.BadRequest;
 
   constructor() {
     super('O código de convite da família é inválido');
@@ -18,7 +18,7 @@ export class InvalidFamilyInvitationCodeException extends BaseException {
 }
 
 export class FamilyAlreadyExistsException extends BaseException {
-  statusCode = HttpStatusCode.UnprocessableEntity;
+  statusCode = HttpStatusCode.Conflict;
 
   constructor() {
     super('A família já existe');
@@ -26,7 +26,7 @@ export class FamilyAlreadyExistsException extends BaseException {
 }
 
 export class UserNotAFamilyOwnerException extends BaseException {
-  statusCode = HttpStatusCode.UnprocessableEntity;
+  statusCode = HttpStatusCode.BadRequest;
 
   constructor() {
     super('O usuário não é dono da família');
@@ -34,7 +34,7 @@ export class UserNotAFamilyOwnerException extends BaseException {
 }
 
 export class FamilyOwnerCannotBeRemovedException extends BaseException {
-  statusCode = HttpStatusCode.UnprocessableEntity;
+  statusCode = HttpStatusCode.BadRequest;
 
   constructor() {
     super('O dono da família não pode ser removido');
@@ -42,7 +42,7 @@ export class FamilyOwnerCannotBeRemovedException extends BaseException {
 }
 
 export class FamilyWithoutMembersException extends BaseException {
-  statusCode = HttpStatusCode.UnprocessableEntity;
+  statusCode = HttpStatusCode.BadRequest;
 
   constructor() {
     super('A família não possui membros');
@@ -50,7 +50,7 @@ export class FamilyWithoutMembersException extends BaseException {
 }
 
 export class UserAlreadyAFamilyMemberException extends BaseException {
-  statusCode = HttpStatusCode.UnprocessableEntity;
+  statusCode = HttpStatusCode.Conflict;
 
   constructor() {
     super('O usuário já é membro da família');
@@ -58,7 +58,7 @@ export class UserAlreadyAFamilyMemberException extends BaseException {
 }
 
 export class TargetUserNotAFamilyMemberException extends BaseException {
-  statusCode = HttpStatusCode.UnprocessableEntity;
+  statusCode = HttpStatusCode.BadRequest;
 
   constructor() {
     super('O usuário não é membro da família');
@@ -66,6 +66,14 @@ export class TargetUserNotAFamilyMemberException extends BaseException {
 }
 
 export class UserNotAFamilyMemberException extends BaseException {
+  statusCode = HttpStatusCode.BadRequest;
+
+  constructor() {
+    super('O usuário não é membro da família');
+  }
+}
+
+export class UserNotAFamilyMemberBarrierException extends BaseException {
   statusCode = HttpStatusCode.Unauthorized;
 
   constructor() {
