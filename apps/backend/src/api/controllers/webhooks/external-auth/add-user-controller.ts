@@ -8,7 +8,7 @@ import { injection } from '@/main/di/injection-tokens';
 
 const { usecases } = injection;
 
-export const webhookExternalAuthAddUserRequestSchema = z
+const webhookExternalAuthAddUserRequestSchema = z
   .object({
     type: z.enum(authWebhooksTypeList),
     data: z

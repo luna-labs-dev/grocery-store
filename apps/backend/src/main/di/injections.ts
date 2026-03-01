@@ -19,6 +19,7 @@ import {
   RemoveProductFromCartController,
   StartShoppingEventController,
   UpdateProductInCartController,
+  WebhookAuthController,
   WebhookExternalAuthAddUserController,
 } from '@/api';
 import type { FastifyController } from '@/api/contracts/fastify-controller';
@@ -224,4 +225,8 @@ export const registerInjections = () => {
     ShoppingEventController,
   );
   container.register<FastifyController>(controllers.fastify, CartController);
+  container.register<FastifyController>(
+    controllers.fastify,
+    WebhookAuthController,
+  );
 };

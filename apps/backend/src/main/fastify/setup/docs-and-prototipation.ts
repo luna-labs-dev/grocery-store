@@ -24,14 +24,15 @@ export const setupDocsAndPrototipation = (app: FastifyTypedInstance) => {
         },
         version: '1.0.0',
       },
+
       tags: [
+        { name: 'family', description: 'Endpoints relacionados a familias' },
+        { name: 'market', description: 'Endpoints relacionados a mercados' },
         {
           name: 'shopping-event',
           description: 'Endpoints relacionados a eventos de compra',
         },
         { name: 'cart', description: 'Endpoints relacionados ao carrinho' },
-        { name: 'market', description: 'Endpoints relacionados a mercados' },
-        { name: 'family', description: 'Endpoints relacionados a familias' },
       ],
     },
     transform: jsonSchemaTransform,
