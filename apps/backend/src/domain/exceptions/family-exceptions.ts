@@ -66,7 +66,7 @@ export class TargetUserNotAFamilyMemberException extends BaseException {
 }
 
 export class UserNotAFamilyMemberException extends BaseException {
-  statusCode = HttpStatusCode.UnprocessableEntity;
+  statusCode = HttpStatusCode.Unauthorized;
 
   constructor() {
     super('O usuário não é membro da família');

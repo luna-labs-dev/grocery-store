@@ -1,32 +1,16 @@
 import { container } from 'tsyringe';
 import { env } from '../config/env';
 import type { FastifyTypedInstance } from '../fastify/types';
-import { app } from '../fastify-server';
+import { app } from '../server';
 import { injection } from './injection-tokens';
 import {
-  AddFamilyController,
-  AddProductToCartController,
-  type Controller,
-  EndShoppingEventController,
-  GetFamilyController,
-  GetMarketByIdController,
-  GetMarketListController,
-  GetShoppingEventByIdController,
-  GetShoppingEventListController,
-  JoinFamilyController,
-  LeaveFamilyController,
-  RemoveFamilyMemberController,
-  RemoveProductFromCartController,
-  StartShoppingEventController,
-  UpdateProductInCartController,
+  CartController,
+  FamilyController,
+  type FastifyController,
+  MarketController,
+  ShoppingEventController,
   WebhookAuthController,
-  WebhookExternalAuthAddUserController,
 } from '@/api';
-import type { FastifyController } from '@/api/contracts/fastify-controller';
-import { CartController } from '@/api/controllers/cart-controller';
-import { FamilyController } from '@/api/controllers/family-controller';
-import { MarketController } from '@/api/controllers/market-controller';
-import { ShoppingEventController } from '@/api/controllers/shopping-event-controller';
 import {
   DbAddFamily,
   DbAddProductToCart,
@@ -164,58 +148,6 @@ export const registerInjections = () => {
   );
 
   // Api
-  container.register<Controller>(
-    controllers.getMarketList,
-    GetMarketListController,
-  );
-  container.register<Controller>(
-    controllers.getMarketById,
-    GetMarketByIdController,
-  );
-  container.register<Controller>(
-    controllers.startShoppingEvent,
-    StartShoppingEventController,
-  );
-  container.register<Controller>(
-    controllers.endShoppingEvent,
-    EndShoppingEventController,
-  );
-  container.register<Controller>(
-    controllers.getShoppingEventList,
-    GetShoppingEventListController,
-  );
-  container.register<Controller>(
-    controllers.getShoppingEventById,
-    GetShoppingEventByIdController,
-  );
-  container.register<Controller>(
-    controllers.addProductToCart,
-    AddProductToCartController,
-  );
-  container.register<Controller>(
-    controllers.updateProductInCart,
-    UpdateProductInCartController,
-  );
-  container.register<Controller>(
-    controllers.removeProductFromCart,
-    RemoveProductFromCartController,
-  );
-  container.register<Controller>(controllers.addFamily, AddFamilyController);
-  container.register<Controller>(controllers.joinFamily, JoinFamilyController);
-  container.register<Controller>(
-    controllers.leaveFamily,
-    LeaveFamilyController,
-  );
-  container.register<Controller>(controllers.getFamily, GetFamilyController);
-  container.register<Controller>(
-    controllers.removeFamilyMember,
-    RemoveFamilyMemberController,
-  );
-
-  container.register<Controller>(
-    controllers.webhooks.externalAuthService.addUser,
-    WebhookExternalAuthAddUserController,
-  );
 
   // Fastify Controllers
   container.register<FastifyController>(controllers.fastify, FamilyController);

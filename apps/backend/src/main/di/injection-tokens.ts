@@ -32,24 +32,5 @@ export const injection = {
   },
   controllers: {
     fastify: 'fastify-controllers',
-    getMarketList: 'get-market-list-controller',
-    getMarketById: 'get-market-by-id-controller',
-    startShoppingEvent: 'start-shopping-event-controller',
-    endShoppingEvent: 'end-shopping-event-controller',
-    getShoppingEventList: 'get-shopping-event-list-controller',
-    getShoppingEventById: 'get-shopping-event-by-id-controller',
-    addProductToCart: 'add-product-to-cart-controller',
-    updateProductInCart: 'update-product-in-cart-controller',
-    removeProductFromCart: 'remove-product-from-cart-controller',
-    addFamily: 'add-family-controller',
-    joinFamily: 'join-family-controller',
-    leaveFamily: 'leave-family-controller',
-    getFamily: 'get-family-controller',
-    removeFamilyMember: 'remove-family-member-controller',
-    webhooks: {
-      externalAuthService: {
-        addUser: 'webhook-external-auth-service-add-user-controller',
-      },
-    },
   },
 };
