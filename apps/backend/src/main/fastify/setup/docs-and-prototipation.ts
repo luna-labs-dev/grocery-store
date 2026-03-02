@@ -17,7 +17,6 @@ export const setupDocsAndPrototipation = (app: FastifyTypedInstance) => {
       info: {
         title: 'Grocery Store API',
         description: 'API de gerenciamento de compras',
-        summary: 'API de gerenciamento de compras',
         contact: {
           name: 'Tiago',
           url: 'https://tiagoluizpoli.lunalabs.com.br/',

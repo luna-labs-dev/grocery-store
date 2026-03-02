@@ -1,4 +1,6 @@
 import 'reflect-metadata';
+import { writeFileSync } from 'node:fs';
+import { v4 as uuid } from 'uuid';
 import { env } from './config/env';
 import { registerInjections } from './di/injections';
 import { registerControllers } from './fastify';
@@ -18,6 +20,11 @@ app
     host: baseConfig.host,
   })
   .then(async () => {
+    await app.ready();
+    const yaml = app.swagger({ yaml: true });
+    writeFileSync('./auto-generated-api.yaml', yaml);
+    uuid();
+
     await new Promise((resolve) => setTimeout(resolve, 100));
     console.log(
       `🔥 HTTP server running on http://localhost:${baseConfig.port}`,
