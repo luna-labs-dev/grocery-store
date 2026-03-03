@@ -9,7 +9,7 @@ import {
   shoppingEventSummaryDtoSchema,
   startShoppingEventRequestSchema,
   startShoppingEventResponseSchema,
-} from './helpers';
+} from '../helpers';
 import type { ShoppingEventService } from '@/application';
 import { getPossibleExceptionsSchemas } from '@/domain';
 import {

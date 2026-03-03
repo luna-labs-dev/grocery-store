@@ -6,7 +6,7 @@ import {
   getMarketListRequestSchema,
   marketItemResponseSchema,
   marketListResponseSchema,
-} from './helpers';
+} from '../helpers';
 import type { MarketService } from '@/application';
 import { getPossibleExceptionsSchemas } from '@/domain';
 import { MarketNotFoundException } from '@/domain/exceptions';

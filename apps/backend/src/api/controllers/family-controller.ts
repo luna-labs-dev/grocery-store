@@ -7,7 +7,7 @@ import {
   familyResponseSchema,
   joinFamilyRequestSchema,
   removeFamilyMemberRequestSchema,
-} from './helpers';
+} from '../helpers';
 import type { FamilyService } from '@/application';
 import { getPossibleExceptionsSchemas } from '@/domain';
 import { HttpStatusCode } from '@/domain/core/enums';

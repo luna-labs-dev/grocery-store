@@ -7,7 +7,7 @@ import {
   cartCommonRequestParamsSchema,
   mutateProductInCartRequestParamsSchema,
   updateProductInCartRequestSchema,
-} from './helpers';
+} from '../helpers';
 import type { ShoppingEventService } from '@/application';
 import { getPossibleExceptionsSchemas } from '@/domain';
 import {
