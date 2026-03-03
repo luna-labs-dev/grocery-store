@@ -8,14 +8,8 @@ import {
   joinFamilyRequestSchema,
   removeFamilyMemberRequestSchema,
 } from './helpers';
-import {
-  type AddFamily,
-  type GetFamily,
-  getPossibleExceptionsSchemas,
-  type JoinFamily,
-  type LeaveFamily,
-  type RemoveFamilyMember,
-} from '@/domain';
+import type { FamilyService } from '@/application';
+import { getPossibleExceptionsSchemas } from '@/domain';
 import { HttpStatusCode } from '@/domain/core/enums';
 import {
   FamilyNotFoundException,
@@ -37,12 +31,8 @@ const { usecases } = injection;
 @injectable()
 export class FamilyController extends FastifyController {
   constructor(
-    @inject(usecases.addFamily) private readonly addFamily: AddFamily,
-    @inject(usecases.getFamily) private readonly getFamily: GetFamily,
-    @inject(usecases.joinFamily) private readonly joinFamily: JoinFamily,
-    @inject(usecases.leaveFamily) private readonly leaveFamily: LeaveFamily,
-    @inject(usecases.removeFamilyMember)
-    private readonly removeFamilyMember: RemoveFamilyMember,
+    @inject(usecases.familyService)
+    private readonly familyService: FamilyService,
   ) {
     super();
   }
@@ -55,7 +45,7 @@ export class FamilyController extends FastifyController {
       {
         schema: {
           tags: [this.prefix],
-          description: 'Get Family',
+          description: 'Get the family of the current user',
           summary: 'Obter família',
           operationId: 'getFamily',
           response: {
@@ -72,9 +62,7 @@ export class FamilyController extends FastifyController {
       async (request, reply) => {
         const { userId } = request.auth;
 
-        const family = await this.getFamily.execute({
-          userId,
-        });
+        const family = await this.familyService.getFamily({ userId });
 
         const response = familyMapper.toResponse(family);
         reply.status(HttpStatusCode.Ok).send(response);
@@ -103,7 +91,7 @@ export class FamilyController extends FastifyController {
         const { name, description } = request.body;
         const { userId } = request.auth;
 
-        const family = await this.addFamily.execute({
+        const family = await this.familyService.addFamily({
           userId,
           name,
           description,
@@ -139,10 +127,7 @@ export class FamilyController extends FastifyController {
         const { inviteCode } = request.body;
         const { userId } = request.auth;
 
-        await this.joinFamily.execute({
-          userId,
-          inviteCode,
-        });
+        await this.familyService.joinFamily({ userId, inviteCode });
 
         reply.status(HttpStatusCode.NoContent).send();
       },
@@ -170,9 +155,7 @@ export class FamilyController extends FastifyController {
       async (request, reply) => {
         const { userId } = request.auth;
 
-        await this.leaveFamily.execute({
-          userId,
-        });
+        await this.familyService.leaveFamily({ userId });
 
         reply.status(HttpStatusCode.NoContent).send();
       },
@@ -206,7 +189,7 @@ export class FamilyController extends FastifyController {
         const { memberId } = request.params;
         const { userId: authUserId } = request.auth;
 
-        await this.removeFamilyMember.execute({
+        await this.familyService.removeFamilyMember({
           userId: authUserId,
           targetUserId: memberId,
         });

@@ -7,11 +7,8 @@ import {
   marketItemResponseSchema,
   marketListResponseSchema,
 } from './helpers';
-import {
-  type GetMarketById,
-  type GetMarketList,
-  getPossibleExceptionsSchemas,
-} from '@/domain';
+import type { MarketService } from '@/application';
+import { getPossibleExceptionsSchemas } from '@/domain';
 import { MarketNotFoundException } from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 import {
@@ -25,10 +22,8 @@ const { usecases } = injection;
 @injectable()
 export class MarketController extends FastifyController {
   constructor(
-    @inject(usecases.getMarketList)
-    private readonly getMarketList: GetMarketList,
-    @inject(usecases.getMarketById)
-    private readonly getMarketById: GetMarketById,
+    @inject(usecases.marketService)
+    private readonly marketService: MarketService,
   ) {
     super();
   }
@@ -54,7 +49,6 @@ export class MarketController extends FastifyController {
       },
       async (request, reply) => {
         const { query } = request;
-
         const {
           location,
           search,
@@ -65,7 +59,7 @@ export class MarketController extends FastifyController {
           expand,
         } = query;
 
-        const market = await this.getMarketList.execute({
+        const market = await this.marketService.getMarketList({
           search,
           pageIndex,
           pageSize,
@@ -114,7 +108,7 @@ export class MarketController extends FastifyController {
         const { marketId } = request.params;
         const { location } = request.query;
 
-        const market = await this.getMarketById.execute({
+        const market = await this.marketService.getMarketById({
           marketId,
           location,
         });

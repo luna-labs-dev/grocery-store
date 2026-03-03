@@ -2,7 +2,8 @@ import { inject, injectable } from 'tsyringe';
 import { z } from 'zod';
 import { authWebhooksTypeList } from './types';
 import { FastifyController } from '@/api/contracts/fastify-controller';
-import { type AddUser, getPossibleExceptionsSchemas } from '@/domain';
+import type { UserService } from '@/application';
+import { getPossibleExceptionsSchemas } from '@/domain';
 import { UserAlreadyExistsException } from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 import type { FastifyTypedInstance } from '@/main/fastify';
@@ -22,9 +23,13 @@ const webhookExternalAuthAddUserRequestSchema = z
 
 @injectable()
 export class WebhookAuthController extends FastifyController {
-  constructor(@inject(usecases.addUser) private readonly addUser: AddUser) {
+  constructor(
+    @inject(usecases.userService)
+    private readonly userService: UserService,
+  ) {
     super();
   }
+
   registerRoutes(app: FastifyTypedInstance): void {
     app.post(
       '/add-user',
@@ -44,7 +49,7 @@ export class WebhookAuthController extends FastifyController {
       async (request, reply) => {
         const { data } = request.body;
 
-        await this.addUser.execute({ externalId: data.id });
+        await this.userService.addUser({ externalId: data.id });
 
         reply.status(201).send();
       },

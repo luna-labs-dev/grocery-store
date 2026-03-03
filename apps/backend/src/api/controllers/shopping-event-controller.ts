@@ -8,13 +8,9 @@ import {
   startShoppingEventRequestSchema,
   startShoppingEventResponseSchema,
 } from './helpers';
+import type { ShoppingEventService } from '@/application';
 import {
-  type AddProductToCart,
-  type EndShoppingEvent,
-  type GetShoppingEventById,
-  type GetShoppingEventList,
   getPossibleExceptionsSchemas,
-  type StartShoppingEvent,
   shoppingEventSummaryDtoSchema,
 } from '@/domain';
 import {
@@ -35,19 +31,12 @@ const { usecases } = injection;
 @injectable()
 export class ShoppingEventController extends FastifyController {
   constructor(
-    @inject(usecases.startShoppingEvent)
-    private readonly startShoppingEvent: StartShoppingEvent,
-    @inject(usecases.endShoppingEvent)
-    private readonly endShoppingEvent: EndShoppingEvent,
-    @inject(usecases.getShoppingEventList)
-    private readonly getShoppingEventList: GetShoppingEventList,
-    @inject(usecases.getShoppingEventById)
-    private readonly getShoppingEventById: GetShoppingEventById,
-    @inject(usecases.addProductToCart)
-    private readonly addProductToCart: AddProductToCart,
+    @inject(usecases.shoppingEventService)
+    private readonly shoppingEventService: ShoppingEventService,
   ) {
     super();
   }
+
   registerRoutes(app: FastifyTypedInstance): void {
     app.addHook('preHandler', clerkAuthorizationMiddleware);
     app.addHook('preHandler', familyBarrierMiddleware);
@@ -71,11 +60,13 @@ export class ShoppingEventController extends FastifyController {
         const { familyId } = request;
         const { marketId } = request.body;
         const { userId } = request.auth;
-        const shoppingEvent = await this.startShoppingEvent.execute({
-          userId,
-          familyId,
-          marketId,
-        });
+
+        const shoppingEvent =
+          await this.shoppingEventService.startShoppingEvent({
+            userId,
+            familyId,
+            marketId,
+          });
 
         const response = {
           id: shoppingEvent.id,
@@ -111,7 +102,7 @@ export class ShoppingEventController extends FastifyController {
         const { shoppingEventId, totalPaid } = request.body;
         const { familyId } = request;
 
-        const shoppingEvent = await this.endShoppingEvent.execute({
+        const shoppingEvent = await this.shoppingEventService.endShoppingEvent({
           familyId,
           shoppingEventId,
           totalPaid,
@@ -144,18 +135,20 @@ export class ShoppingEventController extends FastifyController {
         const { familyId } = request;
         const { status, period, pageIndex, pageSize, orderBy, orderDirection } =
           request.query;
-        const shoppingEvents = await this.getShoppingEventList.execute({
-          familyId,
-          status,
-          period: period && {
-            start: new Date(period.start),
-            end: new Date(period.end),
-          },
-          pageIndex,
-          pageSize,
-          orderBy,
-          orderDirection,
-        });
+
+        const shoppingEvents =
+          await this.shoppingEventService.getShoppingEventList({
+            familyId,
+            status,
+            period: period && {
+              start: new Date(period.start),
+              end: new Date(period.end),
+            },
+            pageIndex,
+            pageSize,
+            orderBy,
+            orderDirection,
+          });
 
         const response = {
           total: shoppingEvents.total,
@@ -177,6 +170,7 @@ export class ShoppingEventController extends FastifyController {
         reply.status(200).send(response);
       },
     );
+
     app.get(
       '/:shoppingEventId',
       {
@@ -196,10 +190,12 @@ export class ShoppingEventController extends FastifyController {
       },
       async (request, reply) => {
         const { shoppingEventId, familyId } = request.params;
-        const shoppingEvent = await this.getShoppingEventById.execute({
-          familyId,
-          shoppingEventId,
-        });
+
+        const shoppingEvent =
+          await this.shoppingEventService.getShoppingEventById({
+            familyId,
+            shoppingEventId,
+          });
 
         reply.status(200).send(shoppingEvent.toSummaryDto());
       },

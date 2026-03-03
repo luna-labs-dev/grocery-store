@@ -1,32 +1,34 @@
 import { inject, injectable } from 'tsyringe';
 import type {
   AddMarketRepository,
+  GetMarketByIdRepository,
   GetMarketListRepository,
   Places,
-} from '../../contracts';
+} from '@/application/contracts';
+import type { GetMarketByIdParams, GetMarketListParams } from '@/domain';
+import { type GetMarketListResult, Market } from '@/domain';
 import {
-  type GetMarketList,
-  type GetMarketListParams,
-  type GetMarketListResult,
-  Market,
-} from '@/domain';
-import { UnexpectedException } from '@/domain/exceptions';
+  MarketNotFoundException,
+  UnexpectedException,
+} from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
 const { marketRepositories, places } = injection.infra;
 
 @injectable()
-export class DbGetMarketList implements GetMarketList {
+export class MarketService {
   constructor(
     @inject(marketRepositories)
     private readonly repositories: GetMarketListRepository &
-      AddMarketRepository,
-    @inject(places) private readonly placesService: Places,
+      AddMarketRepository &
+      GetMarketByIdRepository,
+    @inject(places)
+    private readonly placesService: Places,
   ) {}
 
-  execute = async (
+  async getMarketList(
     params: GetMarketListParams,
-  ): Promise<GetMarketListResult> => {
+  ): Promise<GetMarketListResult> {
     try {
       const { expand } = params;
 
@@ -40,27 +42,32 @@ export class DbGetMarketList implements GetMarketList {
       return markets;
     } catch (error) {
       console.error(error);
-
       throw new UnexpectedException();
     }
-  };
+  }
+
+  async getMarketById({ marketId }: GetMarketByIdParams): Promise<Market> {
+    try {
+      const market = await this.repositories.getById({ id: marketId });
+
+      if (!market) throw new MarketNotFoundException();
+
+      return market;
+    } catch (error) {
+      console.error(error);
+      throw new UnexpectedException();
+    }
+  }
 
   private async databaseSearch(
     params: GetMarketListParams,
   ): Promise<GetMarketListResult> {
     const { search, location, pageIndex, pageSize, orderBy, orderDirection } =
       params;
-    const marketCount = await this.repositories.count({
-      search,
-      location,
-    });
+    const marketCount = await this.repositories.count({ search, location });
 
-    if (marketCount === 0) {
-      return {
-        total: 0,
-        markets: [],
-      };
-    }
+    if (marketCount === 0) return { total: 0, markets: [] };
+
     const markets = await this.repositories.getAll({
       search,
       location,
@@ -70,20 +77,13 @@ export class DbGetMarketList implements GetMarketList {
       orderDirection,
     });
 
-    const response: GetMarketListResult = {
-      total: marketCount,
-      markets,
-    };
-
-    return response;
+    return { total: marketCount, markets };
   }
 
   private async googleSearch(params: GetMarketListParams): Promise<void> {
     const { location } = params;
 
-    if (!location) {
-      return;
-    }
+    if (!location) return;
 
     const googleMarkets = await this.placesService.getNearByPlaces({
       latitude: location.latitude,
@@ -106,15 +106,12 @@ export class DbGetMarketList implements GetMarketList {
       ),
     );
 
-    if (marketsToAdd.length === 0) {
-      return;
-    }
+    if (marketsToAdd.length === 0) return;
+
     await this.repositories.addMany({
       markets: marketsToAdd,
       latitude: location.latitude,
       longitude: location.longitude,
     });
-
-    return;
   }
 }

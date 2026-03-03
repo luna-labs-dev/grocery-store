@@ -8,12 +8,8 @@ import {
   mutateProductInCartRequestParamsSchema,
   updateProductInCartRequestSchema,
 } from './helpers';
-import {
-  type AddProductToCart,
-  getPossibleExceptionsSchemas,
-  type RemoveProductFromCart,
-  type UpdateProductInCart,
-} from '@/domain';
+import type { ShoppingEventService } from '@/application';
+import { getPossibleExceptionsSchemas } from '@/domain';
 import {
   ProductNotFoundException,
   ShoppingEventAlreadyEndedException,
@@ -30,19 +26,13 @@ const { usecases } = injection;
 
 @injectable()
 export class CartController extends FastifyController {
-  /**
-   *
-   */
   constructor(
-    @inject(usecases.addProductToCart)
-    private readonly addProductToCart: AddProductToCart,
-    @inject(usecases.updateProductInCart)
-    private readonly updateProductInCart: UpdateProductInCart,
-    @inject(usecases.removeProductFromCart)
-    private readonly removeProductFromCart: RemoveProductFromCart,
+    @inject(usecases.shoppingEventService)
+    private readonly cartService: ShoppingEventService,
   ) {
     super();
   }
+
   registerRoutes(app: FastifyTypedInstance) {
     app.addHook('preHandler', clerkAuthorizationMiddleware);
     app.addHook('preHandler', familyBarrierMiddleware);
@@ -72,7 +62,8 @@ export class CartController extends FastifyController {
         const { shoppingEventId } = request.params;
         const { name, amount, price, wholesaleMinAmount, wholesalePrice } =
           request.body;
-        const product = await this.addProductToCart.execute({
+
+        const product = await this.cartService.addProductToCart({
           userId,
           shoppingEventId,
           familyId,
@@ -86,6 +77,7 @@ export class CartController extends FastifyController {
         reply.status(200).send(product);
       },
     );
+
     app.put(
       '/:shoppingEventId/update-product/:productId',
       {
@@ -112,7 +104,7 @@ export class CartController extends FastifyController {
         const { name, amount, price, wholesaleMinAmount, wholesalePrice } =
           request.body;
 
-        await this.updateProductInCart.execute({
+        await this.cartService.updateProductInCart({
           shoppingEventId,
           productId,
           familyId,
@@ -126,6 +118,7 @@ export class CartController extends FastifyController {
         reply.status(204).send();
       },
     );
+
     app.delete(
       '/:shoppingEventId/remove-product/:productId',
       {
@@ -149,7 +142,7 @@ export class CartController extends FastifyController {
         const { shoppingEventId, productId } = request.params;
         const { familyId } = request;
 
-        await this.removeProductFromCart.execute({
+        await this.cartService.removeProductFromCart({
           shoppingEventId,
           productId,
           familyId,

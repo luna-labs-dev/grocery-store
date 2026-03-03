@@ -1,6 +1,6 @@
 import type { FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
-import type { GetUser } from '@/domain';
+import type { UserService } from '@/application';
 import {
   UnauthorizedException,
   UserNotAFamilyMemberBarrierException,
@@ -10,15 +10,15 @@ import { injection } from '@/main/di/injection-tokens';
 const { usecases } = injection;
 
 export const familyBarrierMiddleware = async (request: FastifyRequest) => {
-  const getUser = container.resolve<GetUser>(usecases.getUser);
+  const userService = container.resolve<UserService>(usecases.userService);
 
-  const { userId } = request.context.auth;
+  const { userId } = request.auth;
   if (!userId) {
     console.error('external user id is not provided');
     throw new UnauthorizedException();
   }
 
-  const dbUser = await getUser.execute({
+  const dbUser = await userService.getUser({
     externalId: userId,
   });
 
@@ -27,5 +27,5 @@ export const familyBarrierMiddleware = async (request: FastifyRequest) => {
     throw new UserNotAFamilyMemberBarrierException();
   }
 
-  request.context.familyId = dbUser.familyId;
+  request.familyId = dbUser.familyId;
 };
