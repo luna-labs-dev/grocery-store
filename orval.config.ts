@@ -8,8 +8,14 @@ export default defineConfig({
       schemas: './apps/frontend/src/infrastructure/api/types',
       clean: true,
       namingConvention: 'kebab-case',
-      httpClient: 'axios',
       client: 'react-query',
+      httpClient: 'axios',
+      override: {
+        mutator: {
+          path: './apps/frontend/src/config/clients/custom-http-client.ts',
+          name: 'customInstance',
+        },
+      },
       mode: 'tags',
       indexFiles: true,
     },

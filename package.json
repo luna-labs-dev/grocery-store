@@ -11,10 +11,7 @@
     "test": "vitest run --silent --reporter verbose",
     "test:watch": "vitest --silent --reporter verbose",
     "db:up": "docker compose -f docker-compose.dev.yml up -d",
-    "db:down": "docker compose -f docker-compose.dev.yml down",
-    "husky:install": "husky install",
-    "husky:prepare": "yarn husky:install && chmod ug+x .husky/* && yarn husky:install",
-    "prepare": "husky"
+    "db:down": "docker compose -f docker-compose.dev.yml down"
   },
   "keywords": [],
   "author": "",
