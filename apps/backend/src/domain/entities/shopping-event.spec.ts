@@ -57,43 +57,6 @@ describe('ShoppingEvent Entity', () => {
     expect(totals.averagePricePerUnit).toBeCloseTo(13.33, 2);
   });
 
-  it('should return correct summary DTO', () => {
-    const p1 = Product.create({
-      shoppingEventId: 'any_id',
-      name: 'Product 1',
-      amount: 2,
-      price: 10,
-      addedAt: new Date(),
-      addedBy: 'any_user',
-    });
-
-    const products = Products.create([p1]);
-    const shoppingEvent = ShoppingEvent.create({
-      familyId: 'any_family',
-      marketId: 'any_market',
-      status: 'ONGOING',
-      products,
-      createdAt: new Date(),
-      createdBy: 'any_user',
-    });
-
-    const dto = shoppingEvent.toSummaryDto();
-
-    expect(dto.id).toBe(shoppingEvent.id);
-    expect(dto.status).toBe('ONGOING');
-    expect(dto.totals.totalItemsDistinct).toBe(1);
-    expect(dto.totals.totalItemsQuantity).toBe(2);
-    expect(dto.totals.highestPrice).toBe(10);
-    expect(dto.totals.lowestPrice).toBe(10);
-    expect(dto.totals.retailPaidDifferenceValue).toBeUndefined();
-    expect(dto.totals.wholesalePaidDifferenceValue).toBeUndefined();
-    expect(dto.products).toHaveLength(1);
-    expect(dto.products[0].name).toBe('Product 1');
-    expect(dto.products[0]).toHaveProperty('totalRetailPrice');
-    expect(dto.products[0]).toHaveProperty('totalWholesalePrice');
-    expect(dto.products[0]).toHaveProperty('totalDifference');
-  });
-
   it('should handle empty products list correctly', () => {
     const products = Products.create([]);
     const shoppingEvent = ShoppingEvent.create({

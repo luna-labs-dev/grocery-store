@@ -5,14 +5,13 @@ import {
   getShoppingEventByIdRequestSchema,
   getShoppingEventListRequestSchema,
   getShoppingEventListResponseSchema,
+  shoppingEventMapper,
+  shoppingEventSummaryDtoSchema,
   startShoppingEventRequestSchema,
   startShoppingEventResponseSchema,
 } from './helpers';
 import type { ShoppingEventService } from '@/application';
-import {
-  getPossibleExceptionsSchemas,
-  shoppingEventSummaryDtoSchema,
-} from '@/domain';
+import { getPossibleExceptionsSchemas } from '@/domain';
 import {
   MarketNotFoundException,
   ShoppingEventAlreadyEndedException,
@@ -108,7 +107,7 @@ export class ShoppingEventController extends FastifyController {
           totalPaid,
         });
 
-        reply.status(200).send(shoppingEvent.toSummaryDto());
+        reply.status(200).send(shoppingEventMapper.toSummaryDto(shoppingEvent));
       },
     );
 
@@ -197,7 +196,7 @@ export class ShoppingEventController extends FastifyController {
             shoppingEventId,
           });
 
-        reply.status(200).send(shoppingEvent.toSummaryDto());
+        reply.status(200).send(shoppingEventMapper.toSummaryDto(shoppingEvent));
       },
     );
   }

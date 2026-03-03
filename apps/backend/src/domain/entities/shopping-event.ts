@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import { Entity, TimerHelper } from '../core';
 import { monetaryCalc } from '../helper';
 import type { Family } from './family';
@@ -379,105 +378,18 @@ export class ShoppingEvent extends Entity<ShoppingEventProps> {
     }
 
     return {
-      retailTotal: this.props.retailTotal,
-      wholesaleTotal: this.props.wholesaleTotal,
+      retailTotal: this.props.retailTotal ?? 0,
+      wholesaleTotal: this.props.wholesaleTotal ?? 0,
       paidValue: this.props.totalPaid,
       savingsValue: this.props.savingsValue,
       savingsPercentage: this.props.savingsPercentage,
       retailPaidDifferenceValue: this.props.retailPaidDifferenceValue,
       wholesalePaidDifferenceValue: this.props.wholesalePaidDifferenceValue,
-      totalItemsDistinct: this.props.totalItemsDistinct,
-      totalItemsQuantity: this.props.totalItemsQuantity,
-      averagePricePerUnit: this.props.averagePricePerUnit,
-      highestPrice: this.props.highestPrice,
-      lowestPrice: this.props.lowestPrice,
-    };
-  }
-
-  /**
-   * Converts the entity to a comprehensive summary DTO used by the API.
-   * Includes nested calculated totals for consistency.
-   */
-  public toSummaryDto(): ShoppingEventSummaryDto {
-    return {
-      id: this.id,
-      status: this.status,
-      market: this.market
-        ? this.market.toDto()
-        : {
-            id: this.marketId,
-          },
-      totals: this.getCalculatedTotals(),
-      products: this.products.getItems().map((prod) => {
-        const { totalsRetailOnly, totalsWithWhosale, totalsDifference } =
-          prod.getCalculatedTotals();
-        return {
-          id: prod.id,
-          name: prod.name,
-          amount: prod.amount,
-          wholesaleMinAmount: prod.wholesaleMinAmount,
-          price: prod.price,
-          wholesalePrice: prod.wholesalePrice,
-          totalRetailPrice: totalsRetailOnly,
-          totalWholesalePrice: totalsWithWhosale,
-          totalDifference: totalsDifference,
-          addedAt: prod.addedAt,
-        };
-      }),
-      elapsedTime: this.elapsedTime,
-      createdAt: this.createdAt,
-      finishedAt: this.finishedAt,
-      createdBy: this.createdBy,
+      totalItemsDistinct: this.props.totalItemsDistinct ?? 0,
+      totalItemsQuantity: this.props.totalItemsQuantity ?? 0,
+      averagePricePerUnit: this.props.averagePricePerUnit ?? 0,
+      highestPrice: this.props.highestPrice ?? 0,
+      lowestPrice: this.props.lowestPrice ?? 0,
     };
   }
 }
-
-export const shoppingEventSummaryDtoSchema = z.object({
-  id: z.uuid(),
-  status: z.enum(validShoppingEventStatus),
-  market: z.object({
-    id: z.uuid(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    address: z.string().optional(),
-    createdAt: z.date().optional(),
-    updatedAt: z.date().optional(),
-    deletedAt: z.date().optional(),
-  }),
-  totals: z.object({
-    retailTotal: z.number().optional(),
-    wholesaleTotal: z.number().optional(),
-    paidValue: z.number().optional(),
-    savingsValue: z.number().optional(),
-    savingsPercentage: z.number().optional(),
-    retailPaidDifferenceValue: z.number().optional(),
-    wholesalePaidDifferenceValue: z.number().optional(),
-    totalItemsDistinct: z.number().optional(),
-    totalItemsQuantity: z.number().optional(),
-    averagePricePerUnit: z.number().optional(),
-    highestPrice: z.number().optional(),
-    lowestPrice: z.number().optional(),
-  }),
-  products: z.array(
-    z.object({
-      id: z.uuid(),
-      name: z.string(),
-      amount: z.number().optional(),
-      wholesaleMinAmount: z.number().optional(),
-      price: z.number().optional(),
-      wholesalePrice: z.number().optional(),
-      totalRetailPrice: z.number(),
-      totalWholesalePrice: z.number(),
-      totalDifference: z.number(),
-      addedAt: z.date(),
-    }),
-  ),
-  elapsedTime: z.number().optional(),
-  createdAt: z.date(),
-  finishedAt: z.date().optional(),
-  createdBy: z.string(),
-});
-
-export type ShoppingEventSummaryDto = z.infer<
-  typeof shoppingEventSummaryDtoSchema
->;

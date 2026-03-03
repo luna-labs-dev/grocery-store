@@ -58,3 +58,53 @@ export const getShoppingEventByIdRequestSchema = z.object({
   familyId: z.uuid(),
   shoppingEventId: z.uuid(),
 });
+
+export const shoppingEventSummaryDtoSchema = z.object({
+  id: z.uuid(),
+  status: z.enum(validShoppingEventStatus),
+  market: z.object({
+    id: z.uuid(),
+    name: z.string().optional(),
+    description: z.string().optional(),
+    address: z.string().optional(),
+    createdAt: z.date().optional(),
+    updatedAt: z.date().optional(),
+    deletedAt: z.date().optional(),
+  }),
+  totals: z.object({
+    retailTotal: z.number(),
+    wholesaleTotal: z.number(),
+    paidValue: z.number().optional(),
+    savingsValue: z.number().optional(),
+    savingsPercentage: z.number().optional(),
+    retailPaidDifferenceValue: z.number().optional(),
+    wholesalePaidDifferenceValue: z.number().optional(),
+    totalItemsDistinct: z.number(),
+    totalItemsQuantity: z.number(),
+    averagePricePerUnit: z.number(),
+    highestPrice: z.number(),
+    lowestPrice: z.number(),
+  }),
+  products: z.array(
+    z.object({
+      id: z.uuid(),
+      name: z.string(),
+      amount: z.number(),
+      wholesaleMinAmount: z.number().optional(),
+      price: z.number(),
+      wholesalePrice: z.number().optional(),
+      totalRetailPrice: z.number(),
+      totalWholesalePrice: z.number(),
+      totalDifference: z.number(),
+      addedAt: z.date(),
+    }),
+  ),
+  elapsedTime: z.number().optional(),
+  createdAt: z.date(),
+  finishedAt: z.date().optional(),
+  createdBy: z.string(),
+});
+
+export type ShoppingEventSummaryDto = z.infer<
+  typeof shoppingEventSummaryDtoSchema
+>;

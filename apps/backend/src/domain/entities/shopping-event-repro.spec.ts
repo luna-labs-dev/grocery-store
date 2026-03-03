@@ -4,33 +4,6 @@ import { Products } from './products';
 import { ShoppingEvent } from './shopping-event';
 
 describe('ShoppingEvent Entity - Repro', () => {
-  it('should not return difference values if totalPaid is 0 (even if set)', () => {
-    const p1 = Product.create({
-      shoppingEventId: 'any_id',
-      name: 'Product 1',
-      amount: 2,
-      price: 10,
-      addedAt: new Date(),
-      addedBy: 'any_user',
-    });
-
-    const products = Products.create([p1]);
-    const shoppingEvent = ShoppingEvent.create({
-      familyId: 'any_family',
-      marketId: 'any_market',
-      status: 'ONGOING',
-      totalPaid: 0,
-      products,
-      createdAt: new Date(),
-      createdBy: 'any_user',
-    });
-
-    const dto = shoppingEvent.toSummaryDto();
-
-    expect(dto.totals.retailPaidDifferenceValue).toBeUndefined();
-    expect(dto.totals.wholesalePaidDifferenceValue).toBeUndefined();
-  });
-
   it('should optimize calculations using dirty flag', () => {
     const p1 = Product.create({
       shoppingEventId: 'any_id',
