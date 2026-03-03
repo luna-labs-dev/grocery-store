@@ -9,5 +9,5 @@ export const clerkAuthorizationMiddleware = async (request: FastifyRequest) => {
     throw new UnauthorizedException();
   }
 
-  request.context.auth = auth;
+  request.auth = auth;
 };
