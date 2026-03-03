@@ -10,11 +10,11 @@ import {
   CardTitle,
 } from '@/components';
 import HourglassIcon from '@/components/hourglass-icon';
-import type { MarketListItem } from '@/features/market';
 import { useStartShoppingEventMutation } from '@/features/shopping-event/infrastructure';
+import type { ListMarkets200ItemsItem } from '@/infrastructure/api/types';
 
 export interface MarketItemParams {
-  market: MarketListItem;
+  market: ListMarkets200ItemsItem;
 }
 
 const getDistanceVariant = (distance: number) => {
@@ -69,7 +69,9 @@ export const MarketItem = ({ market }: MarketItemParams) => {
             disabled={isPending}
             onClick={async () => {
               const shoppingEvent = await mutateAsync({
-                marketId: market.id,
+                data: {
+                  marketId: market.id,
+                },
               });
               navigate({
                 to: '/shopping-event/$shoppingEventId',

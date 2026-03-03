@@ -20,11 +20,13 @@ import { Page } from '@/components/layout/page-layout';
 import { useGetShoppingEventByIdQuery } from '@/features/shopping-event/infrastructure';
 import { cn } from '@/lib/utils';
 
+interface ShoppingEventDetailsPageProps {
+  shoppingEventId: string;
+}
+
 export const ShoppingEventDetailsPage = ({
   shoppingEventId,
-}: {
-  shoppingEventId: string;
-}) => {
+}: ShoppingEventDetailsPageProps) => {
   const { data, refetch, isFetching } = useGetShoppingEventByIdQuery({
     shoppingEventId,
   });

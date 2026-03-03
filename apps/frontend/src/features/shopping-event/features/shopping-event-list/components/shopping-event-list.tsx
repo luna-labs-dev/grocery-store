@@ -11,8 +11,8 @@ import {
   Skeleton,
   Spinner,
 } from '@/components';
-import type { FetchShoppingEventListParams } from '@/features/shopping-event/domain';
 import { useGetShoppingEventListQuery } from '@/features/shopping-event/infrastructure';
+import type { GetShoppingEventListParams } from '@/infrastructure/api/types';
 
 function ShoppingEventListLoading() {
   return (
@@ -69,7 +69,7 @@ function ShoppingEventListEmpty() {
 }
 
 interface Props {
-  paginationParams: FetchShoppingEventListParams;
+  paginationParams: GetShoppingEventListParams;
 }
 export function ShoppingEventList({ paginationParams }: Props) {
   const { data, isLoading, isError } =

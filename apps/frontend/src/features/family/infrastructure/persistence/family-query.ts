@@ -1,37 +1,31 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { AxiosError } from 'axios';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { errorMapper } from '@/domain';
 import {
-  httpCreateFamily,
-  httpGetFamily,
-  httpJoinFamily,
-  httpRemoveFamilyMember,
-} from '../http';
-import { errorMapper, type HttpError } from '@/domain';
-import type {
-  CreateFamilyParams,
-  Family,
-  JoinFamilyParams,
-  RemoveFamilyMemberParams,
-} from '@/features/family';
+  useCreateFamily,
+  useGetFamily,
+  useJoinFamily,
+  useRemoveFamilyMember,
+} from '@/infrastructure/api/family';
 
 export const useGetFamilyQuery = () => {
   const [isFamilyMember, setIsFamilyMember] = useState<boolean>(true);
 
-  const query = useQuery<Family, AxiosError | HttpError>({
-    queryKey: ['family'],
-    queryFn: () => httpGetFamily(),
-    staleTime: 1000 * 5,
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+  const query = useGetFamily({
+    query: {
+      queryKey: ['family'],
+      staleTime: 1000 * 5,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+    },
   });
 
   const { error } = query;
 
   useEffect(() => {
-    if (error?.code === 'USER_NOT_A_FAMILY_MEMBER_ERROR') {
+    if (error?.code === 'USER_NOT_A_FAMILY_MEMBER_BARRIER_EXCEPTION') {
       setIsFamilyMember(false);
     }
     if (!error) {
@@ -45,29 +39,26 @@ export const useGetFamilyQuery = () => {
 export const useCreateFamilyMutation = () => {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<
-    Family,
-    AxiosError | HttpError,
-    CreateFamilyParams
-  >({
-    mutationFn: (params: CreateFamilyParams) => httpCreateFamily(params),
-    onError: (error, params) => {
-      const { title, description } = errorMapper(error.code ?? '')(params);
+  const mutation = useCreateFamily({
+    mutation: {
+      onError: (error, params) => {
+        const { title, description } = errorMapper(error.code ?? '')(params);
 
-      toast.error(title, {
-        description,
-      });
-    },
-    onSuccess: (_, params) => {
-      toast.success('Família criada', {
-        description: `a família "${params.name}" foi criada com sucesso`,
-      });
-    },
-    onSettled: (data) => {
-      console.log(data);
-      queryClient.invalidateQueries({
-        queryKey: ['family'],
-      });
+        toast.error(title, {
+          description,
+        });
+      },
+      onSuccess: (_, params) => {
+        toast.success('Família criada', {
+          description: `a família "${params.data.name}" foi criada com sucesso`,
+        });
+      },
+      onSettled: (data) => {
+        console.log(data);
+        queryClient.invalidateQueries({
+          queryKey: ['family'],
+        });
+      },
     },
   });
 
@@ -77,27 +68,27 @@ export const useCreateFamilyMutation = () => {
 export const useJoinFamilyMutation = () => {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<void, AxiosError | HttpError, JoinFamilyParams>({
-    mutationFn: (params: JoinFamilyParams) => httpJoinFamily(params),
+  const mutation = useJoinFamily({
+    mutation: {
+      onError: (error, params) => {
+        const { title, description } = errorMapper(error.code ?? '')(params);
 
-    onError: (error, params) => {
-      const { title, description } = errorMapper(error.code ?? '')(params);
+        toast.error(title, {
+          description,
+        });
+      },
 
-      toast.error(title, {
-        description,
-      });
-    },
+      onSuccess: () => {
+        toast.success('Entrou na família', {
+          description: 'Agora você faz parte da família',
+        });
+      },
 
-    onSuccess: () => {
-      toast.success('Entrou na família', {
-        description: 'Agora você faz parte da família',
-      });
-    },
-
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['family'],
-      });
+      onSettled: () => {
+        queryClient.invalidateQueries({
+          queryKey: ['family'],
+        });
+      },
     },
   });
 
@@ -107,30 +98,25 @@ export const useJoinFamilyMutation = () => {
 export const useRemoveFamilyMemberMutation = () => {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<
-    void,
-    AxiosError | HttpError,
-    RemoveFamilyMemberParams
-  >({
-    mutationFn: (params: RemoveFamilyMemberParams) =>
-      httpRemoveFamilyMember(params),
+  const mutation = useRemoveFamilyMember({
+    mutation: {
+      onError: (error, params) => {
+        const { title, description } = errorMapper(error.code ?? '')(params);
 
-    onError: (error, params) => {
-      const { title, description } = errorMapper(error.code ?? '')(params);
+        toast.error(title, {
+          description,
+        });
+      },
 
-      toast.error(title, {
-        description,
-      });
-    },
+      onSuccess: () => {
+        toast.success('Membro removido da família');
+      },
 
-    onSuccess: () => {
-      toast.success('Membro removido da família');
-    },
-
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['family'],
-      });
+      onSettled: () => {
+        queryClient.invalidateQueries({
+          queryKey: ['family'],
+        });
+      },
     },
   });
 

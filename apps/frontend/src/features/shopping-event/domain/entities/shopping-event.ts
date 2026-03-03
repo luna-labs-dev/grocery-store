@@ -58,7 +58,7 @@ export interface ShoppingEventListResponse
   extends FetchListResponse<ShoppingEventListItem> {}
 
 export interface GetShoppingEventByIdParams {
-  shoppingEventId?: string;
+  shoppingEventId: string;
 }
 
 export interface StartShoppingEventParams {

@@ -10,13 +10,13 @@ import {
   AlertDialogTrigger,
 } from '@/components';
 import { fCurrency } from '@/domain';
-import type { Product } from '@/features/shopping-event/domain';
 import { useRemoveProductFromCartMutation } from '@/features/shopping-event/infrastructure';
+import type { GetShoppingEventById200ProductsItem } from '@/infrastructure/api/types';
 
 interface RemoveProductFromCartDialogProps {
   children: React.ReactElement;
   shoppingEventId: string;
-  product: Product;
+  product: GetShoppingEventById200ProductsItem;
 }
 export const RemoveProductFromCartDialog = ({
   children,

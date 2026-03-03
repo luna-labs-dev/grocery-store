@@ -3,13 +3,11 @@ import type {
   RefetchOptions,
 } from '@tanstack/react-query';
 import { ProductItem } from './shopping-event-product-item';
-import type {
-  Product,
-  ShoppingEventStatus,
-} from '@/features/shopping-event/domain';
+import type { ShoppingEventStatus } from '@/features/shopping-event/domain';
+import type { GetShoppingEventById200ProductsItem } from '@/infrastructure/api/types';
 
 interface ShoppingEventDetailsProductsProps {
-  products: Product[];
+  products: GetShoppingEventById200ProductsItem[];
   shoppingEventId: string;
   shoppingEventStatus: ShoppingEventStatus;
   refetch: (options?: RefetchOptions) => Promise<QueryObserverResult<any, any>>;
