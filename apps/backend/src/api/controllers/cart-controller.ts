@@ -57,14 +57,13 @@ export class CartController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { userId } = request.auth;
-        const { familyId } = request;
+        const { auth, familyId } = request;
         const { shoppingEventId } = request.params;
         const { name, amount, price, wholesaleMinAmount, wholesalePrice } =
           request.body;
 
         const product = await this.cartService.addProductToCart({
-          userId,
+          userId: auth.userId,
           shoppingEventId,
           familyId,
           name,
@@ -74,7 +73,10 @@ export class CartController extends FastifyController {
           wholesalePrice,
         });
 
-        reply.status(200).send(product);
+        reply.status(200).send({
+          id: product.id,
+          addedAt: product.addedAt,
+        });
       },
     );
 

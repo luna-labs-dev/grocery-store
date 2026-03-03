@@ -2,10 +2,10 @@ import { inject, injectable } from 'tsyringe';
 import { FastifyController } from '../contracts/fastify-controller';
 import {
   endShoppingEventRequestSchema,
-  getShoppingEventByIdRequestSchema,
   getShoppingEventListRequestSchema,
   getShoppingEventListResponseSchema,
   shoppingEventMapper,
+  shoppingEventParamSchema,
   shoppingEventSummaryDtoSchema,
   startShoppingEventRequestSchema,
   startShoppingEventResponseSchema,
@@ -86,6 +86,7 @@ export class ShoppingEventController extends FastifyController {
           description: 'End a shopping event',
           summary: 'Finalizar evento de compras',
           operationId: 'endShoppingEvent',
+          params: shoppingEventParamSchema,
           body: endShoppingEventRequestSchema,
           response: {
             200: shoppingEventSummaryDtoSchema,
@@ -98,7 +99,8 @@ export class ShoppingEventController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { shoppingEventId, totalPaid } = request.body;
+        const { shoppingEventId } = request.params;
+        const { totalPaid } = request.body;
         const { familyId } = request;
 
         const shoppingEvent = await this.shoppingEventService.endShoppingEvent({
@@ -178,7 +180,7 @@ export class ShoppingEventController extends FastifyController {
           description: 'Get a shopping event by id',
           summary: 'Obter evento de compras por id',
           operationId: 'getShoppingEventById',
-          params: getShoppingEventByIdRequestSchema,
+          params: shoppingEventParamSchema,
           response: {
             200: shoppingEventSummaryDtoSchema,
             ...getPossibleExceptionsSchemas([

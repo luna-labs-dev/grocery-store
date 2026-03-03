@@ -2,6 +2,10 @@ import { z } from 'zod';
 import { marketItemResponseSchema } from './market-schemas';
 import { validShoppingEventStatus } from '@/domain';
 
+export const shoppingEventParamSchema = z.object({
+  shoppingEventId: z.uuid(),
+});
+
 export const startShoppingEventRequestSchema = z.object({
   marketId: z.string().max(320),
 });
@@ -14,7 +18,6 @@ export const startShoppingEventResponseSchema = z.object({
 });
 
 export const endShoppingEventRequestSchema = z.object({
-  shoppingEventId: z.uuid(),
   totalPaid: z.number().min(0),
 });
 
@@ -53,10 +56,6 @@ export const getShoppingEventListResponseSchema = z.object({
       createdAt: z.date(),
     }),
   ),
-});
-
-export const getShoppingEventByIdRequestSchema = z.object({
-  shoppingEventId: z.uuid(),
 });
 
 export const shoppingEventSummaryDtoSchema = z.object({

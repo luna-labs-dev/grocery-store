@@ -22,6 +22,7 @@ export const setupErrorHandler = (
       statusCode: 400,
       details: {
         issues: error.validation,
+        validationContext: error.validationContext,
         method: request.method,
         url: request.url,
       },
@@ -35,6 +36,7 @@ export const setupErrorHandler = (
       statusCode: 500,
       details: {
         issues: error.cause.issues,
+        validationContext: error.validationContext,
         method: request.method,
         url: request.url,
       },

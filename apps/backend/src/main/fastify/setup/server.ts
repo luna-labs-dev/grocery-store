@@ -7,6 +7,7 @@ const { baseConfig } = env;
 export const setupServer = (app: FastifyTypedInstance) => {
   app.register(fastifyCors, {
     origin: baseConfig.origins,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
   });
 };
