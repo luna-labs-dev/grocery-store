@@ -6,6 +6,7 @@ import {
   getMarketListRequestSchema,
   marketItemResponseSchema,
   marketListResponseSchema,
+  marketMapper,
 } from '../helpers';
 import type { MarketService } from '@/application';
 import { getPossibleExceptionsSchemas } from '@/domain';
@@ -71,17 +72,7 @@ export class MarketController extends FastifyController {
 
         const response = {
           total: market.total,
-          items: market.markets.map((mkt) => ({
-            id: mkt.id,
-            name: mkt.name,
-            formattedAddress: mkt.formattedAddress,
-            city: mkt.city,
-            neighborhood: mkt.neighborhood,
-            latitude: mkt.latitude,
-            longitude: mkt.longitude,
-            distance: mkt.distance,
-            createdAt: mkt.createdAt,
-          })),
+          items: marketMapper.toResponseList(market.markets),
         };
 
         reply.status(200).send(response);
@@ -113,19 +104,7 @@ export class MarketController extends FastifyController {
           location,
         });
 
-        const response = {
-          id: market.id,
-          name: market.name,
-          formattedAddress: market.formattedAddress,
-          city: market.city,
-          neighborhood: market.neighborhood,
-          latitude: market.latitude,
-          longitude: market.longitude,
-          distance: market.distance,
-          createdAt: market.createdAt,
-        };
-
-        reply.status(200).send(response);
+        reply.status(200).send(marketMapper.toResponse(market));
       },
     );
   }

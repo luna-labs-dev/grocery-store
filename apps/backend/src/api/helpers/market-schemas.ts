@@ -27,7 +27,11 @@ export const marketItemResponseSchema = z.object({
   latitude: z.number(),
   longitude: z.number(),
   distance: z.number().optional(),
+  createdAt: z.date(),
+  lastUpdatedAt: z.date(),
 });
+
+export type MarketDto = z.infer<typeof marketItemResponseSchema>;
 
 export const marketListResponseSchema = z.object({
   total: z.number(),

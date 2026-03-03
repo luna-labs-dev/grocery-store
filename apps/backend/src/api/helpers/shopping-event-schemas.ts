@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { marketItemResponseSchema } from './market-schemas';
 import { validShoppingEventStatus } from '@/domain';
 
 export const startShoppingEventRequestSchema = z.object({
@@ -55,22 +56,13 @@ export const getShoppingEventListResponseSchema = z.object({
 });
 
 export const getShoppingEventByIdRequestSchema = z.object({
-  familyId: z.uuid(),
   shoppingEventId: z.uuid(),
 });
 
 export const shoppingEventSummaryDtoSchema = z.object({
   id: z.uuid(),
   status: z.enum(validShoppingEventStatus),
-  market: z.object({
-    id: z.uuid(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    address: z.string().optional(),
-    createdAt: z.date().optional(),
-    updatedAt: z.date().optional(),
-    deletedAt: z.date().optional(),
-  }),
+  market: marketItemResponseSchema,
   totals: z.object({
     retailTotal: z.number(),
     wholesaleTotal: z.number(),

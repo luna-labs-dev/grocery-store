@@ -188,7 +188,8 @@ export class ShoppingEventController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { shoppingEventId, familyId } = request.params;
+        const { shoppingEventId } = request.params;
+        const { familyId } = request;
 
         const shoppingEvent =
           await this.shoppingEventService.getShoppingEventById({

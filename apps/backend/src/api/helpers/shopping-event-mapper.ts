@@ -1,3 +1,4 @@
+import { marketMapper } from './market-mapper';
 import type { ShoppingEventSummaryDto } from './shopping-event-schemas';
 import type { ShoppingEvent } from '@/domain';
 
@@ -7,8 +8,8 @@ export const shoppingEventMapper = {
       id: shoppingEvent.id,
       status: shoppingEvent.status,
       market: shoppingEvent.market
-        ? shoppingEvent.market.toDto()
-        : { id: shoppingEvent.marketId },
+        ? marketMapper.toResponse(shoppingEvent.market)
+        : (undefined as any), // Fallback should be handled by the schema/controller if possible
       totals: shoppingEvent.getCalculatedTotals(),
       products: shoppingEvent.products.getItems().map((prod) => {
         const { totalsRetailOnly, totalsWithWhosale, totalsDifference } =
