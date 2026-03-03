@@ -2,6 +2,13 @@ import { inject, injectable } from 'tsyringe';
 import { z } from 'zod';
 import { FastifyController } from '../contracts/fastify-controller';
 import {
+  addProductToCartRequestSchema,
+  addProductToCartResponseSchema,
+  cartCommonRequestParamsSchema,
+  mutateProductInCartRequestParamsSchema,
+  updateProductInCartRequestSchema,
+} from './helpers';
+import {
   type AddProductToCart,
   getPossibleExceptionsSchemas,
   type RemoveProductFromCart,
@@ -20,36 +27,6 @@ import {
 } from '@/main/fastify/middlewares';
 
 const { usecases } = injection;
-
-export const cartCommonRequestParamsSchema = z.object({
-  shoppingEventId: z.uuid(),
-});
-
-export const addProductToCartRequestSchema = z.object({
-  name: z.string().min(1),
-  amount: z.number().gt(0),
-  price: z.number().gt(0),
-  wholesaleMinAmount: z.number().gt(0).optional(),
-  wholesalePrice: z.number().gt(0).optional(),
-});
-
-export const addProductToCartResponseSchema = z.object({
-  id: z.uuid(),
-  addedAt: z.date(),
-});
-
-export const mutateProductInCartRequestParamsSchema =
-  cartCommonRequestParamsSchema.extend({
-    productId: z.uuid(),
-  });
-
-export const updateProductInCartRequestSchema = z.object({
-  name: z.string().min(1),
-  amount: z.number().gt(0),
-  price: z.number().gt(0),
-  wholesaleMinAmount: z.number().gt(0).optional(),
-  wholesalePrice: z.number().gt(0).optional(),
-});
 
 @injectable()
 export class CartController extends FastifyController {
@@ -90,8 +67,8 @@ export class CartController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { userId } = request.context.auth;
-        const { familyId } = request.context;
+        const { userId } = request.auth;
+        const { familyId } = request;
         const { shoppingEventId } = request.params;
         const { name, amount, price, wholesaleMinAmount, wholesalePrice } =
           request.body;
@@ -130,7 +107,7 @@ export class CartController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { familyId } = request.context;
+        const { familyId } = request;
         const { shoppingEventId, productId } = request.params;
         const { name, amount, price, wholesaleMinAmount, wholesalePrice } =
           request.body;
@@ -170,7 +147,7 @@ export class CartController extends FastifyController {
       },
       async (request, reply) => {
         const { shoppingEventId, productId } = request.params;
-        const { familyId } = request.context;
+        const { familyId } = request;
 
         await this.removeProductFromCart.execute({
           shoppingEventId,
