@@ -29,8 +29,19 @@ We are moving from an ephemeral, transaction-based product model to a **"Golden 
 
 ## 3. Core Directives (Retail Nexus Veteran)
 - **Offline First**: Scanned barcodes must work without a connection; hydration happens background/later.
-- **Deduplication over Coverage**: Better to have one high-quality, verified Coca-Cola record than ten duplicates.
-- **Trust but Verify**: Use the **5-User Consensus** for pricing; ignore outliers and "troll" reports.
+- **Circuit Breakers**: External APIs (OFF/UPCitemdb) must have aggressive timeouts (2000ms).
+- **Weigh-Scale Barcodes**: Logic must handle variable-weight barcodes (e.g., EAN-13 starting with '2').
+- **OSS Guard**: No non-OSS licensed tech (Valkey over Redis).
+
+## 4. Architectural Scars & Guardrails (Technical Deep-Dive)
+- **SCAR_07: The Signal Dead-Zone**: Hypermarket basements kill RF. Result: Partial Carts.
+    - *Defense*: Frontend Outbox Pattern + Lamport Clocks for sync resolution.
+- **SCAR_08: Image Link Decay**: External product images disappear.
+    - *Defense*: Proxy/Cache strategy in the `ExternalProductClient`.
+- **SCAR_09: Migration Lock-In**: Moving "Family" -> "Group" with live events.
+    - *Defense*: Shadow Mapping during migration (Dual-write or backward-compatible schema).
+- **SCAR_10: State Pollution**: Valkey state bleeding between test runs.
+    - *Defense*: Namespaced keys + `FLUSHDB` in integration test teardown.
 
 ## 4. Next Steps
 1.  **Infrastructure Setup**: Database schema migrations for new tables.

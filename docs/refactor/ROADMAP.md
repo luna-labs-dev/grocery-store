@@ -5,6 +5,8 @@ This backlog follows Scrum patterns to ensure every technical task delivers clea
 ## 🏁 Definition of Done (DoD) - Applied to ALL Tasks
 - [ ] Code passes Vitest unit/integration tests with 100% coverage on new logic.
 - [ ] Zod schema verification for every API boundary.
+- [ ] OSS Compliance: No non-OSS licensed dependencies (Valkey, PostgreSQL, etc.).
+- [ ] Test Isolation: Automatic `FLUSHDB` (Valkey) and DB truncation between runs.
 - [ ] Mobile-first responsive check (Google Pixel 7 / iPhone 14 Pro simulation).
 - [ ] Documentation updated (Swagger/MD).
 
@@ -20,6 +22,7 @@ This backlog follows Scrum patterns to ensure every technical task delivers clea
 - **Technical Tasks**:
     - [ ] Replace Redis with `valkey/valkey` in Compose.
     - [ ] Setup Healthchecks for all services.
+    - [ ] Configure `Pino` with Correlation IDs for socket/HTTP tracing.
     - [ ] Create `scripts/dev-up.sh` for one-click environment readiness.
 
 ---
