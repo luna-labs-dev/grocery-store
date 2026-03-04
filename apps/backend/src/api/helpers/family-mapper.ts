@@ -3,7 +3,7 @@ import type { Family, User } from '@/domain';
 
 export const userResponse = z.object({
   id: z.string(),
-  externalId: z.string(),
+  externalId: z.string().optional(),
   name: z.string().optional(),
   picture: z.string().optional(),
   email: z.string(),
@@ -14,7 +14,7 @@ export type UserResponse = z.infer<typeof userResponse>;
 export const userMapper = {
   toResponse: (user: User): UserResponse => ({
     id: user.id,
-    externalId: user.externalId,
+    externalId: user.externalId ?? undefined,
     name: user.name,
     picture: user.picture,
     email: user.email,

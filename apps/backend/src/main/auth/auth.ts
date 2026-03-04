@@ -22,9 +22,20 @@ export const auth = betterAuth({
     client: redis,
     keyPrefix: 'auth:',
   }),
+  user: {
+    additionalFields: {
+      familyId: {
+        type: 'string',
+        input: false, // Set to false if it should only be managed by the backend
+      },
+    },
+  },
   emailAndPassword: {
     enabled: true,
   },
+  trustedOrigins: Array.isArray(env.baseConfig.origins)
+    ? env.baseConfig.origins
+    : [env.baseConfig.origins],
   secret: env.auth.secret,
   baseURL: env.auth.url,
 });

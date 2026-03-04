@@ -207,7 +207,8 @@ export class DrizzleShoppingEventRepository
             ownerId: shoppingEventModel.family.ownerId,
             owner: User.create(
               {
-                externalId: shoppingEventModel.family.owner.externalId,
+                externalId:
+                  shoppingEventModel.family.owner.externalId ?? undefined,
                 email: shoppingEventModel.family.owner.email,
               },
               shoppingEventModel.family.owner.id,
@@ -221,7 +222,7 @@ export class DrizzleShoppingEventRepository
               ? shoppingEventModel.family.members.map((m: any) =>
                   User.create(
                     {
-                      externalId: m.externalId,
+                      externalId: m.externalId ?? undefined,
                       email: m.email,
                     },
                     m.id,

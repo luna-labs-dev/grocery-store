@@ -43,7 +43,7 @@ export const shoppingEventStatusEnum = pgEnum('shoppingEventStatusEnum', [
 export const familyTable = pgTable('family', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: varchar('name', { length: 100 }).unique().notNull(),
-  ownerId: uuid('ownerId').unique().notNull(),
+  ownerId: text('ownerId').unique().notNull(),
   description: text('description'),
   inviteCode: varchar('inviteCode', { length: 320 }).unique(),
   createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),

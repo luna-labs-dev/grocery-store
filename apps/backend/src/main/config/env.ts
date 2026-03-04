@@ -21,7 +21,7 @@ const envVariables = z.object({
 
   // Auth (Better Auth)
   BETTER_AUTH_SECRET: z.string().default('test-secret'),
-  BETTER_AUTH_URL: z.url().default('http://localhost'),
+  BETTER_AUTH_URL: z.string().url().default('http://localhost'),
 
   // Valkey / Redis
   VALKEY_URL: z.string().default('redis://localhost:6380'),
