@@ -17,7 +17,7 @@ export interface Market extends Entity {
 }
 
 export interface GetMarketByIdParams {
-  marketId?: string;
+  marketId: string;
   location?: {
     latitude: number;
     longitude: number;

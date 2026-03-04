@@ -13,7 +13,7 @@ import type {
   StartShoppingEventParams,
   UpdateProductInCartParams,
 } from '@/domain';
-import { Product, ProductNotFoundError, ShoppingEvent } from '@/domain';
+import { Product, ShoppingEvent } from '@/domain';
 import { Products } from '@/domain/entities/products';
 import {
   MarketNotFoundException,
@@ -259,7 +259,7 @@ export class ShoppingEventService {
 
       const product = shoppingEvent.products.getItemById(productId);
 
-      if (!product) throw new ProductNotFoundError();
+      if (!product) throw new ProductNotFoundException();
 
       shoppingEvent.removeProduct(product);
 

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useGetPosition } from '@/components/shared/get-position';
-import type { GetMarketByIdParams } from '@/features/market';
-import { useGetMarketById, useListMarkets } from '@/infrastructure/api/market';
+import { useListMarkets } from '@/infrastructure/api/market';
 import type { ListMarketsParams } from '@/infrastructure/api/types';
 
 export const useGetMarketListQuery = () => {
@@ -46,25 +45,4 @@ export const useGetMarketListQuery = () => {
     setParams,
     params,
   };
-};
-
-export const useGetMarketByIdQuery = ({
-  marketId,
-  location,
-}: GetMarketByIdParams) => {
-  const query = useGetMarketById(
-    marketId!,
-    {
-      location,
-    },
-    {
-      query: {
-        queryKey: ['get-market-by-id', marketId],
-        staleTime: 1000 * 60 * 10,
-        enabled: !!marketId,
-      },
-    },
-  );
-
-  return { ...query };
 };

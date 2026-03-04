@@ -13,6 +13,7 @@ const envToLogger = {
   },
   production: true,
   local: false,
+  test: false,
 };
 
 const { baseConfig } = env;

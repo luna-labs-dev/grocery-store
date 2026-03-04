@@ -7,7 +7,7 @@
     "dev:front": "pnpm --filter frontend dev",
     "dev:back": "pnpm --filter backend dev",
     "commit": "cz",
-    "lint": "biome check --write --unsafe apps/**/src packages/**/src",
+    "lint": "biome check --write --unsafe apps/**/src apps/**/tests",
     "test": "vitest run --silent --reporter verbose",
     "test:watch": "vitest --silent --reporter verbose",
     "db:up": "docker compose -f docker-compose.dev.yml up -d",
