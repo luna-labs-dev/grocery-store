@@ -41,7 +41,7 @@ export const RemoveFamilyMemberAlertDialog = ({ memberId }: Props) => {
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={() => {
-              mutateAsync({ userToBeRemovedId: memberId });
+              mutateAsync({ memberId });
             }}
           >
             Remove

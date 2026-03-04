@@ -2,11 +2,11 @@ import { Icon } from '@iconify/react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { fCurrency, fPercent, fShortenNumber } from '@/domain';
-import type { ShoppingEventCalculatedTotals } from '@/features/shopping-event/domain';
+import type { GetShoppingEventById200Totals } from '@/infrastructure/api/types';
 import { cn } from '@/lib/utils';
 
 interface ShoppingEventDetailsTotalsProps {
-  totals: ShoppingEventCalculatedTotals;
+  totals: GetShoppingEventById200Totals;
 }
 
 // ----------------------------------------------------------------------
@@ -121,7 +121,7 @@ function DifferenceStatItem({
 export function ShoppingEventDetailsTotals({
   totals,
 }: ShoppingEventDetailsTotalsProps) {
-  const showPaidStats = totals.paidValue > 0;
+  const showPaidStats = !!totals.paidValue && totals.paidValue > 0;
 
   const showDifferenceStats =
     showPaidStats &&
@@ -141,7 +141,7 @@ export function ShoppingEventDetailsTotals({
           label="Varejo"
           value={fCurrency(totals.retailTotal)}
         />
-        {showPaidStats && (
+        {!!totals.paidValue && totals.paidValue > 0 && (
           <StatItem
             icon="solar:dollar-minimalistic-bold"
             label="Pago"
@@ -156,13 +156,13 @@ export function ShoppingEventDetailsTotals({
         <StatItem
           icon="solar:wallet-bold"
           label="Economia"
-          value={fCurrency(totals.savingsValue)}
+          value={fCurrency(totals.savingsValue ?? 0)}
           accent="positive"
         />
         <StatItem
           icon="majesticons:percent"
           label="% Economizada"
-          value={fPercent(totals.savingsPercentage)}
+          value={fPercent(totals.savingsPercentage ?? 0)}
           accent="positive"
         />
 

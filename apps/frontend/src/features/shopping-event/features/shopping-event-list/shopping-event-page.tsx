@@ -4,11 +4,11 @@ import { useGetShoppingEventListQuery } from '../../infrastructure';
 import { ShoppingEventList } from './components/shopping-event-list';
 import { Button, CustomPagination } from '@/components';
 import { Page } from '@/components/layout/page-layout';
-import type { FetchShoppingEventListParams } from '@/features/shopping-event/domain';
+import type { GetShoppingEventListParams } from '@/infrastructure/api/types';
 export const ShoppingEventPage = () => {
   const navigate = useNavigate();
   const [paginationParams, setPaginationParams] =
-    useState<FetchShoppingEventListParams>({
+    useState<GetShoppingEventListParams>({
       pageIndex: 0,
       pageSize: 10,
       orderBy: 'createdAt',

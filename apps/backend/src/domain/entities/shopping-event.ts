@@ -378,55 +378,18 @@ export class ShoppingEvent extends Entity<ShoppingEventProps> {
     }
 
     return {
-      retailTotal: this.props.retailTotal,
-      wholesaleTotal: this.props.wholesaleTotal,
+      retailTotal: this.props.retailTotal ?? 0,
+      wholesaleTotal: this.props.wholesaleTotal ?? 0,
       paidValue: this.props.totalPaid,
       savingsValue: this.props.savingsValue,
       savingsPercentage: this.props.savingsPercentage,
       retailPaidDifferenceValue: this.props.retailPaidDifferenceValue,
       wholesalePaidDifferenceValue: this.props.wholesalePaidDifferenceValue,
-      totalItemsDistinct: this.props.totalItemsDistinct,
-      totalItemsQuantity: this.props.totalItemsQuantity,
-      averagePricePerUnit: this.props.averagePricePerUnit,
-      highestPrice: this.props.highestPrice,
-      lowestPrice: this.props.lowestPrice,
-    };
-  }
-
-  /**
-   * Converts the entity to a comprehensive summary DTO used by the API.
-   * Includes nested calculated totals for consistency.
-   */
-  public toSummaryDto() {
-    return {
-      id: this.id,
-      status: this.status,
-      market: this.market
-        ? this.market.toDto()
-        : {
-            id: this.marketId,
-          },
-      totals: this.getCalculatedTotals(),
-      products: this.products.getItems().map((prod) => {
-        const { totalsRetailOnly, totalsWithWhosale, totalsDifference } =
-          prod.getCalculatedTotals();
-        return {
-          id: prod.id,
-          name: prod.name,
-          amount: prod.amount,
-          wholesaleMinAmount: prod.wholesaleMinAmount,
-          price: prod.price,
-          wholesalePrice: prod.wholesalePrice,
-          totalRetailPrice: totalsRetailOnly,
-          totalWholesalePrice: totalsWithWhosale,
-          totalDifference: totalsDifference,
-          addedAt: prod.addedAt,
-        };
-      }),
-      elapsedTime: this.elapsedTime,
-      createdAt: this.createdAt,
-      finishedAt: this.finishedAt,
-      createdBy: this.createdBy,
+      totalItemsDistinct: this.props.totalItemsDistinct ?? 0,
+      totalItemsQuantity: this.props.totalItemsQuantity ?? 0,
+      averagePricePerUnit: this.props.averagePricePerUnit ?? 0,
+      highestPrice: this.props.highestPrice ?? 0,
+      lowestPrice: this.props.lowestPrice ?? 0,
     };
   }
 }

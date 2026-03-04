@@ -37,7 +37,7 @@ export const EndShoppingEventForm = ({
   const onSubmit = async (data: FormInput) => {
     const success = await mutateAsync({
       shoppingEventId,
-      params: {
+      data: {
         totalPaid: data.totalPaid,
       },
     });

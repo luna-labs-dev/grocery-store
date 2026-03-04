@@ -33,7 +33,9 @@ export const JoinFamilyForm = () => {
 
   const onSubmit = async (values: JoinFamilyInput) => {
     await mutateAsync({
-      inviteCode: values.inviteCode,
+      data: {
+        inviteCode: values.inviteCode,
+      },
     });
 
     onFinished();

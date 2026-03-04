@@ -124,7 +124,7 @@ export const FamilyDetails = () => {
                             <AvatarImage src={member.picture} />
                             <AvatarFallback>
                               {getInitials({
-                                fullName: member.name,
+                                fullName: member.name ?? member.email,
                                 initialsLength: 2,
                                 upperCase: true,
                               })}

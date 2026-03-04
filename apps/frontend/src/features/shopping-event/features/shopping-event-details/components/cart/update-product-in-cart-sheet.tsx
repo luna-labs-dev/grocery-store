@@ -9,12 +9,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components';
-import type { Product } from '@/features/shopping-event/domain';
+import type { GetShoppingEventById200ProductsItem } from '@/infrastructure/api/types';
 
 interface UpdateProductInCartSheetProps {
   children: React.ReactElement;
   shoppingEventId: string;
-  product: Product;
+  product: GetShoppingEventById200ProductsItem;
 }
 export const UpdateProductInCartSheet = ({
   children,

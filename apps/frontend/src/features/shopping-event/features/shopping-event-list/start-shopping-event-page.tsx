@@ -23,6 +23,7 @@ import { GetPositionPermissinDialog } from '@/components/shared/get-position';
 import { InputGroupAddon } from '@/components/ui/input-group';
 import type { MarketListItem } from '@/features/market';
 import { useGetMarketListQuery } from '@/features/market/infrastructure';
+import type { ListMarkets200ItemsItem } from '@/infrastructure/api/types';
 
 const startShoppingEventFormSchema = z.object({
   marketId: z.string(),
@@ -49,7 +50,9 @@ export const StartShoppingEventPage = () => {
   const onSubmint = handleSubmit(async (data) => {
     if (value) {
       const shoppingEvent = await mutateAsync({
-        marketId: data.marketId,
+        data: {
+          marketId: data.marketId,
+        },
       });
       navigate({
         to: '/shopping-event/$shoppingEventId',
@@ -60,7 +63,7 @@ export const StartShoppingEventPage = () => {
     }
   });
 
-  const marketList: MarketListItem[] = data?.items ?? [];
+  const marketList: ListMarkets200ItemsItem[] = data?.items ?? [];
 
   const loadingIcon = (
     <HourglassIcon

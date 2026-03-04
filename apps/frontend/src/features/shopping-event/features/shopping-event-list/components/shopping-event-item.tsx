@@ -22,7 +22,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import type { ShoppingEventListItem } from '@/features/shopping-event/domain';
+import type { GetShoppingEventList200ItemsItem } from '@/infrastructure/api/types';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -86,7 +86,7 @@ function StatCell({ icon, label, value }: StatCellProps) {
 // ---------------------------------------------------------------------------
 
 interface ShoppingEventItemProps {
-  shoppingEvent: ShoppingEventListItem;
+  shoppingEvent: GetShoppingEventList200ItemsItem;
 }
 
 export function ShoppingEventItem({ shoppingEvent }: ShoppingEventItemProps) {
@@ -128,21 +128,27 @@ export function ShoppingEventItem({ shoppingEvent }: ShoppingEventItemProps) {
       {/* Row 2: All totals in a compact grid */}
       <CardContent className="px-3 py-0">
         <div className="grid grid-cols-3 gap-x-3 gap-y-2">
-          <StatCell
-            icon={<ShoppingCart className="size-2.5" />}
-            label="Varejo"
-            value={fCurrency(shoppingEvent.totals.retailTotal)}
-          />
-          <StatCell
-            icon={<Truck className="size-2.5" />}
-            label="Atacado"
-            value={fCurrency(shoppingEvent.totals.wholesaleTotal)}
-          />
-          <StatCell
-            icon={<PercentCircle className="size-2.5" />}
-            label="Economia"
-            value={fPercentage(shoppingEvent.totals.savingsPercentage)}
-          />
+          {shoppingEvent.totals.retailTotal && (
+            <StatCell
+              icon={<ShoppingCart className="size-2.5" />}
+              label="Varejo"
+              value={fCurrency(shoppingEvent.totals.retailTotal)}
+            />
+          )}
+          {shoppingEvent.totals.wholesaleTotal && (
+            <StatCell
+              icon={<Truck className="size-2.5" />}
+              label="Atacado"
+              value={fCurrency(shoppingEvent.totals.wholesaleTotal)}
+            />
+          )}
+          {shoppingEvent.totals.savingsPercentage && (
+            <StatCell
+              icon={<PercentCircle className="size-2.5" />}
+              label="Economia"
+              value={fPercentage(shoppingEvent.totals.savingsPercentage)}
+            />
+          )}
           <StatCell
             icon={<Package className="size-2.5" />}
             label="Itens"

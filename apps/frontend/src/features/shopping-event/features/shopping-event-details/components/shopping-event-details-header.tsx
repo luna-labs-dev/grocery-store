@@ -1,12 +1,10 @@
 import { Calendar, MapPin } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import type {
-  ShoppingEvent,
-  ShoppingEventStatus,
-} from '@/features/shopping-event/domain';
+import type { ShoppingEventStatus } from '@/features/shopping-event/domain';
+import type { GetShoppingEventById200 } from '@/infrastructure/api/types';
 
 interface ShoppingEventDetailsHeaderProps {
-  shoppingEvent: ShoppingEvent;
+  shoppingEvent: GetShoppingEventById200;
 }
 
 function formatDate(date: string | Date): string {

@@ -32,3 +32,4 @@ dist-ssr
 .tanstack
 .temp
 .scripts
+auto-generated-api.yaml

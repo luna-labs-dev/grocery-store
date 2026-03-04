@@ -11,7 +11,7 @@ import type {
 } from '@/application';
 import { Family, Market, Product, ShoppingEvent, User } from '@/domain';
 import { Products } from '@/domain/entities/products';
-import { injection } from '@/main/di/injection-codes';
+import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
 

@@ -1,6 +1,4 @@
-import type { Either } from '../../core';
 import type { Market } from '../../entities';
-import type { MarketListSearchError, UnexpectedError } from '../errors';
 
 export interface GetMarketListParams {
   search?: string;
@@ -15,17 +13,11 @@ export interface GetMarketListParams {
   orderDirection: 'desc' | 'asc';
 }
 
-export type GetMarketListPossibleErrors =
-  | UnexpectedError
-  | MarketListSearchError;
-
 export interface GetMarketListResult {
   total: number;
   markets: Market[];
 }
 
 export interface GetMarketList {
-  execute: (
-    params: GetMarketListParams,
-  ) => Promise<Either<GetMarketListPossibleErrors, GetMarketListResult>>;
+  execute(params: GetMarketListParams): Promise<GetMarketListResult>;
 }

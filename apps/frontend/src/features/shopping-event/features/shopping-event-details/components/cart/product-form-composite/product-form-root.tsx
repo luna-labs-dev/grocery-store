@@ -6,18 +6,18 @@ import {
   formInputSchema,
   ProductFormProvider,
 } from './product-form-context';
-import type {
-  AddProductToCartSuccessResult,
-  Product,
-} from '@/features/shopping-event/domain';
 import {
   useAddProductCartMutation,
   useUpdateProductInCartMutation,
 } from '@/features/shopping-event/infrastructure';
+import type {
+  AddProductToCart200,
+  GetShoppingEventById200ProductsItem,
+} from '@/infrastructure/api/types';
 
 interface ProductFormRootProps {
   shoppingEventId: string;
-  product?: Product;
+  product?: GetShoppingEventById200ProductsItem;
   onSuccess?: () => void;
   onCancel?: () => void;
   children: ReactNode;
@@ -67,12 +67,12 @@ export const ProductFormRoot = ({
   const isSubmitting = isAdding || isUpdating;
 
   const onSubmit = handleSubmit(async (values) => {
-    let success: AddProductToCartSuccessResult | boolean;
+    let success: AddProductToCart200 | boolean;
     if (isUpdate) {
       await mutateUpdateProductAsync({
         shoppingEventId,
         productId: product.id,
-        params: {
+        data: {
           name: values.name,
           amount: values.amount,
           price: values.price,
@@ -87,7 +87,7 @@ export const ProductFormRoot = ({
     } else {
       success = await mutateAddProductAsync({
         shoppingEventId,
-        params: {
+        data: {
           name: values.name,
           amount: values.amount,
           price: values.price,

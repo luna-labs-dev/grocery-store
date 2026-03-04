@@ -1,4 +1,9 @@
-export const unsecuredCopyToClipboard = (text: string) => {
+export const unsecuredCopyToClipboard = (text?: string) => {
+  if (!text) {
+    console.warn('No text provided to copy to clipboard');
+    return;
+  }
+
   const textArea = document.createElement('textarea');
   textArea.value = text;
   document.body.appendChild(textArea);

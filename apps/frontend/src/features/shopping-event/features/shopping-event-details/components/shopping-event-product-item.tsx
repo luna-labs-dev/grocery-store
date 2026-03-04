@@ -14,14 +14,12 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { fCurrency } from '@/domain';
-import type {
-  Product,
-  ShoppingEventStatus,
-} from '@/features/shopping-event/domain';
+import type { ShoppingEventStatus } from '@/features/shopping-event/domain';
+import type { GetShoppingEventById200ProductsItem } from '@/infrastructure/api/types';
 import { cn } from '@/lib/utils';
 
 interface ProductItemProps {
-  product: Product;
+  product: GetShoppingEventById200ProductsItem;
   shoppingEventId: string;
   shoppingEventStatus: ShoppingEventStatus;
 }
@@ -89,7 +87,7 @@ export function ProductItem({
 
             <span className="text-border text-sm">{'/'}</span>
 
-            <StatValue label="Qtd:" value={product.amount.toString()} />
+            <StatValue label="Qtd:" value={(product.amount ?? 0).toString()} />
 
             <span className="text-border text-sm">{'/'}</span>
 
