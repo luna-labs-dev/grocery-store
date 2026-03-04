@@ -1,18 +1,10 @@
-import { BaseException } from '../core';
 import { HttpStatusCode } from '../core/enums';
+import { BaseException } from '../core/exceptions/base-exception';
 
-export class UnexpectedException extends BaseException {
-  statusCode = HttpStatusCode.InternalServerError;
+export class ConflictException extends BaseException {
+  statusCode = HttpStatusCode.Conflict;
 
-  constructor() {
-    super('Ocorreu um erro inesperado');
-  }
-}
-
-export class UnauthorizedException extends BaseException {
-  statusCode = HttpStatusCode.Unauthorized;
-
-  constructor() {
-    super('Unauthorized');
+  constructor(message: string) {
+    super(message);
   }
 }

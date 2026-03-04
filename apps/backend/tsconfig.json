@@ -13,10 +13,16 @@
     "resolveJsonModule": true,
     "types": ["vitest/globals"],
     "paths": {
-      "@/tests/*": ["../tests/*"],
+      "@/tests/*": ["./tests/*"],
       "@/*": ["./src/*"]
     }
   },
-  "include": ["./src", "./tests", "./prisma/**/*.ts", "./commitlint.config.js"],
+  "include": [
+    "./src",
+    "./tests",
+    "./prisma/**/*.ts",
+    "./commitlint.config.js",
+    "../../.temp/teste"
+  ],
   "exclude": []
 }

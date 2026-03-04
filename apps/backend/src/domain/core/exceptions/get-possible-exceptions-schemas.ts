@@ -3,7 +3,7 @@ import type { BaseException, ExceptionResult } from './base-exception';
 import {
   UnauthorizedException,
   UnexpectedException,
-} from '@/domain/exceptions';
+} from './generic-exceptions';
 
 export const getPossibleExceptionsSchemas = (
   exceptions: BaseException[] = [],

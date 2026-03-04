@@ -5,7 +5,9 @@ config();
 
 const envVariables = z.object({
   // App
-  NODE_ENV: z.enum(['local', 'development', 'production']).default('local'),
+  NODE_ENV: z
+    .enum(['local', 'test', 'development', 'production'])
+    .default('local'),
   LOG_LEVEL: z.enum(['dev', 'debug', 'prod']).default('dev'),
   PORT: z.coerce.number().default(8000),
   ORIGINS: z.string(),

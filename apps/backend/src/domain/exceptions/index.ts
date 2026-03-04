@@ -1,3 +1,4 @@
+export * from '../core/exceptions/generic-exceptions';
 export * from './application-exceptions';
 export * from './cart-exceptions';
 export * from './family-exceptions';

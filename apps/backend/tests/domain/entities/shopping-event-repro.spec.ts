@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { Product } from './product';
-import { Products } from './products';
-import { ShoppingEvent } from './shopping-event';
+import { Product } from '@/domain/entities/product';
+import { Products } from '@/domain/entities/products';
+import { ShoppingEvent } from '@/domain/entities/shopping-event';
 
 describe('ShoppingEvent Entity - Repro', () => {
   it('should optimize calculations using dirty flag', () => {
