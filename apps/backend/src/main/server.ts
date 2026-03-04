@@ -1,3 +1,4 @@
+import './config/otel';
 import 'reflect-metadata';
 import { writeFileSync } from 'node:fs';
 import { v4 as uuid } from 'uuid';
