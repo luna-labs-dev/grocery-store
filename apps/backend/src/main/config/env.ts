@@ -21,7 +21,10 @@ const envVariables = z.object({
 
   // Auth (Better Auth)
   BETTER_AUTH_SECRET: z.string().default('test-secret'),
-  BETTER_AUTH_URL: z.string().url().default('http://localhost'),
+  BETTER_AUTH_URL: z
+    .url()
+    .endsWith('/api/auth')
+    .default('http://localhost/api/auth'),
 
   // Valkey / Redis
   VALKEY_URL: z.string().default('redis://localhost:6380'),
@@ -32,6 +35,10 @@ const envVariables = z.object({
 
   // Domain
   MARKET_RADIUS: z.coerce.number().default(1000),
+
+  // Social Auth
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
 });
 
 const parsedVariables = envVariables.safeParse(process.env);
@@ -74,6 +81,10 @@ const {
 
   // Domain
   MARKET_RADIUS,
+
+  // Social Auth
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
 } = parsedVariables.data;
 
 export const env = {
@@ -102,5 +113,11 @@ export const env = {
   },
   domain: {
     marketRadius: MARKET_RADIUS,
+  },
+  social: {
+    google: {
+      clientId: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRET,
+    },
   },
 } as const;

@@ -2,8 +2,11 @@ import type { FastifyPluginOptions } from 'fastify';
 import { injectable } from 'tsyringe';
 import { FastifyController } from '@/api/contracts/fastify-controller';
 import {
+  callbackGoogleQuerystringSchema,
+  csrfResponseSchema,
   sessionResponseSchema,
   signInEmailRequestSchema,
+  signInSocialRequestSchema,
   signUpEmailRequestSchema,
 } from '@/api/helpers';
 import { HttpStatusCode } from '@/domain/core/enums';
@@ -14,8 +17,11 @@ import type { FastifyTypedInstance } from '@/main/fastify/types';
 @injectable()
 export class AuthController extends FastifyController {
   private async handleRequest(request: any, reply: any) {
+    const baseOrigin = new URL(env.auth.url).origin;
+    const url = `${baseOrigin}${request.url}`;
+
     const response = await auth.handler(
-      new Request(`${env.auth.url}${request.url}`, {
+      new Request(url, {
         method: request.method,
         headers: request.headers as any,
         body: request.body ? JSON.stringify(request.body) : undefined,
@@ -81,6 +87,25 @@ export class AuthController extends FastifyController {
     );
 
     app.post(
+      '/sign-in/social',
+      {
+        schema: {
+          tags: [this.prefix],
+          summary: 'Social Sign In',
+          description: 'Initiate social login flow (e.g., Google)',
+          operationId: 'signInSocial',
+          body: signInSocialRequestSchema,
+          response: {
+            [HttpStatusCode.Ok]: sessionResponseSchema,
+          },
+        },
+      },
+      async (request, reply) => {
+        return this.handleRequest(request, reply);
+      },
+    );
+
+    app.post(
       '/sign-out',
       {
         schema: {
@@ -116,9 +141,38 @@ export class AuthController extends FastifyController {
       },
     );
 
-    // Fallback for other Better Auth endpoints (e.g. CSRF, callback, etc.)
-    // app.all('/*', async (request, reply) => {
-    //   return toNodeHandler(auth)(request.raw, reply.raw);
-    // });
+    app.get(
+      '/callback/google',
+      {
+        schema: {
+          tags: [this.prefix],
+          summary: 'Google Callback',
+          description: 'Handle Google social login callback',
+          operationId: 'callbackGoogle',
+          querystring: callbackGoogleQuerystringSchema,
+        },
+      },
+      async (request, reply) => {
+        return this.handleRequest(request, reply);
+      },
+    );
+
+    app.get(
+      '/csrf',
+      {
+        schema: {
+          tags: [this.prefix],
+          summary: 'CSRF Token',
+          description: 'Get the current CSRF token',
+          operationId: 'getCsrfToken',
+          response: {
+            [HttpStatusCode.Ok]: csrfResponseSchema,
+          },
+        },
+      },
+      async (request, reply) => {
+        return this.handleRequest(request, reply);
+      },
+    );
   }
 }

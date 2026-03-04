@@ -33,6 +33,12 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  socialProviders: {
+    google: {
+      clientId: env.social.google.clientId || '',
+      clientSecret: env.social.google.clientSecret || '',
+    },
+  },
   trustedOrigins: Array.isArray(env.baseConfig.origins)
     ? env.baseConfig.origins
     : [env.baseConfig.origins],

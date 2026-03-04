@@ -23,6 +23,13 @@ export const userResponseSchema = z.object({
   familyId: z.uuid().nullish(),
 });
 
+export const signInSocialRequestSchema = z.object({
+  provider: z.enum(['google']),
+  callbackURL: z.url().optional(),
+  errorCallbackURL: z.url().optional(),
+  newUserCallbackURL: z.url().optional(),
+});
+
 export const sessionResponseSchema = z
   .object({
     user: userResponseSchema,
@@ -56,4 +63,20 @@ export const sessionResponseSchema = z
     z.object({
       success: z.boolean(),
     }),
+  )
+  .or(
+    z.object({
+      url: z.url(),
+      redirect: z.boolean(),
+    }),
   );
+
+export const callbackGoogleQuerystringSchema = z.object({
+  code: z.string().optional(),
+  state: z.string().optional(),
+  error: z.string().optional(),
+});
+
+export const csrfResponseSchema = z.object({
+  csrfToken: z.string(),
+});
