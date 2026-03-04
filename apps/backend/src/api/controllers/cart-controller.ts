@@ -18,7 +18,7 @@ import {
 import { injection } from '@/main/di/injection-tokens';
 import type { FastifyTypedInstance } from '@/main/fastify';
 import {
-  clerkAuthorizationMiddleware,
+  authMiddleware,
   familyBarrierMiddleware,
 } from '@/main/fastify/middlewares';
 
@@ -34,7 +34,7 @@ export class CartController extends FastifyController {
   }
 
   registerRoutes(app: FastifyTypedInstance) {
-    app.addHook('preHandler', clerkAuthorizationMiddleware);
+    app.addHook('preHandler', authMiddleware);
     app.addHook('preHandler', familyBarrierMiddleware);
 
     app.post(
@@ -63,7 +63,7 @@ export class CartController extends FastifyController {
           request.body;
 
         const product = await this.cartService.addProductToCart({
-          userId: auth.userId,
+          userId: auth.user.id,
           shoppingEventId,
           familyId,
           name,

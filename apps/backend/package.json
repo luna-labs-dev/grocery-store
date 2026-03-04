@@ -16,8 +16,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@clerk/express": "^1.4.14",
-    "@clerk/fastify": "^2.6.26",
+    "@better-auth/redis-storage": "^1.5.2",
+
     "@fastify/cors": "^11.2.0",
     "@fastify/swagger": "^9.7.0",
     "@fastify/swagger-ui": "^5.2.5",
@@ -30,10 +30,12 @@
     "@opentelemetry/semantic-conventions": "^1.40.0",
     "@scalar/fastify-api-reference": "^1.44.26",
     "axios": "^1.7.2",
+    "better-auth": "^1.5.2",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.45.1",
     "fastify": "^5.7.4",
     "fastify-type-provider-zod": "^6.1.0",
+    "ioredis": "^5.10.0",
     "postgres": "^3.4.4",
     "referral-codes": "^3.0.0",
     "reflect-metadata": "^0.2.2",

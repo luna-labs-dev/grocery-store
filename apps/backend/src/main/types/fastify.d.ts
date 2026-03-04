@@ -1,11 +1,8 @@
-import '@clerk/fastify';
+import type { auth } from '@/main/auth/auth';
 
 declare module 'fastify' {
   interface FastifyRequest {
-    auth: {
-      userId: string;
-      isAuthenticated: boolean;
-    };
+    auth: typeof auth.$Infer.Session;
     familyId: string;
   }
 }

@@ -21,7 +21,7 @@ import {
 import { injection } from '@/main/di/injection-tokens';
 import type { FastifyTypedInstance } from '@/main/fastify';
 import {
-  clerkAuthorizationMiddleware,
+  authMiddleware,
   familyBarrierMiddleware,
 } from '@/main/fastify/middlewares';
 
@@ -37,7 +37,7 @@ export class ShoppingEventController extends FastifyController {
   }
 
   registerRoutes(app: FastifyTypedInstance): void {
-    app.addHook('preHandler', clerkAuthorizationMiddleware);
+    app.addHook('preHandler', authMiddleware);
     app.addHook('preHandler', familyBarrierMiddleware);
 
     app.post(
@@ -58,11 +58,9 @@ export class ShoppingEventController extends FastifyController {
       async (request, reply) => {
         const { familyId } = request;
         const { marketId } = request.body;
-        const { userId } = request.auth;
-
         const shoppingEvent =
           await this.shoppingEventService.startShoppingEvent({
-            userId,
+            userId: request.auth.user.id,
             familyId,
             marketId,
           });

@@ -10,8 +10,13 @@ export class DrizzleUserRepository implements UserRepositories {
   add = async (user: User): Promise<void> => {
     await db.insert(userTable).values({
       id: user.id,
+      name: user.name ?? '',
       email: user.email,
-      externalId: user.externalId,
+      emailVerified: false,
+      image: user.picture ?? null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      externalId: user.externalId ?? null,
       familyId: user.familyId ?? null,
     });
   };
@@ -20,7 +25,10 @@ export class DrizzleUserRepository implements UserRepositories {
     await db
       .update(userTable)
       .set({
+        name: user.name ?? '',
         email: user.email,
+        image: user.picture ?? null,
+        updatedAt: new Date(),
         familyId: user.familyId ?? null,
       })
       .where(eq(userTable.id, user.id));
@@ -31,7 +39,10 @@ export class DrizzleUserRepository implements UserRepositories {
       where: eq(userTable.id, userId),
       with: {
         family: {
-          with: { owner: true, members: true },
+          with: {
+            owner: true,
+            members: true,
+          },
         },
       },
     });
@@ -44,7 +55,10 @@ export class DrizzleUserRepository implements UserRepositories {
       where: eq(userTable.externalId, externalId),
       with: {
         family: {
-          with: { owner: true, members: true },
+          with: {
+            owner: true,
+            members: true,
+          },
         },
       },
     });
@@ -55,8 +69,10 @@ export class DrizzleUserRepository implements UserRepositories {
   private toDomain(userModel: any): User {
     return User.create(
       {
-        externalId: userModel.externalId,
+        externalId: userModel.externalId ?? undefined,
         email: userModel.email,
+        name: userModel.name,
+        picture: userModel.image ?? undefined,
         familyId: userModel.familyId ?? undefined,
         family: userModel.family
           ? Family.create(
@@ -64,16 +80,20 @@ export class DrizzleUserRepository implements UserRepositories {
                 ownerId: userModel.family.ownerId,
                 owner: User.create(
                   {
-                    externalId: userModel.family.owner.externalId,
+                    externalId: userModel.family.owner.externalId ?? undefined,
                     email: userModel.family.owner.email,
+                    name: userModel.family.owner.name,
+                    picture: userModel.family.owner.image ?? undefined,
                   },
                   userModel.family.owner.id,
                 ),
                 members: userModel.family.members.map((m: any) =>
                   User.create(
                     {
-                      externalId: m.externalId,
+                      externalId: m.externalId ?? undefined,
                       email: m.email,
+                      name: m.name,
+                      picture: m.image ?? undefined,
                     },
                     m.id,
                   ),

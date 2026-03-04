@@ -23,7 +23,7 @@ import {
   UserNotFoundException,
 } from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
-import { clerkAuthorizationMiddleware } from '@/main/fastify/middlewares';
+import { authMiddleware } from '@/main/fastify/middlewares';
 import type { FastifyTypedInstance } from '@/main/fastify/types';
 
 const { usecases } = injection;
@@ -38,7 +38,7 @@ export class FamilyController extends FastifyController {
   }
 
   registerRoutes(app: FastifyTypedInstance): void {
-    app.addHook('preHandler', clerkAuthorizationMiddleware);
+    app.addHook('preHandler', authMiddleware);
 
     app.get(
       '',
@@ -60,9 +60,9 @@ export class FamilyController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { userId } = request.auth;
+        const { user } = request.auth;
 
-        const family = await this.familyService.getFamily({ userId });
+        const family = await this.familyService.getFamily({ userId: user.id });
 
         const response = familyMapper.toResponse(family);
         reply.status(HttpStatusCode.Ok).send(response);
@@ -89,10 +89,10 @@ export class FamilyController extends FastifyController {
       },
       async (request, reply) => {
         const { name, description } = request.body;
-        const { userId } = request.auth;
+        const { user } = request.auth;
 
         const family = await this.familyService.addFamily({
-          userId,
+          userId: user.id,
           name,
           description,
         });
@@ -125,9 +125,9 @@ export class FamilyController extends FastifyController {
       },
       async (request, reply) => {
         const { inviteCode } = request.body;
-        const { userId } = request.auth;
+        const { user } = request.auth;
 
-        await this.familyService.joinFamily({ userId, inviteCode });
+        await this.familyService.joinFamily({ userId: user.id, inviteCode });
 
         reply.status(HttpStatusCode.NoContent).send();
       },
@@ -153,9 +153,9 @@ export class FamilyController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { userId } = request.auth;
+        const { user } = request.auth;
 
-        await this.familyService.leaveFamily({ userId });
+        await this.familyService.leaveFamily({ userId: user.id });
 
         reply.status(HttpStatusCode.NoContent).send();
       },
@@ -187,10 +187,10 @@ export class FamilyController extends FastifyController {
       },
       async (request, reply) => {
         const { memberId } = request.params;
-        const { userId: authUserId } = request.auth;
+        const { user } = request.auth;
 
         await this.familyService.removeFamilyMember({
-          userId: authUserId,
+          userId: user.id,
           targetUserId: memberId,
         });
 

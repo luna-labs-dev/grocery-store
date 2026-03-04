@@ -2,7 +2,7 @@ import { Entity } from '../core';
 import type { Family } from './family';
 
 interface UserProps {
-  externalId: string;
+  externalId?: string;
   email: string;
   name?: string;
   picture?: string;
@@ -20,7 +20,7 @@ export class User extends Entity<UserProps> {
     super(props, id);
   }
 
-  public get externalId(): string {
+  public get externalId(): string | undefined {
     return this.props.externalId;
   }
 

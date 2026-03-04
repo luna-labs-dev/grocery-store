@@ -12,14 +12,14 @@ const { usecases } = injection;
 export const familyBarrierMiddleware = async (request: FastifyRequest) => {
   const userService = container.resolve<UserService>(usecases.userService);
 
-  const { userId } = request.auth;
-  if (!userId) {
-    console.error('external user id is not provided');
+  const { user } = request.auth;
+  if (!user?.id) {
+    console.error('user id is not provided');
     throw new UnauthorizedException();
   }
 
   const dbUser = await userService.getUser({
-    externalId: userId,
+    id: user.id,
   });
 
   if (!dbUser.familyId) {

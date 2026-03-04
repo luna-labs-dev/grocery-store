@@ -13,7 +13,7 @@ import { getPossibleExceptionsSchemas } from '@/domain';
 import { MarketNotFoundException } from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 import {
-  clerkAuthorizationMiddleware,
+  authMiddleware,
   familyBarrierMiddleware,
 } from '@/main/fastify/middlewares';
 import type { FastifyTypedInstance } from '@/main/fastify/types';
@@ -30,7 +30,7 @@ export class MarketController extends FastifyController {
   }
 
   registerRoutes(app: FastifyTypedInstance): void {
-    app.addHook('preHandler', clerkAuthorizationMiddleware);
+    app.addHook('preHandler', authMiddleware);
     app.addHook('preHandler', familyBarrierMiddleware);
 
     app.get(

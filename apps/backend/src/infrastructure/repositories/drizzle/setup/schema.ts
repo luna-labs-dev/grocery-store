@@ -1,6 +1,7 @@
 import { relations } from 'drizzle-orm';
 import {
   bigint,
+  boolean,
   customType,
   decimal,
   index,
@@ -50,10 +51,55 @@ export const familyTable = pgTable('family', {
 });
 
 export const userTable = pgTable('user', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  externalId: varchar('externalId', { length: 320 }).unique().notNull(),
-  email: varchar('email', { length: 320 }).unique().notNull(),
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').unique().notNull(),
+  emailVerified: boolean('emailVerified').notNull(),
+  image: text('image'),
+  createdAt: timestamp('createdAt', { precision: 6 }).notNull(),
+  updatedAt: timestamp('updatedAt', { precision: 6 }).notNull(),
   familyId: uuid('familyId'),
+  externalId: varchar('externalId', { length: 320 }).unique(), // Legacy Clerk ID
+});
+
+export const sessionTable = pgTable('session', {
+  id: text('id').primaryKey(),
+  expiresAt: timestamp('expiresAt', { precision: 6 }).notNull(),
+  token: text('token').unique().notNull(),
+  createdAt: timestamp('createdAt', { precision: 6 }).notNull(),
+  updatedAt: timestamp('updatedAt', { precision: 6 }).notNull(),
+  ipAddress: text('ipAddress'),
+  userAgent: text('userAgent'),
+  userId: text('userId')
+    .notNull()
+    .references(() => userTable.id),
+});
+
+export const accountTable = pgTable('account', {
+  id: text('id').primaryKey(),
+  accountId: text('accountId').notNull(),
+  providerId: text('providerId').notNull(),
+  userId: text('userId')
+    .notNull()
+    .references(() => userTable.id),
+  accessToken: text('accessToken'),
+  refreshToken: text('refreshToken'),
+  idToken: text('idToken'),
+  accessTokenExpiresAt: timestamp('accessTokenExpiresAt', { precision: 6 }),
+  refreshTokenExpiresAt: timestamp('refreshTokenExpiresAt', { precision: 6 }),
+  scope: text('scope'),
+  password: text('password'),
+  createdAt: timestamp('createdAt', { precision: 6 }).notNull(),
+  updatedAt: timestamp('updatedAt', { precision: 6 }).notNull(),
+});
+
+export const verificationTable = pgTable('verification', {
+  id: text('id').primaryKey(),
+  identifier: text('identifier').notNull(),
+  value: text('value').notNull(),
+  expiresAt: timestamp('expiresAt', { precision: 6 }).notNull(),
+  createdAt: timestamp('createdAt', { precision: 6 }),
+  updatedAt: timestamp('updatedAt', { precision: 6 }),
 });
 
 export const marketTable = pgTable(

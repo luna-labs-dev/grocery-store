@@ -1,4 +1,3 @@
-import { clerkClient } from '@clerk/express';
 import { inject, injectable } from 'tsyringe';
 import type {
   AddFamilyRepository,
@@ -43,10 +42,10 @@ export class FamilyService {
     description?: string;
   }): Promise<Family> {
     try {
-      const user = await this.userRepository.getByExternalId(userId);
+      const user = await this.userRepository.getById(userId);
 
       if (!user) throw new UserNotFoundException();
-      if (user.family) throw new UserAlreadyAFamilyMemberException();
+      if (user.familyId) throw new UserAlreadyAFamilyMemberException();
 
       const family = Family.create({
         name,
@@ -64,35 +63,37 @@ export class FamilyService {
       return family;
     } catch (error) {
       console.error(error);
+      if (
+        error instanceof UserNotFoundException ||
+        error instanceof UserAlreadyAFamilyMemberException
+      ) {
+        throw error;
+      }
       throw new UnexpectedException();
     }
   }
 
   async getFamily({ userId }: { userId: string }): Promise<Family> {
     try {
-      const user = await this.userRepository.getByExternalId(userId);
+      const user = await this.userRepository.getById(userId);
 
       if (!user) throw new UserNotFoundException();
       if (!user.family) throw new UserNotAFamilyMemberException();
       if (!user.family.members) throw new FamilyWithoutMembersException();
 
-      for (const member of user.family.members) {
-        const userInfo = await clerkClient.users.getUser(member.externalId);
-        member.setUserInfo({
-          name: userInfo.fullName ?? '',
-          picture: userInfo.imageUrl,
-        });
-      }
-
-      const userInfo = await clerkClient.users.getUser(user.externalId);
-      user.family.owner.setUserInfo({
-        name: userInfo.fullName ?? '',
-        picture: userInfo.imageUrl,
-      });
+      // User info (name, picture) is already in the database and handled by User entity
+      // No need to call external auth provider
 
       return user.family;
     } catch (error) {
       console.error(error);
+      if (
+        error instanceof UserNotFoundException ||
+        error instanceof UserNotAFamilyMemberException ||
+        error instanceof FamilyWithoutMembersException
+      ) {
+        throw error;
+      }
       throw new UnexpectedException();
     }
   }
@@ -105,10 +106,10 @@ export class FamilyService {
     inviteCode: string;
   }): Promise<void> {
     try {
-      const user = await this.userRepository.getByExternalId(userId);
+      const user = await this.userRepository.getById(userId);
 
       if (!user) throw new UserNotFoundException();
-      if (user.family) throw new UserAlreadyAFamilyMemberException();
+      if (user.familyId) throw new UserAlreadyAFamilyMemberException();
 
       const family = await this.familyRepository.getByInviteCode({
         inviteCode,
@@ -121,22 +122,35 @@ export class FamilyService {
       await this.userRepository.update(user);
     } catch (error) {
       console.error(error);
+      if (
+        error instanceof UserNotFoundException ||
+        error instanceof UserAlreadyAFamilyMemberException ||
+        error instanceof InvalidFamilyInvitationCodeException
+      ) {
+        throw error;
+      }
       throw new UnexpectedException();
     }
   }
 
   async leaveFamily({ userId }: { userId: string }): Promise<void> {
     try {
-      const user = await this.userRepository.getByExternalId(userId);
+      const user = await this.userRepository.getById(userId);
 
       if (!user) throw new UserNotFoundException();
-      if (!user.family) throw new UserNotAFamilyMemberException();
+      if (!user.familyId) throw new UserNotAFamilyMemberException();
 
       user.familyId = undefined;
 
       await this.userRepository.update(user);
     } catch (error) {
       console.error(error);
+      if (
+        error instanceof UserNotFoundException ||
+        error instanceof UserNotAFamilyMemberException
+      ) {
+        throw error;
+      }
       throw new UnexpectedException();
     }
   }
@@ -149,14 +163,14 @@ export class FamilyService {
     targetUserId: string;
   }): Promise<void> {
     try {
-      const user = await this.userRepository.getByExternalId(userId);
+      const user = await this.userRepository.getById(userId);
 
       if (!user) throw new UserNotFoundException();
-      if (!user.family) throw new UserNotAFamilyMemberException();
-      if (user.id !== user.family.ownerId)
+      if (!user.familyId) throw new UserNotAFamilyMemberException();
+      if (user.id !== user.family?.ownerId)
         throw new UserNotAFamilyOwnerException();
 
-      const memberInFamily = user.family.members?.find(
+      const memberInFamily = user.family?.members?.find(
         (member) => member.id === targetUserId,
       );
 
@@ -169,6 +183,15 @@ export class FamilyService {
       await this.userRepository.update(memberInFamily);
     } catch (error) {
       console.error(error);
+      if (
+        error instanceof UserNotFoundException ||
+        error instanceof UserNotAFamilyMemberException ||
+        error instanceof UserNotAFamilyOwnerException ||
+        error instanceof TargetUserNotAFamilyMemberException ||
+        error instanceof FamilyOwnerCannotBeRemovedException
+      ) {
+        throw error;
+      }
       throw new UnexpectedException();
     }
   }

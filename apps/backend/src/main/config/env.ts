@@ -19,9 +19,12 @@ const envVariables = z.object({
   DATABASE_PASSWORD: z.string(),
   DATABASE_NAME: z.string(),
 
-  // Clerk
-  CLERK_PUBLISHABLE_KEY: z.string(),
-  CLERK_SECRET_KEY: z.string(),
+  // Auth (Better Auth)
+  BETTER_AUTH_SECRET: z.string().default('test-secret'),
+  BETTER_AUTH_URL: z.url().default('http://localhost'),
+
+  // Valkey / Redis
+  VALKEY_URL: z.string().default('redis://localhost:6380'),
 
   // Google Places
   GOOGLE_PLACES_BASE_URL: z.string(),
@@ -58,9 +61,12 @@ const {
   DATABASE_PASSWORD,
   DATABASE_NAME,
 
-  // Clerk
-  CLERK_PUBLISHABLE_KEY,
-  CLERK_SECRET_KEY,
+  // Auth
+  BETTER_AUTH_SECRET,
+  BETTER_AUTH_URL,
+
+  // Valkey
+  VALKEY_URL,
 
   // Google Places
   GOOGLE_PLACES_BASE_URL,
@@ -83,9 +89,12 @@ export const env = {
     url: `postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}`,
     dbName: DATABASE_NAME,
   },
-  clerk: {
-    publishableKey: CLERK_PUBLISHABLE_KEY,
-    secretKey: CLERK_SECRET_KEY,
+  auth: {
+    secret: BETTER_AUTH_SECRET,
+    url: BETTER_AUTH_URL,
+  },
+  valkey: {
+    url: VALKEY_URL,
   },
   googlePlaces: {
     baseURL: GOOGLE_PLACES_BASE_URL,

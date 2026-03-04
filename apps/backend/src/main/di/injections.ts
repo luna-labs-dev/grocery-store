@@ -4,12 +4,12 @@ import type { FastifyTypedInstance } from '../fastify/types';
 import { app } from '../server';
 import { injection } from './injection-tokens';
 import {
+  AuthController,
   CartController,
   FamilyController,
   type FastifyController,
   MarketController,
   ShoppingEventController,
-  WebhookAuthController,
 } from '@/api';
 import {
   FamilyService,
@@ -82,6 +82,7 @@ export const registerInjections = () => {
   container.register<UserService>(usecases.userService, UserService);
 
   // Fastify Controllers
+  container.register<FastifyController>(controllers.fastify, AuthController);
   container.register<FastifyController>(controllers.fastify, FamilyController);
   container.register<FastifyController>(controllers.fastify, MarketController);
   container.register<FastifyController>(
@@ -89,8 +90,4 @@ export const registerInjections = () => {
     ShoppingEventController,
   );
   container.register<FastifyController>(controllers.fastify, CartController);
-  container.register<FastifyController>(
-    controllers.fastify,
-    WebhookAuthController,
-  );
 };
