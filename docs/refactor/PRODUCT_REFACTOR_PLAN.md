@@ -25,6 +25,7 @@ We are moving from an ephemeral, transaction-based product model to a **"Golden 
 | **10 - Frontend Review**    | Peer review from Specialist, Design, and Solutions roles.  | [frontend/03-architectural-review.md](./frontend/03-architectural-review.md)                       |
 | **11 - Testing Strategy**   | Multi-tier QA framework (Unit, Integration, E2E).          | [testing/01-testing-strategy.md](./testing/01-testing-strategy.md)                                 |
 | **12 - Test Blueprints**    | Drafting `test.todo` for core entities and use cases.      | [Back-end Test Suite](../../apps/backend/tests/)                                                   |
+| **13 - Master Roadmap**     | Breakdown into Epics, Tasks, and Subtasks.                 | [ROADMAP.md](./ROADMAP.md)                                                                         |
 
 ## 3. Core Directives (Retail Nexus Veteran)
 - **Offline First**: Scanned barcodes must work without a connection; hydration happens background/later.

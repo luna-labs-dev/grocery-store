@@ -28,8 +28,8 @@ For the current scale and stack, **Socket.io** is the most pragmatic choice. It 
 - **Limit**: Local to a single server instance.
 
 ### Phase 2: Distributed (Evolution)
-- **Add Redis Adapter**: Use `socket.io-redis` to sync events across multiple server instances.
-- **Pub/Sub**: The backend services publish events to Redis, and the Socket.io adapter broadcasts them to the correct rooms.
+- **Add Valkey Adapter**: Use `socket.io-valkey` (or the compatible redis-adapter connecting to Valkey) to sync events across multiple server instances.
+- **Pub/Sub**: The backend services publish events to Valkey, and the Socket.io adapter broadcasts them to the correct rooms.
 
 ### Phase 3: Event-Driven Architecture
 - **Message Broker**: Introduce RabbitMQ or Kafka.
