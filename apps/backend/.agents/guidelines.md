@@ -80,3 +80,4 @@ The project follows a Clean Architecture approach with a strict separation of co
 
 ## 🤝 Collaboration & Workflow
 - **Commits**: Only perform `git commit` when explicitly instructed by the USER.
+- **Progress Tracking**: Agents MUST actively maintain both the internal `task.md` and the official `docs/refactor/ROADMAP.md`. When a feature is implemented, tested, and verified, the agent must check off `[x]` the corresponding tasks in these documents before notifying the USER of completion.

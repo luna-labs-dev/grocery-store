@@ -20,10 +20,10 @@ This backlog follows Scrum patterns to ensure every technical task delivers clea
 - `docker-compose.yml` provides PostgreSQL and Valkey (not Redis).
 - Environment variables are standardized across dev/test.
 - **Technical Tasks**:
-    - [ ] Replace Redis with `valkey/valkey` in Compose.
-    - [ ] Setup Healthchecks for all services.
-    - [ ] Configure `Pino` with Correlation IDs for socket/HTTP tracing.
-    - [ ] Create `scripts/dev-up.sh` for one-click environment readiness.
+    - [x] Replace Redis with `valkey/valkey` in Compose.
+    - [x] Setup Healthchecks for all services.
+    - [x] Configure `Pino` with Correlation IDs for socket/HTTP tracing.
+    - [x] Create `scripts/dev-up.sh` for one-click environment readiness.
 
 ---
 
@@ -35,18 +35,18 @@ This backlog follows Scrum patterns to ensure every technical task delivers clea
 - Authentication works without external clerk deps.
 - Session persists in Valkey (sub-50ms latency).
 - **Technical Tasks**:
-    - [ ] Setup `better-auth` middleware.
-    - [ ] Implement `@/infrastructure/cache/valkey-adapter`.
-    - [ ] TDD: `auth-migration-usecase.spec.ts`.
+    - [x] Setup `better-auth` middleware.
+    - [x] Implement `@/infrastructure/cache/valkey-adapter`.
+    - [x] TDD: `auth-migration-usecase.spec.ts`.
 
 ### Story 2: Flexible Collaboration Groups
 **AC**:
 - User can be in $N$ groups simultaneously.
 - QR/Link invitation joins a user instantly.
 - **Technical Tasks**:
-    - [ ] Many-to-Many Drizzle Schema.
-    - [ ] `InviteMember` UseCase with UUID tokens.
-    - [ ] TDD: `group-entity.spec.ts`, `invite-member.spec.ts`.
+    - [x] Many-to-Many Drizzle Schema.
+    - [x] `InviteMember` UseCase with UUID tokens.
+    - [x] TDD: `group-entity.spec.ts`, `invite-member.spec.ts`.
 
 ### Story 3: ABAC Security Layer
 **AC**:
