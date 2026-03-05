@@ -38,7 +38,7 @@ export class ShoppingEventService {
 
   async startShoppingEvent({
     userId,
-    familyId,
+    groupId,
     marketId,
   }: StartShoppingEventParams): Promise<ShoppingEvent> {
     try {
@@ -47,7 +47,7 @@ export class ShoppingEventService {
       if (!market) throw new MarketNotFoundException();
 
       const shoppingEvent = ShoppingEvent.create({
-        familyId,
+        groupId,
         marketId,
         market,
         status: 'ONGOING',
@@ -67,13 +67,13 @@ export class ShoppingEventService {
 
   async endShoppingEvent({
     shoppingEventId,
-    familyId,
+    groupId,
     totalPaid,
   }: EndShoppingEventParams): Promise<ShoppingEvent> {
     try {
       const shoppingEvent = await this.shoppingEventRepository.getById({
         shoppingEventId,
-        familyId,
+        groupId,
       });
 
       if (!shoppingEvent) throw new ShoppingEventNotFoundException();
@@ -94,7 +94,7 @@ export class ShoppingEventService {
   }
 
   async getShoppingEventList({
-    familyId,
+    groupId,
     status,
     period,
     pageIndex,
@@ -104,7 +104,7 @@ export class ShoppingEventService {
   }: GetShoppingEventListParams): Promise<GetShoppingEventListResult> {
     try {
       const total = await this.shoppingEventRepository.count({
-        familyId,
+        groupId,
         status,
         period,
       });
@@ -116,7 +116,7 @@ export class ShoppingEventService {
 
       if (total > 0) {
         response.shoppingEvents = await this.shoppingEventRepository.getAll({
-          familyId,
+          groupId,
           status,
           period,
           pageIndex,
@@ -134,13 +134,13 @@ export class ShoppingEventService {
   }
 
   async getShoppingEventById({
-    familyId,
+    groupId,
     shoppingEventId,
   }: GetShoppingEventByIdParams): Promise<ShoppingEvent> {
     try {
       const shoppingEvent = await this.shoppingEventRepository.getById({
         shoppingEventId,
-        familyId,
+        groupId,
       });
 
       if (!shoppingEvent) throw new ShoppingEventNotFoundException();
@@ -154,7 +154,7 @@ export class ShoppingEventService {
 
   async addProductToCart({
     userId,
-    familyId,
+    groupId,
     shoppingEventId,
     name,
     amount,
@@ -165,7 +165,7 @@ export class ShoppingEventService {
     try {
       const shoppingEvent = await this.shoppingEventRepository.getById({
         shoppingEventId,
-        familyId,
+        groupId,
       });
 
       if (!shoppingEvent) throw new ShoppingEventNotFoundException();
@@ -195,7 +195,7 @@ export class ShoppingEventService {
   }
 
   async updateProductInCart({
-    familyId,
+    groupId,
     shoppingEventId,
     productId,
     name,
@@ -206,7 +206,7 @@ export class ShoppingEventService {
   }: UpdateProductInCartParams): Promise<Product> {
     try {
       const shoppingEvent = await this.shoppingEventRepository.getById({
-        familyId,
+        groupId,
         shoppingEventId,
       });
 
@@ -243,13 +243,13 @@ export class ShoppingEventService {
   }
 
   async removeProductFromCart({
-    familyId,
+    groupId,
     shoppingEventId,
     productId,
   }: RemoveProductFromCartParams): Promise<void> {
     try {
       const shoppingEvent = await this.shoppingEventRepository.getById({
-        familyId,
+        groupId,
         shoppingEventId,
       });
 

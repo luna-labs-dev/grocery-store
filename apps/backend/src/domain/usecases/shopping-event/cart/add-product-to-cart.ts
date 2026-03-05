@@ -2,7 +2,7 @@ import type { Product } from '../../../entities';
 
 export interface AddProductToCartParams {
   userId: string;
-  familyId: string;
+  groupId: string;
   shoppingEventId: string;
   name: string;
   amount: number;

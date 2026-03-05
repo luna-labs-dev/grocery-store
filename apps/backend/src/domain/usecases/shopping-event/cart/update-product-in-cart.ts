@@ -1,13 +1,13 @@
 import type { Product } from '../../../entities';
 
 export interface UpdateProductInCartParams {
-  familyId: string;
+  groupId: string;
   shoppingEventId: string;
   productId: string;
-  name: string;
-  amount: number;
+  name?: string;
+  amount?: number;
   wholesaleMinAmount?: number;
-  price: number;
+  price?: number;
   wholesalePrice?: number;
 }
 

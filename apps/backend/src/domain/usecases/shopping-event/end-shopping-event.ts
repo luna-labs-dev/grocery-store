@@ -2,7 +2,7 @@ import type { ShoppingEvent } from '../../entities';
 
 export interface EndShoppingEventParams {
   shoppingEventId: string;
-  familyId: string;
+  groupId: string;
   totalPaid: number;
 }
 

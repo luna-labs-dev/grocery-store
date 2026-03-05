@@ -1,8 +1,8 @@
 import type { ShoppingEvent } from '../../entities';
 
 export interface GetShoppingEventByIdParams {
-  familyId: string;
   shoppingEventId: string;
+  groupId: string;
 }
 
 export interface GetShoppingEventById {

@@ -1,5 +1,5 @@
 export interface RemoveProductFromCartParams {
-  familyId: string;
+  groupId: string;
   shoppingEventId: string;
   productId: string;
 }

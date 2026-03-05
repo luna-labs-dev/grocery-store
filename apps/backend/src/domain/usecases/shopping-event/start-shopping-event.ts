@@ -2,7 +2,7 @@ import type { ShoppingEvent } from '../../entities';
 
 export interface StartShoppingEventParams {
   userId: string;
-  familyId: string;
+  groupId: string;
   marketId: string;
 }
 

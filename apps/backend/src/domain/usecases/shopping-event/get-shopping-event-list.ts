@@ -1,7 +1,7 @@
 import type { ShoppingEvent, ShoppingEventStatus } from '../../entities';
 
 export interface GetShoppingEventListParams {
-  familyId: string;
+  groupId: string;
   status?: ShoppingEventStatus;
   period?: {
     start: Date;
@@ -9,8 +9,8 @@ export interface GetShoppingEventListParams {
   };
   pageIndex: number;
   pageSize: number;
-  orderBy: 'createdAt';
-  orderDirection: 'desc' | 'asc';
+  orderBy: string;
+  orderDirection: 'ASC' | 'DESC';
 }
 
 export interface GetShoppingEventListResult {
