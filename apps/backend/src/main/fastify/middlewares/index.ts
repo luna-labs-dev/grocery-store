@@ -1,2 +1,2 @@
 export * from './auth-middleware';
-export * from './family-barrier-middleware';
+export * from './group-barrier-middleware';

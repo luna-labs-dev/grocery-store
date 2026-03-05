@@ -40,6 +40,12 @@ export const shoppingEventStatusEnum = pgEnum('shoppingEventStatusEnum', [
   'FINISHED',
 ]);
 
+export const groupRoleEnum = pgEnum('groupRoleEnum', [
+  'OWNER',
+  'ADMIN',
+  'MEMBER',
+]);
+
 export const familyTable = pgTable('family', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: varchar('name', { length: 100 }).unique().notNull(),
@@ -49,6 +55,32 @@ export const familyTable = pgTable('family', {
   createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
   createdBy: varchar('createdBy', { length: 320 }).notNull(),
 });
+
+export const groupTable = pgTable('group', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: varchar('name', { length: 100 }).unique().notNull(),
+  description: text('description'),
+  inviteCode: varchar('inviteCode', { length: 320 }).unique(),
+  createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
+  createdBy: varchar('createdBy', { length: 320 }).notNull(),
+});
+
+export const groupMemberTable = pgTable(
+  'group_member',
+  {
+    groupId: uuid('groupId')
+      .notNull()
+      .references(() => groupTable.id),
+    userId: text('userId')
+      .notNull()
+      .references(() => userTable.id),
+    role: groupRoleEnum('role').default('MEMBER').notNull(),
+    joinedAt: timestamp('joinedAt', { precision: 6 }).defaultNow().notNull(),
+  },
+  (table) => [
+    index('group_member_pkey').on(table.groupId, table.userId), // composite "PK" in logic
+  ],
+);
 
 export const userTable = pgTable('user', {
   id: text('id').primaryKey(),
@@ -129,7 +161,8 @@ export const marketTable = pgTable(
 
 export const shopping_eventTable = pgTable('shopping_event', {
   id: uuid('id').primaryKey().defaultRandom(),
-  familyId: uuid('familyId').notNull(),
+  familyId: uuid('familyId'), // deprecated, making nullable for migration
+  groupId: uuid('groupId').references(() => groupTable.id), // New field
   marketId: varchar('marketId', { length: 320 }).notNull(),
   description: text('description'),
   totalPaid: money('totalPaid').notNull(),
@@ -164,7 +197,23 @@ export const familyRelations = relations(familyTable, ({ one, many }) => ({
   shopping_events: many(shopping_eventTable),
 }));
 
-export const userRelations = relations(userTable, ({ one }) => ({
+export const groupRelations = relations(groupTable, ({ many }) => ({
+  members: many(groupMemberTable),
+  shopping_events: many(shopping_eventTable),
+}));
+
+export const groupMemberRelations = relations(groupMemberTable, ({ one }) => ({
+  group: one(groupTable, {
+    fields: [groupMemberTable.groupId],
+    references: [groupTable.id],
+  }),
+  user: one(userTable, {
+    fields: [groupMemberTable.userId],
+    references: [userTable.id],
+  }),
+}));
+
+export const userRelations = relations(userTable, ({ one, many }) => ({
   family: one(familyTable, {
     fields: [userTable.familyId],
     references: [familyTable.id],
@@ -175,6 +224,7 @@ export const userRelations = relations(userTable, ({ one }) => ({
     references: [familyTable.ownerId],
     relationName: 'familyOwner',
   }),
+  groups: many(groupMemberTable),
 }));
 
 export const marketRelations = relations(marketTable, ({ many }) => ({
@@ -191,6 +241,10 @@ export const shoppingEventRelations = relations(
     family: one(familyTable, {
       fields: [shopping_eventTable.familyId],
       references: [familyTable.id],
+    }),
+    group: one(groupTable, {
+      fields: [shopping_eventTable.groupId],
+      references: [groupTable.id],
     }),
     products: many(productTable),
   }),

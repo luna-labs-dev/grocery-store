@@ -23,12 +23,7 @@ export const auth = betterAuth({
     keyPrefix: 'auth:',
   }),
   user: {
-    additionalFields: {
-      familyId: {
-        type: 'string',
-        input: false, // Set to false if it should only be managed by the backend
-      },
-    },
+    additionalFields: {},
   },
   emailAndPassword: {
     enabled: true,

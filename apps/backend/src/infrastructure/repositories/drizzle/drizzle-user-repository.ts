@@ -3,7 +3,7 @@ import { injectable } from 'tsyringe';
 import { db } from './setup/connection';
 import { userTable } from './setup/schema';
 import type { UserRepositories } from '@/application';
-import { Family, User } from '@/domain';
+import { GroupMember, User } from '@/domain';
 
 @injectable()
 export class DrizzleUserRepository implements UserRepositories {
@@ -12,12 +12,11 @@ export class DrizzleUserRepository implements UserRepositories {
       id: user.id,
       name: user.name ?? '',
       email: user.email,
-      emailVerified: false,
-      image: user.picture ?? null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      emailVerified: user.emailVerified,
+      image: user.image ?? null,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
       externalId: user.externalId ?? null,
-      familyId: user.familyId ?? null,
     });
   };
 
@@ -27,9 +26,8 @@ export class DrizzleUserRepository implements UserRepositories {
       .set({
         name: user.name ?? '',
         email: user.email,
-        image: user.picture ?? null,
+        image: user.image ?? null,
         updatedAt: new Date(),
-        familyId: user.familyId ?? null,
       })
       .where(eq(userTable.id, user.id));
   };
@@ -38,10 +36,9 @@ export class DrizzleUserRepository implements UserRepositories {
     const userModel = await db.query.userTable.findFirst({
       where: eq(userTable.id, userId),
       with: {
-        family: {
+        groups: {
           with: {
-            owner: true,
-            members: true,
+            group: true,
           },
         },
       },
@@ -54,10 +51,9 @@ export class DrizzleUserRepository implements UserRepositories {
     const userModel = await db.query.userTable.findFirst({
       where: eq(userTable.externalId, externalId),
       with: {
-        family: {
+        groups: {
           with: {
-            owner: true,
-            members: true,
+            group: true,
           },
         },
       },
@@ -67,46 +63,42 @@ export class DrizzleUserRepository implements UserRepositories {
   };
 
   private toDomain(userModel: any): User {
+    const mapUser = (u: any) =>
+      User.create(
+        {
+          externalId: u.externalId ?? undefined,
+          email: u.email,
+          emailVerified: u.emailVerified ?? false,
+          name: u.name,
+          image: u.image ?? undefined,
+          createdAt: u.createdAt ?? new Date(),
+          updatedAt: u.updatedAt ?? new Date(),
+        },
+        u.id,
+      );
+
+    const groups = userModel.groups?.map((gm: any) =>
+      GroupMember.create(
+        {
+          groupId: gm.groupId,
+          userId: gm.userId,
+          role: gm.role,
+          joinedAt: gm.joinedAt,
+        },
+        // Optional: you could include gm.group mapped to CollaborationGroup if needed
+      ),
+    );
+
     return User.create(
       {
         externalId: userModel.externalId ?? undefined,
         email: userModel.email,
+        emailVerified: userModel.emailVerified ?? false,
         name: userModel.name,
-        picture: userModel.image ?? undefined,
-        familyId: userModel.familyId ?? undefined,
-        family: userModel.family
-          ? Family.create(
-              {
-                ownerId: userModel.family.ownerId,
-                owner: User.create(
-                  {
-                    externalId: userModel.family.owner.externalId ?? undefined,
-                    email: userModel.family.owner.email,
-                    name: userModel.family.owner.name,
-                    picture: userModel.family.owner.image ?? undefined,
-                  },
-                  userModel.family.owner.id,
-                ),
-                members: userModel.family.members.map((m: any) =>
-                  User.create(
-                    {
-                      externalId: m.externalId ?? undefined,
-                      email: m.email,
-                      name: m.name,
-                      picture: m.image ?? undefined,
-                    },
-                    m.id,
-                  ),
-                ),
-                name: userModel.family.name,
-                description: userModel.family.description ?? undefined,
-                inviteCode: userModel.family.inviteCode ?? undefined,
-                createdAt: userModel.family.createdAt,
-                createdBy: userModel.family.createdBy,
-              },
-              userModel.family.id,
-            )
-          : undefined,
+        image: userModel.image ?? undefined,
+        groups,
+        createdAt: userModel.createdAt,
+        updatedAt: userModel.updatedAt,
       },
       userModel.id,
     );

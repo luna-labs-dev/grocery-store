@@ -2,20 +2,20 @@ import type { ShoppingEvent, ShoppingEventStatus } from '@/domain';
 
 export interface GetShoppingEventListRepositoryParams {
   status?: ShoppingEventStatus;
-  familyId: string;
+  groupId: string;
   period?: {
     start: Date;
     end: Date;
   };
   pageIndex: number;
   pageSize: number;
-  orderBy: 'createdAt';
-  orderDirection: 'desc' | 'asc';
+  orderBy: string;
+  orderDirection: 'ASC' | 'DESC';
 }
 
 export type CountShoppingEventListRepositoryParams = Pick<
   GetShoppingEventListRepositoryParams,
-  'familyId' | 'status' | 'period'
+  'groupId' | 'status' | 'period'
 >;
 
 export interface GetShoppingEventListRepository {

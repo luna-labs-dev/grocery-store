@@ -19,7 +19,7 @@ import { injection } from '@/main/di/injection-tokens';
 import type { FastifyTypedInstance } from '@/main/fastify';
 import {
   authMiddleware,
-  familyBarrierMiddleware,
+  groupBarrierMiddleware,
 } from '@/main/fastify/middlewares';
 
 const { usecases } = injection;
@@ -35,7 +35,7 @@ export class CartController extends FastifyController {
 
   registerRoutes(app: FastifyTypedInstance) {
     app.addHook('preHandler', authMiddleware);
-    app.addHook('preHandler', familyBarrierMiddleware);
+    app.addHook('preHandler', groupBarrierMiddleware);
 
     app.post(
       '/add-product/:shoppingEventId',
@@ -57,7 +57,7 @@ export class CartController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { auth, familyId } = request;
+        const { auth, groupId } = request;
         const { shoppingEventId } = request.params;
         const { name, amount, price, wholesaleMinAmount, wholesalePrice } =
           request.body;
@@ -65,7 +65,7 @@ export class CartController extends FastifyController {
         const product = await this.cartService.addProductToCart({
           userId: auth.user.id,
           shoppingEventId,
-          familyId,
+          groupId,
           name,
           amount,
           price,
@@ -101,7 +101,7 @@ export class CartController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { familyId } = request;
+        const { groupId } = request;
         const { shoppingEventId, productId } = request.params;
         const { name, amount, price, wholesaleMinAmount, wholesalePrice } =
           request.body;
@@ -109,7 +109,7 @@ export class CartController extends FastifyController {
         await this.cartService.updateProductInCart({
           shoppingEventId,
           productId,
-          familyId,
+          groupId,
           name,
           amount,
           price,
@@ -142,12 +142,12 @@ export class CartController extends FastifyController {
       },
       async (request, reply) => {
         const { shoppingEventId, productId } = request.params;
-        const { familyId } = request;
+        const { groupId } = request;
 
         await this.cartService.removeProductFromCart({
           shoppingEventId,
           productId,
-          familyId,
+          groupId,
         });
 
         reply.status(204).send();

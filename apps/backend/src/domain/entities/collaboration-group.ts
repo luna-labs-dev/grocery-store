@@ -1,29 +1,19 @@
 import { Entity } from '../core';
 import { generateReferalCode } from '../helper';
-import type { User } from './user';
+import type { GroupMember } from './group-member';
 
-interface FamilyProps {
-  ownerId: string;
-  owner: User;
+interface CollaborationGroupProps {
   name: string;
   description?: string;
   inviteCode?: string;
   createdAt: Date;
   createdBy: string;
-  members?: User[];
+  members?: GroupMember[];
 }
 
-export class Family extends Entity<FamilyProps> {
-  private constructor(props: FamilyProps, id?: string) {
+export class CollaborationGroup extends Entity<CollaborationGroupProps> {
+  private constructor(props: CollaborationGroupProps, id?: string) {
     super(props, id);
-  }
-
-  public get ownerId(): string {
-    return this.props.ownerId;
-  }
-
-  public get owner(): User {
-    return this.props.owner;
   }
 
   public get name(): string {
@@ -46,14 +36,17 @@ export class Family extends Entity<FamilyProps> {
     return this.props.createdBy;
   }
 
-  public get members(): User[] | undefined {
+  public get members(): GroupMember[] | undefined {
     return this.props.members;
   }
 
-  public static create(props: FamilyProps, id?: string): Family {
+  public static create(
+    props: CollaborationGroupProps,
+    id?: string,
+  ): CollaborationGroup {
     props.inviteCode =
       props.inviteCode ?? generateReferalCode({ name: props.name });
-    return new Family(props, id);
+    return new CollaborationGroup(props, id);
   }
 
   public generateInviteCode(): void {

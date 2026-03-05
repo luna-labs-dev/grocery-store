@@ -1,7 +1,7 @@
 import type { ShoppingEvent } from '@/domain';
 
 export interface GetShoppingEventByIdRepositoryProps {
-  familyId: string;
+  groupId: string;
   shoppingEventId: string;
 }
 

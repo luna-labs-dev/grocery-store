@@ -1,18 +1,20 @@
 import { Entity } from '../core';
-import type { Family } from './family';
+import type { GroupMember } from './group-member';
 
 interface UserProps {
   externalId?: string;
   email: string;
-  name?: string;
-  picture?: string;
-  familyId?: string;
-  family?: Family;
+  emailVerified: boolean;
+  name: string;
+  image?: string;
+  groups?: GroupMember[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface UserInfoProps {
-  name?: string;
-  picture?: string;
+  name: string;
+  image?: string;
 }
 
 export class User extends Entity<UserProps> {
@@ -28,33 +30,37 @@ export class User extends Entity<UserProps> {
     return this.props.email;
   }
 
-  public get name(): string | undefined {
+  public get emailVerified(): boolean {
+    return this.props.emailVerified;
+  }
+
+  public get name(): string {
     return this.props.name;
   }
 
-  public get picture(): string | undefined {
-    return this.props.picture;
+  public get image(): string | undefined {
+    return this.props.image;
   }
 
-  public set picture(picture: string | undefined) {
-    this.props.picture = picture;
+  public set image(image: string | undefined) {
+    this.props.image = image;
   }
 
-  public get familyId(): string | undefined {
-    return this.props.familyId;
+  public get groups(): GroupMember[] | undefined {
+    return this.props.groups;
   }
 
-  public set familyId(familyId: string | undefined) {
-    this.props.familyId = familyId;
+  public get createdAt(): Date {
+    return this.props.createdAt;
   }
 
-  public get family(): Family | undefined {
-    return this.props.family;
+  public get updatedAt(): Date {
+    return this.props.updatedAt;
   }
 
-  public setUserInfo({ name, picture }: UserInfoProps) {
+  public setUserInfo({ name, image }: UserInfoProps) {
     this.props.name = name;
-    this.props.picture = picture;
+    this.props.image = image;
   }
 
   public static create(props: UserProps, id?: string): User {

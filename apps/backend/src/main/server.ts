@@ -10,7 +10,7 @@ import { setupFastifyApp } from './fastify/setup/app';
 const { baseConfig } = env;
 export const { app } = setupFastifyApp();
 
-registerInjections();
+registerInjections(app);
 app.register(registerControllers, {
   prefix: '/api',
 });

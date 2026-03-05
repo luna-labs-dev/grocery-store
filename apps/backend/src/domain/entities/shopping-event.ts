@@ -1,6 +1,6 @@
 import { Entity, TimerHelper } from '../core';
 import { monetaryCalc } from '../helper';
-import type { Family } from './family';
+import type { CollaborationGroup } from './collaboration-group';
 import type { Market } from './market';
 import type { Product } from './product';
 import type { Products } from './products';
@@ -13,8 +13,8 @@ export const validShoppingEventStatus = [
 export type ShoppingEventStatus = (typeof validShoppingEventStatus)[number];
 
 export interface ShoppingEventProps {
-  familyId: string;
-  family?: Family;
+  groupId: string;
+  group?: CollaborationGroup;
   marketId: string;
   market?: Market;
   description?: string;
@@ -46,12 +46,12 @@ export class ShoppingEvent extends Entity<ShoppingEventProps> {
     this.calculateTotals();
   }
 
-  get familyId(): string {
-    return this.props.familyId;
+  get groupId(): string {
+    return this.props.groupId;
   }
 
-  get family(): Family | undefined {
-    return this.props.family;
+  get group(): CollaborationGroup | undefined {
+    return this.props.group;
   }
 
   get marketId(): string {

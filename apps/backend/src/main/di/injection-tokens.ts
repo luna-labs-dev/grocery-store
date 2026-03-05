@@ -5,7 +5,7 @@ export const injection = {
   infra: {
     marketRepositories: 'market-repositories',
     userRepositories: 'user-repositories',
-    familyRepositories: 'family-repositories',
+    groupRepositories: 'group-repositories',
     shoppingEventRepositories: 'shopping-event-repositories',
     productRepositories: 'product-repositories',
     userInfo: 'user-info-service',
@@ -13,7 +13,7 @@ export const injection = {
     places: 'places-service',
   },
   usecases: {
-    familyService: 'family-service',
+    groupService: 'group-service',
     shoppingEventService: 'shopping-event-service',
     marketService: 'market-service',
     userService: 'user-service',

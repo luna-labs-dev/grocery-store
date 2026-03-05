@@ -9,16 +9,17 @@ import type {
   ProductRepositories,
   ShoppingEventRepositories,
 } from '@/application';
-import { Family, Market, Product, ShoppingEvent, User } from '@/domain';
+import { CollaborationGroup, Market, Product, ShoppingEvent } from '@/domain';
 import { Products } from '@/domain/entities/products';
 import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
 
 type ShoppingEventModel = typeof schema.shopping_eventTable.$inferSelect & {
-  family: typeof schema.familyTable.$inferSelect & {
-    owner: typeof schema.userTable.$inferSelect;
-    members: (typeof schema.userTable.$inferSelect)[];
+  group?: typeof schema.groupTable.$inferSelect & {
+    members: (typeof schema.groupMemberTable.$inferSelect & {
+      user: typeof schema.userTable.$inferSelect;
+    })[];
   };
   market: typeof schema.marketTable.$inferSelect;
   products: (typeof schema.productTable.$inferSelect)[];
@@ -34,11 +35,11 @@ export class DrizzleShoppingEventRepository
   ) {}
 
   count = async ({
-    familyId,
+    groupId,
     status,
     period,
   }: CountShoppingEventListRepositoryParams): Promise<number> => {
-    const conditions = [eq(schema.shopping_eventTable.familyId, familyId)];
+    const conditions = [eq(schema.shopping_eventTable.groupId, groupId)];
 
     if (status !== undefined) {
       conditions.push(eq(schema.shopping_eventTable.status, status as any));
@@ -58,7 +59,7 @@ export class DrizzleShoppingEventRepository
   };
 
   getAll = async ({
-    familyId,
+    groupId,
     status,
     period,
     pageIndex,
@@ -66,7 +67,7 @@ export class DrizzleShoppingEventRepository
     orderBy,
     orderDirection,
   }: GetShoppingEventListRepositoryParams): Promise<ShoppingEvent[]> => {
-    const conditions = [eq(schema.shopping_eventTable.familyId, familyId)];
+    const conditions = [eq(schema.shopping_eventTable.groupId, groupId)];
 
     if (status !== undefined) {
       conditions.push(eq(schema.shopping_eventTable.status, status as any));
@@ -77,11 +78,9 @@ export class DrizzleShoppingEventRepository
       conditions.push(lte(schema.shopping_eventTable.createdAt, period.end));
     }
 
-    const orderFn = orderDirection === 'desc' ? desc : asc;
+    const orderFn = orderDirection === 'DESC' ? desc : asc;
     let orderColumn = (schema.shopping_eventTable as any)[orderBy];
     if (!orderColumn && (orderBy as string) === 'market') {
-      // if sorting by market, since relationships sorting in query API is limited,
-      // we might fallback to createdAt, but for a drop in, let's just do standard mapping
       orderColumn = schema.shopping_eventTable.createdAt;
     }
 
@@ -93,18 +92,22 @@ export class DrizzleShoppingEventRepository
       with: {
         market: true,
         products: true,
-        family: {
-          with: { owner: true, members: true },
+        group: {
+          with: {
+            members: {
+              with: { user: true },
+            },
+          },
         },
       },
     });
 
     if (shoppingEvents.length === 0) return [];
-    return shoppingEvents.map((se) => this.toDomain(se));
+    return shoppingEvents.map((se) => this.toDomain(se as any));
   };
 
   getById = async ({
-    familyId,
+    groupId,
     shoppingEventId,
   }: GetShoppingEventByIdRepositoryProps): Promise<
     ShoppingEvent | undefined
@@ -112,27 +115,31 @@ export class DrizzleShoppingEventRepository
     const shoppingEvent = await db.query.shopping_eventTable.findFirst({
       where: and(
         eq(schema.shopping_eventTable.id, shoppingEventId),
-        eq(schema.shopping_eventTable.familyId, familyId),
+        eq(schema.shopping_eventTable.groupId, groupId),
       ),
       with: {
         market: true,
         products: {
           orderBy: [desc(schema.productTable.addedAt)],
         },
-        family: {
-          with: { owner: true, members: true },
+        group: {
+          with: {
+            members: {
+              with: { user: true },
+            },
+          },
         },
       },
     });
 
     if (!shoppingEvent) return undefined;
-    return this.toDomain(shoppingEvent);
+    return this.toDomain(shoppingEvent as any);
   };
 
   add = async (shoppingEvent: ShoppingEvent): Promise<void> => {
     await db.insert(schema.shopping_eventTable).values({
       id: shoppingEvent.id,
-      familyId: shoppingEvent.familyId,
+      groupId: shoppingEvent.groupId,
       marketId: shoppingEvent.marketId,
       description: shoppingEvent.description ?? null,
       totalPaid: shoppingEvent.totalPaid ?? 0,
@@ -149,7 +156,7 @@ export class DrizzleShoppingEventRepository
     await db
       .update(schema.shopping_eventTable)
       .set({
-        familyId: shoppingEvent.familyId,
+        groupId: shoppingEvent.groupId,
         description: shoppingEvent.description ?? null,
         totalPaid: shoppingEvent.totalPaid ?? 0,
         wholesaleTotal: shoppingEvent.wholesaleTotal ?? 0,
@@ -199,39 +206,24 @@ export class DrizzleShoppingEventRepository
   };
 
   private toDomain(shoppingEventModel: ShoppingEventModel): ShoppingEvent {
+    let group: CollaborationGroup | undefined;
+    if (shoppingEventModel.group) {
+      group = CollaborationGroup.create(
+        {
+          name: shoppingEventModel.group.name,
+          description: shoppingEventModel.group.description ?? undefined,
+          inviteCode: shoppingEventModel.group.inviteCode ?? undefined,
+          createdAt: shoppingEventModel.group.createdAt,
+          createdBy: shoppingEventModel.group.createdBy,
+        },
+        shoppingEventModel.group.id,
+      );
+    }
+
     return ShoppingEvent.create(
       {
-        familyId: shoppingEventModel.familyId,
-        family: Family.create(
-          {
-            ownerId: shoppingEventModel.family.ownerId,
-            owner: User.create(
-              {
-                externalId:
-                  shoppingEventModel.family.owner.externalId ?? undefined,
-                email: shoppingEventModel.family.owner.email,
-              },
-              shoppingEventModel.family.owner.id,
-            ),
-            name: shoppingEventModel.family.name,
-            createdAt: shoppingEventModel.family.createdAt,
-            createdBy: shoppingEventModel.family.createdBy,
-            description: shoppingEventModel.family.description ?? undefined,
-            inviteCode: shoppingEventModel.family.inviteCode ?? undefined,
-            members: shoppingEventModel.family.members
-              ? shoppingEventModel.family.members.map((m: any) =>
-                  User.create(
-                    {
-                      externalId: m.externalId ?? undefined,
-                      email: m.email,
-                    },
-                    m.id,
-                  ),
-                )
-              : [],
-          },
-          shoppingEventModel.family.id,
-        ),
+        groupId: shoppingEventModel.groupId!,
+        group,
         marketId: shoppingEventModel.marketId,
         market: Market.create(
           {

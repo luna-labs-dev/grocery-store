@@ -17,10 +17,10 @@ export interface ProductProps {
 }
 
 export interface UpdateProps {
-  name: string;
-  amount: number;
+  name?: string;
+  amount?: number;
   wholesaleMinAmount?: number;
-  price: number;
+  price?: number;
   wholesalePrice?: number;
 }
 
@@ -116,11 +116,12 @@ export class Product extends Entity<ProductProps> {
     wholesaleMinAmount,
     wholesalePrice,
   }: UpdateProps): void {
-    this.props.name = name;
-    this.props.amount = amount;
-    this.props.price = price;
-    this.props.wholesaleMinAmount = wholesaleMinAmount;
-    this.props.wholesalePrice = wholesalePrice;
+    this.props.name = name ?? this.props.name;
+    this.props.amount = amount ?? this.props.amount;
+    this.props.price = price ?? this.props.price;
+    this.props.wholesaleMinAmount =
+      wholesaleMinAmount ?? this.props.wholesaleMinAmount;
+    this.props.wholesalePrice = wholesalePrice ?? this.props.wholesalePrice;
     this.calculateTotalPrice();
   }
 

@@ -22,7 +22,7 @@ import { injection } from '@/main/di/injection-tokens';
 import type { FastifyTypedInstance } from '@/main/fastify';
 import {
   authMiddleware,
-  familyBarrierMiddleware,
+  groupBarrierMiddleware,
 } from '@/main/fastify/middlewares';
 
 const { usecases } = injection;
@@ -38,7 +38,7 @@ export class ShoppingEventController extends FastifyController {
 
   registerRoutes(app: FastifyTypedInstance): void {
     app.addHook('preHandler', authMiddleware);
-    app.addHook('preHandler', familyBarrierMiddleware);
+    app.addHook('preHandler', groupBarrierMiddleware);
 
     app.post(
       '/start',
@@ -56,12 +56,12 @@ export class ShoppingEventController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { familyId } = request;
+        const { groupId } = request;
         const { marketId } = request.body;
         const shoppingEvent =
           await this.shoppingEventService.startShoppingEvent({
             userId: request.auth.user.id,
-            familyId,
+            groupId,
             marketId,
           });
 
@@ -99,10 +99,10 @@ export class ShoppingEventController extends FastifyController {
       async (request, reply) => {
         const { shoppingEventId } = request.params;
         const { totalPaid } = request.body;
-        const { familyId } = request;
+        const { groupId } = request;
 
         const shoppingEvent = await this.shoppingEventService.endShoppingEvent({
-          familyId,
+          groupId,
           shoppingEventId,
           totalPaid,
         });
@@ -131,13 +131,13 @@ export class ShoppingEventController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { familyId } = request;
+        const { groupId } = request;
         const { status, period, pageIndex, pageSize, orderBy, orderDirection } =
           request.query;
 
         const shoppingEvents =
           await this.shoppingEventService.getShoppingEventList({
-            familyId,
+            groupId,
             status,
             period: period && {
               start: new Date(period.start),
@@ -146,7 +146,7 @@ export class ShoppingEventController extends FastifyController {
             pageIndex,
             pageSize,
             orderBy,
-            orderDirection,
+            orderDirection: orderDirection.toUpperCase() as 'ASC' | 'DESC',
           });
 
         const response = {
@@ -189,11 +189,11 @@ export class ShoppingEventController extends FastifyController {
       },
       async (request, reply) => {
         const { shoppingEventId } = request.params;
-        const { familyId } = request;
+        const { groupId } = request;
 
         const shoppingEvent =
           await this.shoppingEventService.getShoppingEventById({
-            familyId,
+            groupId,
             shoppingEventId,
           });
 
