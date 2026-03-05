@@ -1,32 +1,23 @@
 import { container } from 'tsyringe';
 import { env } from '../config/env';
 import type { FastifyTypedInstance } from '../fastify/types';
-import { app } from '../server';
 import { injection } from './injection-tokens';
 import {
   AuthController,
   CartController,
-  FamilyController,
   type FastifyController,
+  GroupController,
   MarketController,
   ShoppingEventController,
 } from '@/api';
 import {
-  FamilyService,
+  GroupService,
   MarketService,
   ShoppingEventService,
   UserService,
 } from '@/application';
-import type {
-  FamilyRepositories,
-  MarketRepositories,
-  Places,
-  ProductRepositories,
-  ShoppingEventRepositories,
-  UserRepositories,
-} from '@/application/contracts';
 import {
-  DrizzleFamilyRepository,
+  DrizzleGroupRepository,
   DrizzleMarketRepository,
   DrizzleProductRepository,
   DrizzleShoppingEventRepository,
@@ -35,55 +26,50 @@ import {
   GooglePlacesHttpClient,
 } from '@/infrastructure';
 
-const { application, infra, usecases, controllers } = injection;
-const { googlePlaces } = env;
+const { infra, usecases, controllers } = injection;
 
-export const registerInjections = () => {
-  // Application
-  container.registerInstance<FastifyTypedInstance>(application.fastify, app);
-
-  // Infra
-  container.register<MarketRepositories>(
-    infra.marketRepositories,
-    DrizzleMarketRepository,
-  );
-  container.register<UserRepositories>(
-    infra.userRepositories,
-    DrizzleUserRepository,
-  );
-  container.register<FamilyRepositories>(
-    infra.familyRepositories,
-    DrizzleFamilyRepository,
-  );
-  container.register<ShoppingEventRepositories>(
-    infra.shoppingEventRepositories,
-    DrizzleShoppingEventRepository,
-  );
-  container.register<ProductRepositories>(
-    infra.productRepositories,
-    DrizzleProductRepository,
-  );
-
-  container.register<GooglePlacesHttpClient>(infra.placesHttpClient, {
-    useFactory: () => {
-      const { apiKey, baseURL } = googlePlaces;
-      return new GooglePlacesHttpClient({ apiKey, baseURL });
-    },
+export const registerInjections = (app: FastifyTypedInstance): void => {
+  // Repositories
+  container.register(infra.userRepositories, {
+    useClass: DrizzleUserRepository,
   });
-  container.register<Places>(infra.places, GooglePlaces);
+  container.register(infra.marketRepositories, {
+    useClass: DrizzleMarketRepository,
+  });
+  container.register(infra.groupRepositories, {
+    useClass: DrizzleGroupRepository,
+  });
+  container.register(infra.shoppingEventRepositories, {
+    useClass: DrizzleShoppingEventRepository,
+  });
+  container.register(infra.productRepositories, {
+    useClass: DrizzleProductRepository,
+  });
 
-  // Usecases — domain services
-  container.register<FamilyService>(usecases.familyService, FamilyService);
-  container.register<ShoppingEventService>(
-    usecases.shoppingEventService,
-    ShoppingEventService,
-  );
-  container.register<MarketService>(usecases.marketService, MarketService);
-  container.register<UserService>(usecases.userService, UserService);
+  // Services
+  container.register(infra.placesHttpClient, {
+    useFactory: () =>
+      new GooglePlacesHttpClient({
+        apiKey: env.googlePlaces.apiKey,
+        baseURL: env.googlePlaces.baseURL,
+      }),
+  });
+  container.register(infra.places, { useClass: GooglePlaces });
+
+  // Usecases
+  container.register(usecases.marketService, { useClass: MarketService });
+  container.register(usecases.userService, { useClass: UserService });
+  container.register(usecases.groupService, { useClass: GroupService });
+  container.register(usecases.shoppingEventService, {
+    useClass: ShoppingEventService,
+  });
+
+  // Fastify Instance
+  container.registerInstance<FastifyTypedInstance>('FastifyInstance', app);
 
   // Fastify Controllers
   container.register<FastifyController>(controllers.fastify, AuthController);
-  container.register<FastifyController>(controllers.fastify, FamilyController);
+  container.register<FastifyController>(controllers.fastify, GroupController);
   container.register<FastifyController>(controllers.fastify, MarketController);
   container.register<FastifyController>(
     controllers.fastify,
