@@ -16,7 +16,7 @@ describe('ShoppingEvent Entity - Repro', () => {
 
     const products = Products.create([p1]);
     const shoppingEvent = ShoppingEvent.create({
-      familyId: 'any_family',
+      groupId: 'any_group',
       marketId: 'any_market',
       status: 'ONGOING',
       products,

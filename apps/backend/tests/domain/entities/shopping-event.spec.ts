@@ -27,7 +27,7 @@ describe('ShoppingEvent Entity', () => {
 
     const products = Products.create([p1, p2]);
     const shoppingEvent = ShoppingEvent.create({
-      familyId: 'any_family',
+      groupId: 'any_group',
       marketId: 'any_market',
       status: 'ONGOING',
       products,
@@ -60,7 +60,7 @@ describe('ShoppingEvent Entity', () => {
   it('should handle empty products list correctly', () => {
     const products = Products.create([]);
     const shoppingEvent = ShoppingEvent.create({
-      familyId: 'any_family',
+      groupId: 'any_group',
       marketId: 'any_market',
       status: 'ONGOING',
       products,
