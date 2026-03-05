@@ -31,6 +31,8 @@ For this stack (TS + Drizzle + Fastify), Better Auth is the superior choice over
 *   **Session over JWT Bloat**: Use database-backed sessions with strategic Redis caching. This avoids the "Header Too Large" error (SCAR_02) and allows for instant session revocation.
 *   **Reference Tokens**: Never expose the full user object in the token. Use an opaque session ID.
 *   **Idempotency on Signup**: Ensure the user creation flow is idempotent. If the user is created in the Auth provider but DB insertion fails, the retry must handle it gracefully.
+*   **ABAC Integration**: Session data must include `roles` (Master, Admin, Moderator) and `groupIds` to empower the `PermissionService` without DB thrashing.
+*   **Session Versioning (SCAR_04)**: Use a `session_version` or `group_hash` in the session object. If an Admin changes a user's role or a user's group membership changes, increment the version to force a background session refresh.
 
 ---
 **Status**: DRAFT - *Solutions Architect / Elite Backend Architect*
