@@ -66,7 +66,6 @@ describe('groupBarrierMiddleware', () => {
     await groupBarrierMiddleware(request);
     
     expect(request.groupId).toBe('group-1');
-    expect(request.familyId).toBe('group-1'); // legacy support
   });
 
   it('should set the group from x-group-id header if valid', async () => {

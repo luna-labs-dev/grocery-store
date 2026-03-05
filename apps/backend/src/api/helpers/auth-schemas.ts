@@ -20,7 +20,6 @@ export const userResponseSchema = z.object({
   image: z.url().nullish(),
   createdAt: z.date().or(z.string()),
   updatedAt: z.date().or(z.string()),
-  familyId: z.uuid().nullish(),
 });
 
 export const signInSocialRequestSchema = z.object({

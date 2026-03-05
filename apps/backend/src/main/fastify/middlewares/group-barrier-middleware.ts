@@ -2,8 +2,8 @@ import type { FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
 import type { UserService } from '@/application';
 import {
-  UnauthorizedException,
-  UserNotMemberOfAnyGroupBarrierException,
+    UnauthorizedException,
+    UserNotMemberOfAnyGroupBarrierException,
 } from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
@@ -36,11 +36,9 @@ export const groupBarrierMiddleware = async (request: FastifyRequest) => {
 
   if (headerGroupId && groups.some((g) => g.groupId === headerGroupId)) {
     request.groupId = headerGroupId;
-    request.familyId = headerGroupId; // Backward compatibility
     return;
   }
 
   const activeGroupId = groups[0].groupId;
   request.groupId = activeGroupId;
-  request.familyId = activeGroupId; // Backward compatibility
 };
