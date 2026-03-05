@@ -64,6 +64,13 @@
       "when": 1772670858244,
       "tag": "0008_slim_dark_phoenix",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1772672121778,
+      "tag": "0009_cooing_shaman",
+      "breakpoints": true
     }
   ]
 }

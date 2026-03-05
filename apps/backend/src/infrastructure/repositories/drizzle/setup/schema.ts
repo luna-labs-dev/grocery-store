@@ -151,7 +151,9 @@ export const marketTable = pgTable(
 export const shopping_eventTable = pgTable('shopping_event', {
   id: uuid('id').primaryKey().defaultRandom(),
   groupId: uuid('groupId').references(() => groupTable.id),
-  marketId: varchar('marketId', { length: 320 }).notNull(),
+  marketId: varchar('marketId', { length: 320 })
+    .notNull()
+    .references(() => marketTable.id),
   description: text('description'),
   totalPaid: money('totalPaid').notNull(),
   wholesaleTotal: money('wholesaleTotal').notNull(),
@@ -165,7 +167,9 @@ export const shopping_eventTable = pgTable('shopping_event', {
 
 export const productTable = pgTable('product', {
   id: uuid('id').primaryKey().defaultRandom(),
-  shoppingEventId: uuid('shoppingEventId').notNull(),
+  shoppingEventId: uuid('shoppingEventId')
+    .notNull()
+    .references(() => shopping_eventTable.id),
   name: varchar('name', { length: 256 }).notNull(),
   amount: real('amount').notNull(),
   price: money('price').notNull(),

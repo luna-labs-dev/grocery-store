@@ -1,0 +1,2 @@
+ALTER TABLE "product" ADD CONSTRAINT "product_shoppingEventId_shopping_event_id_fk" FOREIGN KEY ("shoppingEventId") REFERENCES "public"."shopping_event"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "shopping_event" ADD CONSTRAINT "shopping_event_marketId_market_id_fk" FOREIGN KEY ("marketId") REFERENCES "public"."market"("id") ON DELETE no action ON UPDATE no action;
