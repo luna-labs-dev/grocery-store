@@ -75,3 +75,8 @@ The project follows a Clean Architecture approach with a strict separation of co
 5. Implementation in `application/usecases`.
 6. Integration in `api/controllers`.
 7. Register in `main/di`.
+
+---
+
+## 🤝 Collaboration & Workflow
+- **Commits**: Only perform `git commit` when explicitly instructed by the USER.
