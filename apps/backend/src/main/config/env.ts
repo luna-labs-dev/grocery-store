@@ -11,6 +11,7 @@ const envVariables = z.object({
   LOG_LEVEL: z.enum(['dev', 'debug', 'prod']).default('dev'),
   PORT: z.coerce.number().default(8000),
   ORIGINS: z.string(),
+  WEB_APP_URL: z.string().url().default('http://localhost:3000'),
 
   // Database
   DATABASE_HOST: z.string(),
@@ -60,6 +61,7 @@ const {
   LOG_LEVEL,
   PORT,
   ORIGINS,
+  WEB_APP_URL,
 
   // Database
   DATABASE_HOST,
@@ -94,6 +96,7 @@ export const env = {
     port: PORT,
     origins: getOrigin(ORIGINS),
     host: '0.0.0.0',
+    webAppUrl: WEB_APP_URL,
   },
   database: {
     baseUrl: `postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}`,
