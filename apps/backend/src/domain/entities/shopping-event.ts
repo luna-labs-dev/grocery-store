@@ -6,9 +6,9 @@ import type { Product } from './product';
 import type { Products } from './products';
 
 export const validShoppingEventStatus = [
-  'CANCELED',
-  'FINISHED',
-  'ONGOING',
+  'canceled',
+  'finished',
+  'ongoing',
 ] as const;
 export type ShoppingEventStatus = (typeof validShoppingEventStatus)[number];
 
@@ -172,7 +172,7 @@ export class ShoppingEvent extends Entity<ShoppingEventProps> {
    */
   end = (totalPaid: number): void => {
     this.props.totalPaid = totalPaid;
-    this.props.status = 'FINISHED';
+    this.props.status = 'finished';
     this.props.finishedAt = new Date();
     this.props.elapsedTime = TimerHelper.calculateDuration(
       this.props.createdAt,

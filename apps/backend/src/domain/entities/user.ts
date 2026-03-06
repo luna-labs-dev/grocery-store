@@ -1,4 +1,4 @@
-import { Entity } from '../core';
+import { type ApplicationRole, Entity } from '../core';
 import type { GroupMember } from './group-member';
 
 interface UserProps {
@@ -7,6 +7,8 @@ interface UserProps {
   emailVerified: boolean;
   name: string;
   image?: string;
+  roles: ApplicationRole[];
+  reputationScore: number;
   groups?: GroupMember[];
   createdAt: Date;
   updatedAt: Date;
@@ -48,6 +50,14 @@ export class User extends Entity<UserProps> {
 
   public get groups(): GroupMember[] | undefined {
     return this.props.groups;
+  }
+
+  public get roles(): ApplicationRole[] {
+    return this.props.roles;
+  }
+
+  public get reputationScore(): number {
+    return this.props.reputationScore;
   }
 
   public get createdAt(): Date {

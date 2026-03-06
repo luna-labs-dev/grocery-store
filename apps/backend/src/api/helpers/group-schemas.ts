@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const groupRoleSchema = z.enum(['OWNER', 'ADMIN', 'MEMBER']);
+export const groupRoleSchema = z.enum(['owner', 'moderator', 'member']);
 
 export const groupMemberResponseSchema = z.object({
   userId: z.string(),

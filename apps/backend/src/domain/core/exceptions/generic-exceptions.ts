@@ -16,3 +16,11 @@ export class UnauthorizedException extends BaseException {
     super('Unauthorized');
   }
 }
+
+export class ForbiddenException extends BaseException {
+  statusCode = HttpStatusCode.Forbidden;
+
+  constructor(message = 'Forbidden: Insufficient permissions') {
+    super(message);
+  }
+}

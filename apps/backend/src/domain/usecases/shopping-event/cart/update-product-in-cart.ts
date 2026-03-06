@@ -1,6 +1,7 @@
 import type { Product } from '../../../entities';
 
 export interface UpdateProductInCartParams {
+  userId: string;
   groupId: string;
   shoppingEventId: string;
   productId: string;

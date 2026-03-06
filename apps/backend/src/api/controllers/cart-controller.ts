@@ -101,12 +101,13 @@ export class CartController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { groupId } = request;
+        const { auth, groupId } = request;
         const { shoppingEventId, productId } = request.params;
         const { name, amount, price, wholesaleMinAmount, wholesalePrice } =
           request.body;
 
         await this.cartService.updateProductInCart({
+          userId: auth.user.id,
           shoppingEventId,
           productId,
           groupId,
@@ -142,9 +143,10 @@ export class CartController extends FastifyController {
       },
       async (request, reply) => {
         const { shoppingEventId, productId } = request.params;
-        const { groupId } = request;
+        const { auth, groupId } = request;
 
         await this.cartService.removeProductFromCart({
+          userId: auth.user.id,
           shoppingEventId,
           productId,
           groupId,

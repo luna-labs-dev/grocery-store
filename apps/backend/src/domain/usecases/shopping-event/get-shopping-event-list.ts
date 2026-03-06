@@ -1,6 +1,7 @@
 import type { ShoppingEvent, ShoppingEventStatus } from '../../entities';
 
 export interface GetShoppingEventListParams {
+  userId: string;
   groupId: string;
   status?: ShoppingEventStatus;
   period?: {

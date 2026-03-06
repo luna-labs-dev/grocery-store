@@ -11,6 +11,8 @@ export const injection = {
     userInfo: 'user-info-service',
     placesHttpClient: 'places-http-client',
     places: 'places-service',
+    configService: 'config-service',
+    settingsRepository: 'settings-repository',
   },
   usecases: {
     groupService: 'group-service',

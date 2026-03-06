@@ -4,5 +4,8 @@ export interface RemoveProductRepositoryParams {
 }
 
 export interface RemoveProductRepository {
-  remove: (params: RemoveProductRepositoryParams) => Promise<void>;
+  remove(
+    params: RemoveProductRepositoryParams,
+    transaction?: unknown,
+  ): Promise<void>;
 }

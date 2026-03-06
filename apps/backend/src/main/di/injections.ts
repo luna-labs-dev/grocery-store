@@ -17,6 +17,7 @@ import {
   UserService,
 } from '@/application';
 import {
+  ConfigService,
   DrizzleGroupRepository,
   DrizzleMarketRepository,
   DrizzleProductRepository,
@@ -45,7 +46,6 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
   container.register(infra.productRepositories, {
     useClass: DrizzleProductRepository,
   });
-
   // Services
   container.register(infra.placesHttpClient, {
     useFactory: () =>
@@ -55,6 +55,8 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
       }),
   });
   container.register(infra.places, { useClass: GooglePlaces });
+  container.register(infra.configService, { useClass: ConfigService });
+  container.register(infra.configService, { useClass: ConfigService });
 
   // Usecases
   container.register(usecases.marketService, { useClass: MarketService });

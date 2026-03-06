@@ -1,5 +1,4 @@
-import { Entity } from '../core';
-import { GroupRole } from '../core/enums';
+import { Entity, type GroupRole } from '../core';
 import type { User } from './user';
 
 interface GroupMemberProps {
@@ -42,7 +41,7 @@ export class GroupMember extends Entity<GroupMemberProps> {
     return new GroupMember(
       {
         ...props,
-        role: props.role ?? GroupRole.MEMBER,
+        role: props.role ?? 'member',
       },
       id,
     );

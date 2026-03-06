@@ -1,3 +1,8 @@
+export interface RemoveGroupMemberParams {
+  groupId: string;
+  userId: string;
+}
+
 export interface RemoveGroupMemberRepository {
-  removeMember(params: { groupId: string; userId: string }): Promise<void>;
+  removeMember(params: RemoveGroupMemberParams): Promise<void>;
 }

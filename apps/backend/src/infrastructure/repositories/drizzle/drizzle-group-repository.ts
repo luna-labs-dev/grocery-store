@@ -6,14 +6,17 @@ import type {
   AddGroupMemberRepository,
   AddGroupRepository,
   GetGroupByIdRepository,
+  GetGroupByInviteCodeParams,
   GetGroupByInviteCodeRepository,
   GetGroupMembersRepository,
   GetGroupsByUserIdRepository,
+  RemoveGroupMemberParams,
   RemoveGroupMemberRepository,
   UpdateGroupInviteCodeRepository,
+  UpdateGroupMemberRoleParams,
   UpdateGroupMemberRoleRepository,
 } from '@/application/contracts/repositories/group';
-import type { GroupRole } from '@/domain/core/enums';
+import type { GroupRole } from '@/domain/core/logic/permissions/group/types';
 import { CollaborationGroup, GroupMember, User } from '@/domain/entities';
 
 @injectable()
@@ -30,13 +33,26 @@ export class DrizzleGroupRepository
     UpdateGroupInviteCodeRepository
 {
   async add(group: CollaborationGroup): Promise<void> {
-    await db.insert(schema.groupTable).values({
-      id: group.id,
-      name: group.name,
-      description: group.description ?? null,
-      inviteCode: group.inviteCode ?? null,
-      createdAt: group.createdAt,
-      createdBy: group.createdBy,
+    await db.transaction(async (tx) => {
+      await tx.insert(schema.groupTable).values({
+        id: group.id,
+        name: group.name,
+        description: group.description ?? null,
+        inviteCode: group.inviteCode ?? null,
+        createdAt: group.createdAt,
+        createdBy: group.createdBy,
+      });
+
+      if (group.members && group.members.length > 0) {
+        for (const member of group.members) {
+          await tx.insert(schema.groupMemberTable).values({
+            groupId: group.id,
+            userId: member.userId,
+            role: member.role,
+            joinedAt: member.joinedAt,
+          });
+        }
+      }
     });
   }
 
@@ -61,9 +77,7 @@ export class DrizzleGroupRepository
 
   async getByInviteCode({
     inviteCode,
-  }: {
-    inviteCode: string;
-  }): Promise<CollaborationGroup | undefined> {
+  }: GetGroupByInviteCodeParams): Promise<CollaborationGroup | undefined> {
     const groupModel = await db.query.groupTable.findFirst({
       where: eq(schema.groupTable.inviteCode, inviteCode),
     });
@@ -82,8 +96,9 @@ export class DrizzleGroupRepository
     );
   }
 
-  async addMember(member: GroupMember): Promise<void> {
-    await db.insert(schema.groupMemberTable).values({
+  async addMember(member: GroupMember, transaction?: any): Promise<void> {
+    const client = transaction || db;
+    await client.insert(schema.groupMemberTable).values({
       groupId: member.groupId,
       userId: member.userId,
       role: member.role,
@@ -94,10 +109,7 @@ export class DrizzleGroupRepository
   async removeMember({
     groupId,
     userId,
-  }: {
-    groupId: string;
-    userId: string;
-  }): Promise<void> {
+  }: RemoveGroupMemberParams): Promise<void> {
     await db
       .delete(schema.groupMemberTable)
       .where(
@@ -112,11 +124,7 @@ export class DrizzleGroupRepository
     groupId,
     userId,
     role,
-  }: {
-    groupId: string;
-    userId: string;
-    role: GroupRole;
-  }): Promise<void> {
+  }: UpdateGroupMemberRoleParams): Promise<void> {
     await db
       .update(schema.groupMemberTable)
       .set({ role })
@@ -148,6 +156,8 @@ export class DrizzleGroupRepository
             email: m.user.email,
             emailVerified: m.user.emailVerified,
             image: m.user.image ?? undefined,
+            roles: [],
+            reputationScore: 0,
             createdAt: m.user.createdAt,
             updatedAt: m.user.updatedAt,
             externalId: m.user.externalId ?? undefined,

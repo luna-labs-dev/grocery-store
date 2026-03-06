@@ -137,72 +137,79 @@ export class DrizzleShoppingEventRepository
   };
 
   add = async (shoppingEvent: ShoppingEvent): Promise<void> => {
-    await db.insert(schema.shopping_eventTable).values({
-      id: shoppingEvent.id,
-      groupId: shoppingEvent.groupId,
-      marketId: shoppingEvent.marketId,
-      description: shoppingEvent.description ?? null,
-      totalPaid: shoppingEvent.totalPaid ?? 0,
-      wholesaleTotal: shoppingEvent.wholesaleTotal ?? 0,
-      retailTotal: shoppingEvent.retailTotal ?? 0,
-      status: shoppingEvent.status as any,
-      createdAt: shoppingEvent.createdAt,
-      finishedAt: shoppingEvent.finishedAt ?? null,
-      createdBy: shoppingEvent.createdBy,
-    });
-  };
-
-  update = async (shoppingEvent: ShoppingEvent): Promise<void> => {
-    await db
-      .update(schema.shopping_eventTable)
-      .set({
+    await db.transaction(async (tx) => {
+      await tx.insert(schema.shopping_eventTable).values({
+        id: shoppingEvent.id,
         groupId: shoppingEvent.groupId,
+        marketId: shoppingEvent.marketId,
         description: shoppingEvent.description ?? null,
         totalPaid: shoppingEvent.totalPaid ?? 0,
         wholesaleTotal: shoppingEvent.wholesaleTotal ?? 0,
         retailTotal: shoppingEvent.retailTotal ?? 0,
         status: shoppingEvent.status as any,
-        elapsedTime: shoppingEvent.elapsedTime ?? null,
+        createdAt: shoppingEvent.createdAt,
         finishedAt: shoppingEvent.finishedAt ?? null,
-      })
-      .where(
-        and(
-          eq(schema.shopping_eventTable.id, shoppingEvent.id),
-          eq(schema.shopping_eventTable.marketId, shoppingEvent.marketId),
-        ),
-      );
+        createdBy: shoppingEvent.createdBy,
+      });
 
-    const newProducts = shoppingEvent.products.getNewItems();
-    const updateProducts = shoppingEvent.products.getUpdatedItems();
-    const deleteProducts = shoppingEvent.products.getRemovedItems();
+      const products = shoppingEvent.products.getItems();
+      if (products.length > 0) {
+        await Promise.all(
+          products.map((p) => this.productRepository.add(p, tx)),
+        );
+      }
+    });
+  };
 
-    const promises: any = [];
-    if (newProducts.length > 0) {
-      promises.push(
-        Promise.all(newProducts.map((p) => this.productRepository.add(p))),
-      );
-    }
-    if (updateProducts.length > 0) {
-      promises.push(
-        Promise.all(
-          updateProducts.map((p) => this.productRepository.update(p)),
-        ),
-      );
-    }
-    if (deleteProducts.length > 0) {
-      promises.push(
-        Promise.all(
-          deleteProducts.map((p) =>
-            this.productRepository.remove({
-              shoppingEventId: shoppingEvent.id,
-              productId: p.id,
-            }),
+  update = async (shoppingEvent: ShoppingEvent): Promise<void> => {
+    await db.transaction(async (tx) => {
+      await tx
+        .update(schema.shopping_eventTable)
+        .set({
+          groupId: shoppingEvent.groupId,
+          description: shoppingEvent.description ?? null,
+          totalPaid: shoppingEvent.totalPaid ?? 0,
+          wholesaleTotal: shoppingEvent.wholesaleTotal ?? 0,
+          retailTotal: shoppingEvent.retailTotal ?? 0,
+          status: shoppingEvent.status as any,
+          elapsedTime: shoppingEvent.elapsedTime ?? null,
+          finishedAt: shoppingEvent.finishedAt ?? null,
+        })
+        .where(
+          and(
+            eq(schema.shopping_eventTable.id, shoppingEvent.id),
+            eq(schema.shopping_eventTable.marketId, shoppingEvent.marketId),
           ),
-        ),
-      );
-    }
+        );
 
-    await Promise.allSettled(promises);
+      const newProducts = shoppingEvent.products.getNewItems();
+      const updateProducts = shoppingEvent.products.getUpdatedItems();
+      const deleteProducts = shoppingEvent.products.getRemovedItems();
+
+      if (newProducts.length > 0) {
+        await Promise.all(
+          newProducts.map((p) => this.productRepository.add(p, tx)),
+        );
+      }
+      if (updateProducts.length > 0) {
+        await Promise.all(
+          updateProducts.map((p) => this.productRepository.update(p, tx)),
+        );
+      }
+      if (deleteProducts.length > 0) {
+        await Promise.all(
+          deleteProducts.map((p) =>
+            this.productRepository.remove(
+              {
+                shoppingEventId: shoppingEvent.id,
+                productId: p.id,
+              },
+              tx,
+            ),
+          ),
+        );
+      }
+    });
   };
 
   private toDomain(shoppingEventModel: ShoppingEventModel): ShoppingEvent {

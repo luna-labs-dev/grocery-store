@@ -1,6 +1,7 @@
 import type { ShoppingEvent } from '../../entities';
 
 export interface GetShoppingEventByIdParams {
+  userId: string;
   shoppingEventId: string;
   groupId: string;
 }

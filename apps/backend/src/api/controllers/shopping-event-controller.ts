@@ -99,9 +99,10 @@ export class ShoppingEventController extends FastifyController {
       async (request, reply) => {
         const { shoppingEventId } = request.params;
         const { totalPaid } = request.body;
-        const { groupId } = request;
+        const { auth, groupId } = request;
 
         const shoppingEvent = await this.shoppingEventService.endShoppingEvent({
+          userId: auth.user.id,
           groupId,
           shoppingEventId,
           totalPaid,
@@ -131,12 +132,13 @@ export class ShoppingEventController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { groupId } = request;
+        const { auth, groupId } = request;
         const { status, period, pageIndex, pageSize, orderBy, orderDirection } =
           request.query;
 
         const shoppingEvents =
           await this.shoppingEventService.getShoppingEventList({
+            userId: auth.user.id,
             groupId,
             status,
             period: period && {
@@ -189,10 +191,11 @@ export class ShoppingEventController extends FastifyController {
       },
       async (request, reply) => {
         const { shoppingEventId } = request.params;
-        const { groupId } = request;
+        const { auth, groupId } = request;
 
         const shoppingEvent =
           await this.shoppingEventService.getShoppingEventById({
+            userId: auth.user.id,
             groupId,
             shoppingEventId,
           });

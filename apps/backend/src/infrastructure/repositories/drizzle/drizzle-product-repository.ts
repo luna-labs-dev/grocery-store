@@ -10,8 +10,9 @@ import type { Product } from '@/domain';
 
 @injectable()
 export class DrizzleProductRepository implements ProductRepositories {
-  add = async (product: Product): Promise<void> => {
-    await db.insert(schema.productTable).values({
+  add = async (product: Product, transaction?: any): Promise<void> => {
+    const client = transaction || db;
+    await client.insert(schema.productTable).values({
       id: product.id,
       shoppingEventId: product.shoppingEventId,
       name: product.name,
@@ -24,8 +25,9 @@ export class DrizzleProductRepository implements ProductRepositories {
     });
   };
 
-  update = async (product: Product): Promise<void> => {
-    await db
+  update = async (product: Product, transaction?: any): Promise<void> => {
+    const client = transaction || db;
+    await client
       .update(schema.productTable)
       .set({
         name: product.name,
@@ -42,11 +44,12 @@ export class DrizzleProductRepository implements ProductRepositories {
       );
   };
 
-  remove = async ({
-    shoppingEventId,
-    productId,
-  }: RemoveProductRepositoryParams): Promise<void> => {
-    await db
+  remove = async (
+    { shoppingEventId, productId }: RemoveProductRepositoryParams,
+    transaction?: any,
+  ): Promise<void> => {
+    const client = transaction || db;
+    await client
       .delete(schema.productTable)
       .where(
         and(

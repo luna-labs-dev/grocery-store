@@ -8,6 +8,7 @@ import {
   jsonb,
   pgEnum,
   pgTable,
+  primaryKey,
   real,
   text,
   timestamp,
@@ -35,15 +36,15 @@ export const geography = customType<{ data: string }>({
 });
 
 export const shoppingEventStatusEnum = pgEnum('shoppingEventStatusEnum', [
-  'ONGOING',
-  'CANCELED',
-  'FINISHED',
+  'ongoing',
+  'canceled',
+  'finished',
 ]);
 
 export const groupRoleEnum = pgEnum('groupRoleEnum', [
-  'OWNER',
-  'ADMIN',
-  'MEMBER',
+  'owner',
+  'moderator',
+  'member',
 ]);
 
 export const groupTable = pgTable('group', {
@@ -64,12 +65,10 @@ export const groupMemberTable = pgTable(
     userId: text('userId')
       .notNull()
       .references(() => userTable.id),
-    role: groupRoleEnum('role').default('MEMBER').notNull(),
+    role: groupRoleEnum('role').default('member').notNull(),
     joinedAt: timestamp('joinedAt', { precision: 6 }).defaultNow().notNull(),
   },
-  (table) => [
-    index('group_member_pkey').on(table.groupId, table.userId), // composite "PK" in logic
-  ],
+  (table) => [primaryKey({ columns: [table.groupId, table.userId] })],
 );
 
 export const userTable = pgTable('user', {
@@ -158,7 +157,7 @@ export const shopping_eventTable = pgTable('shopping_event', {
   totalPaid: money('totalPaid').notNull(),
   wholesaleTotal: money('wholesaleTotal').notNull(),
   retailTotal: money('retailTotal').notNull(),
-  status: shoppingEventStatusEnum('status').default('ONGOING').notNull(),
+  status: shoppingEventStatusEnum('status').default('ongoing').notNull(),
   elapsedTime: bigint('elapsedTime', { mode: 'number' }),
   createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
   finishedAt: timestamp('finishedAt', { precision: 6 }),
