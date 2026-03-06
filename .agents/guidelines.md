@@ -71,6 +71,29 @@ The project follows a Clean Architecture approach with a strict separation of co
 - **Maintainability over Speed**: If a quick fix introduces technical debt, it must be rejected in favor of a clean, maintainable solution.
 - **Meaningful Abstractions**: Use design patterns only when they simplify the system's mental model, not for the sake of using them.
 
+### 8. Database & Persistence (DBA Rules)
+- **Transactions**: All write operations involving multiple tables MUST be executed within a transaction. Orchestrate at the Service layer using a `TransactionManager`.
+- **Naming**:
+  - Enums/Statuses/Roles: Always **lowercase** and **kebab-case** (e.g., `partially-filled`, `super-admin`).
+  - Tables: snake_case (e.g., `shopping_event`).
+  - Columns: camelCase (e.g., `inviteCode`).
+- **Integrity**: Every relation MUST be backed by a physical Foreign Key constraint (`.references()`). Use UUIDs for Primary Keys.
+- **Audit**: Every table must have `createdAt` and `updatedAt`/`lastUpdatedAt` timestamps.
+
+### 9. Aggregate Root Pattern
+- **Encapsulation**: Domain entities like `CollaborationGroup` and `ShoppingEvent` act as Aggregate Roots. All internal state changes (e.g., adding members, upserting products) MUST happen through methods on the Root entity.
+- **Persistence**: Repositories must persist the entire Aggregate Root atomically. Avoid scattered repository calls for internal items.
+
+### 10. Authorization Context (`RequesterContext`)
+- **DRY Auth**: Use `RequesterContext` to encapsulate the authenticated `User` and the scoped `CollaborationGroup`.
+- **Ensuring Permissions**: Services must use `ctx.checkPermission(action, resource)` instead of manual repository checks.
+- **Middleware**: Use `groupBarrierMiddleware` to ensure the context is always available for group-scoped routes.
+
+### 11. Environment & Testing (E2E)
+- **Valkey/Redis**: The development and E2E environment uses Valkey on port **6380** (Redis-compatible).
+- **Docker**: Services (`postgres`, `valkey`, `jaeger`) should be running via `docker compose -f docker-compose.dev.yml up -d` before running E2E tests.
+- **Isolation**: Use `cleanupDatabase()` in E2E setup to ensure a clean state between tests.
+
 ---
 
 ## 🛠️ Implementation Checklist
@@ -85,5 +108,6 @@ The project follows a Clean Architecture approach with a strict separation of co
 ---
 
 ## 🤝 Collaboration & Workflow
-- **Commits**: Only perform `git commit` when explicitly instructed by the USER.
+- **Commits**: Follow semantic commit conventions (e.g., `feat:`, `fix:`, `refactor:`, `test:`). Only perform `git commit` when explicitly instructed by the USER.
 - **Progress Tracking**: Agents MUST actively maintain both the internal `task.md` and the official `docs/refactor/ROADMAP.md`. When a feature is implemented, tested, and verified, the agent must check off `[x]` the corresponding tasks in these documents before notifying the USER of completion.
+- **Agent Guidelines**: All specialist agents are located in `.agents/specialists/` and follow kebab-case naming. Always consult the relevant specialist before making high-impact changes.
