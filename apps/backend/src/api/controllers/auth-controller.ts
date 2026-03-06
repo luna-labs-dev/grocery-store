@@ -1,4 +1,8 @@
-import type { FastifyPluginOptions } from 'fastify';
+import type {
+  FastifyPluginOptions,
+  FastifyReply,
+  FastifyRequest,
+} from 'fastify';
 import { injectable } from 'tsyringe';
 import { FastifyController } from '@/api/contracts/fastify-controller';
 import {
@@ -16,15 +20,16 @@ import type { FastifyTypedInstance } from '@/main/fastify/types';
 
 @injectable()
 export class AuthController extends FastifyController {
-  private async handleRequest(request: any, reply: any) {
+  private async handleRequest(request: FastifyRequest, reply: FastifyReply) {
     const baseOrigin = new URL(env.auth.url).origin;
     const url = `${baseOrigin}${request.url}`;
+    const body = JSON.stringify(request.body);
 
     const response = await auth.handler(
       new Request(url, {
         method: request.method,
-        headers: request.headers as any,
-        body: request.body ? JSON.stringify(request.body) : undefined,
+        headers: request.headers as HeadersInit,
+        body,
       }),
     );
 
