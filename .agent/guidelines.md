@@ -65,6 +65,12 @@ The project follows a Clean Architecture approach with a strict separation of co
   - Integration Tests: For controllers and full-stack flows.
 - **Rule**: Always test both Success (`should ...`) and Failure (`should throw ...`) scenarios.
 
+### 7. Clean Code & Minimalism
+- **Rule of Simplicity**: Before implementing a complex solution, narrow down the logic to its most elegant core. Avoid "crap from the ass" (convoluted, over-engineered, or messy code).
+- **SOLID First**: All new code must be audited against SOLID principles.
+- **Maintainability over Speed**: If a quick fix introduces technical debt, it must be rejected in favor of a clean, maintainable solution.
+- **Meaningful Abstractions**: Use design patterns only when they simplify the system's mental model, not for the sake of using them.
+
 ---
 
 ## 🛠️ Implementation Checklist
