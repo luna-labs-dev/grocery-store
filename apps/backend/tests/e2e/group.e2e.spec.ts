@@ -98,4 +98,49 @@ describe('Group E2E', () => {
     expect(groups).toHaveLength(1);
     expect(groups[0].name).toBe('Join Test Group');
   });
+
+  it('should allow creating groups with the same name', async () => {
+    const groupName = 'Duplicate Name';
+
+    // 1. Create group with User A
+    const resA = await app.inject({
+      method: 'POST',
+      url: '/api/group',
+      headers: { cookie },
+      payload: { name: groupName },
+    });
+    expect(resA.statusCode).toBe(201);
+
+    // 2. Authenticate User B
+    const authB = await authenticate(app, 'user-b@example.com');
+    const cookieB = authB.cookie;
+
+    // 3. Create group with User B using same name
+    const resB = await app.inject({
+      method: 'POST',
+      url: '/api/group',
+      headers: { cookie: cookieB },
+      payload: { name: groupName },
+    });
+    expect(resB.statusCode).toBe(201);
+
+    // 4. Verify both have their respective groups
+    const fetchA = await app.inject({
+      method: 'GET',
+      url: '/api/group',
+      headers: { cookie },
+    });
+    const fetchB = await app.inject({
+      method: 'GET',
+      url: '/api/group',
+      headers: { cookie: cookieB },
+    });
+
+    const groupsA = JSON.parse(fetchA.payload);
+    const groupsB = JSON.parse(fetchB.payload);
+
+    expect(groupsA.some((g: any) => g.name === groupName)).toBe(true);
+    expect(groupsB.some((g: any) => g.name === groupName)).toBe(true);
+    expect(groupsA[0].id).not.toBe(groupsB[0].id);
+  });
 });

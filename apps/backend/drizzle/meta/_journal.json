@@ -78,6 +78,13 @@
       "when": 1772767947714,
       "tag": "0010_tricky_stellaris",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1772811847791,
+      "tag": "0011_chilly_black_bird",
+      "breakpoints": true
     }
   ]
 }

@@ -49,7 +49,7 @@ export const groupRoleEnum = pgEnum('groupRoleEnum', [
 
 export const groupTable = pgTable('group', {
   id: uuid('id').primaryKey().defaultRandom(),
-  name: varchar('name', { length: 100 }).unique().notNull(),
+  name: varchar('name', { length: 100 }).notNull(),
   description: text('description'),
   inviteCode: varchar('inviteCode', { length: 320 }).unique(),
   createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
