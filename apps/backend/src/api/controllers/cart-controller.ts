@@ -8,7 +8,7 @@ import {
   mutateProductInCartRequestParamsSchema,
   updateProductInCartRequestSchema,
 } from '../helpers';
-import type { ShoppingEventService } from '@/application';
+import type { CartService } from '@/application';
 import { getPossibleExceptionsSchemas } from '@/domain';
 import {
   ProductNotFoundException,
@@ -27,8 +27,8 @@ const { usecases } = injection;
 @injectable()
 export class CartController extends FastifyController {
   constructor(
-    @inject(usecases.shoppingEventService)
-    private readonly cartService: ShoppingEventService,
+    @inject(usecases.cartService)
+    private readonly cartService: CartService,
   ) {
     super();
   }
@@ -57,21 +57,22 @@ export class CartController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { auth, groupId } = request;
+        const { requesterContext } = request;
         const { shoppingEventId } = request.params;
         const { name, amount, price, wholesaleMinAmount, wholesalePrice } =
           request.body;
 
-        const product = await this.cartService.addProductToCart({
-          userId: auth.user.id,
-          shoppingEventId,
-          groupId,
-          name,
-          amount,
-          price,
-          wholesaleMinAmount,
-          wholesalePrice,
-        });
+        const product = await this.cartService.addProductToCart(
+          requesterContext,
+          {
+            shoppingEventId,
+            name,
+            amount,
+            price,
+            wholesaleMinAmount,
+            wholesalePrice,
+          },
+        );
 
         reply.status(200).send({
           id: product.id,
@@ -101,16 +102,14 @@ export class CartController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { auth, groupId } = request;
+        const { requesterContext } = request;
         const { shoppingEventId, productId } = request.params;
         const { name, amount, price, wholesaleMinAmount, wholesalePrice } =
           request.body;
 
-        await this.cartService.updateProductInCart({
-          userId: auth.user.id,
+        await this.cartService.updateProductInCart(requesterContext, {
           shoppingEventId,
           productId,
-          groupId,
           name,
           amount,
           price,
@@ -143,13 +142,11 @@ export class CartController extends FastifyController {
       },
       async (request, reply) => {
         const { shoppingEventId, productId } = request.params;
-        const { auth, groupId } = request;
+        const { requesterContext } = request;
 
-        await this.cartService.removeProductFromCart({
-          userId: auth.user.id,
+        await this.cartService.removeProductFromCart(requesterContext, {
           shoppingEventId,
           productId,
-          groupId,
         });
 
         reply.status(204).send();

@@ -22,7 +22,10 @@ import {
   UserNotInGroupException,
 } from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
-import { authMiddleware } from '@/main/fastify/middlewares';
+import {
+  authMiddleware,
+  groupBarrierMiddleware,
+} from '@/main/fastify/middlewares';
 import type { FastifyTypedInstance } from '@/main/fastify/types';
 
 const { usecases } = injection;
@@ -122,6 +125,7 @@ export class GroupController extends FastifyController {
     app.post(
       '/:groupId/leave',
       {
+        preHandler: [groupBarrierMiddleware],
         schema: {
           tags: [this.prefix],
           description: 'Leave a collaboration group',
@@ -140,10 +144,9 @@ export class GroupController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { groupId } = request.params;
-        const { user } = request.auth;
+        const { requesterContext } = request;
 
-        await this.groupService.leaveGroup({ userId: user.id, groupId });
+        await this.groupService.leaveGroup(requesterContext);
         reply.status(HttpStatusCode.NoContent).send();
       },
     );
@@ -151,6 +154,7 @@ export class GroupController extends FastifyController {
     app.delete(
       '/:groupId/members/:memberId',
       {
+        preHandler: [groupBarrierMiddleware],
         schema: {
           tags: [this.prefix],
           description: 'Remove a member from the group (RBAC required)',
@@ -169,12 +173,10 @@ export class GroupController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { groupId, memberId } = request.params;
-        const { user } = request.auth;
+        const { memberId } = request.params;
+        const { requesterContext } = request;
 
-        await this.groupService.removeMember({
-          userId: user.id,
-          groupId,
+        await this.groupService.removeMember(requesterContext, {
           targetUserId: memberId,
         });
         reply.status(HttpStatusCode.NoContent).send();
@@ -184,6 +186,7 @@ export class GroupController extends FastifyController {
     app.patch(
       '/:groupId/members/:memberId/role',
       {
+        preHandler: [groupBarrierMiddleware],
         schema: {
           tags: [this.prefix],
           description: "Update a member's role (RBAC required)",
@@ -203,13 +206,11 @@ export class GroupController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { groupId, memberId } = request.params;
+        const { memberId } = request.params;
         const { role } = request.body;
-        const { user } = request.auth;
+        const { requesterContext } = request;
 
-        await this.groupService.updateMemberRole({
-          userId: user.id,
-          groupId,
+        await this.groupService.updateMemberRole(requesterContext, {
           targetUserId: memberId,
           role: role as any,
         });
@@ -220,6 +221,7 @@ export class GroupController extends FastifyController {
     app.get(
       '/:groupId/invite',
       {
+        preHandler: [groupBarrierMiddleware],
         schema: {
           tags: [this.prefix],
           description: 'Get invitation magic link and QR information',
@@ -233,13 +235,10 @@ export class GroupController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { groupId } = request.params;
-        const { user } = request.auth;
+        const { requesterContext } = request;
 
-        const inviteInfo = await this.groupService.getInviteInfo({
-          userId: user.id,
-          groupId,
-        });
+        const inviteInfo =
+          await this.groupService.getInviteInfo(requesterContext);
 
         const response = groupMapper.toInviteResponse(inviteInfo);
         reply.status(HttpStatusCode.Ok).send(response);

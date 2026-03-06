@@ -56,12 +56,10 @@ export class ShoppingEventController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { groupId } = request;
+        const { requesterContext } = request;
         const { marketId } = request.body;
         const shoppingEvent =
-          await this.shoppingEventService.startShoppingEvent({
-            userId: request.auth.user.id,
-            groupId,
+          await this.shoppingEventService.startShoppingEvent(requesterContext, {
             marketId,
           });
 
@@ -99,14 +97,15 @@ export class ShoppingEventController extends FastifyController {
       async (request, reply) => {
         const { shoppingEventId } = request.params;
         const { totalPaid } = request.body;
-        const { auth, groupId } = request;
+        const { requesterContext } = request;
 
-        const shoppingEvent = await this.shoppingEventService.endShoppingEvent({
-          userId: auth.user.id,
-          groupId,
-          shoppingEventId,
-          totalPaid,
-        });
+        const shoppingEvent = await this.shoppingEventService.endShoppingEvent(
+          requesterContext,
+          {
+            shoppingEventId,
+            totalPaid,
+          },
+        );
 
         reply.status(200).send(shoppingEventMapper.toSummaryDto(shoppingEvent));
       },
@@ -132,24 +131,25 @@ export class ShoppingEventController extends FastifyController {
         },
       },
       async (request, reply) => {
-        const { auth, groupId } = request;
+        const { requesterContext } = request;
         const { status, period, pageIndex, pageSize, orderBy, orderDirection } =
           request.query;
 
         const shoppingEvents =
-          await this.shoppingEventService.getShoppingEventList({
-            userId: auth.user.id,
-            groupId,
-            status,
-            period: period && {
-              start: new Date(period.start),
-              end: new Date(period.end),
+          await this.shoppingEventService.getShoppingEventList(
+            requesterContext,
+            {
+              status,
+              period: period && {
+                start: new Date(period.start),
+                end: new Date(period.end),
+              },
+              pageIndex,
+              pageSize,
+              orderBy,
+              orderDirection: orderDirection.toUpperCase() as 'asc' | 'desc',
             },
-            pageIndex,
-            pageSize,
-            orderBy,
-            orderDirection: orderDirection.toUpperCase() as 'ASC' | 'DESC',
-          });
+          );
 
         const response = {
           total: shoppingEvents.total,
@@ -191,14 +191,15 @@ export class ShoppingEventController extends FastifyController {
       },
       async (request, reply) => {
         const { shoppingEventId } = request.params;
-        const { auth, groupId } = request;
+        const { requesterContext } = request;
 
         const shoppingEvent =
-          await this.shoppingEventService.getShoppingEventById({
-            userId: auth.user.id,
-            groupId,
-            shoppingEventId,
-          });
+          await this.shoppingEventService.getShoppingEventById(
+            requesterContext,
+            {
+              shoppingEventId,
+            },
+          );
 
         reply.status(200).send(shoppingEventMapper.toSummaryDto(shoppingEvent));
       },
