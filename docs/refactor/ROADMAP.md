@@ -53,11 +53,11 @@ This backlog follows Scrum patterns to ensure every technical task delivers clea
 - Users cannot read/write data from groups they don't belong to.
 - Permissions context cached in session.
 - **Technical Tasks**:
-    - [ ] `PermissionService` (Policy Engine) with `ConfigService` fallback.
-    - [ ] `SettingsRepository` for DB-backed threshold management.
-    - [ ] Dynamic ABAC Decorators for UseCases.
-    - [ ] Admin Dashboard Endpoints (Master/Admin/Moderator access).
-    - [ ] TDD: `evaluate-permission.spec.ts`, `config-service.spec.ts`.
+    - [x] `PermissionService` (Policy Engine) with `ConfigService` fallback.
+    - [x] `SettingsRepository` for DB-backed threshold management.
+    - [x] **MOD**: Explicit ABAC checks in UseCases (replacing decorators).
+    - [x] Admin Dashboard Endpoints (Master/Admin/Moderator access).
+    - [x] TDD: `evaluate-permission.spec.ts`, `config-service.spec.ts`, `admin-controller.spec.ts`.
 
 ---
 
