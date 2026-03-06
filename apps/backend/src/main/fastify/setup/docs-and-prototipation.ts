@@ -25,13 +25,18 @@ export const setupDocsAndPrototipation = (app: FastifyTypedInstance) => {
       },
 
       tags: [
-        { name: 'family', description: 'Endpoints relacionados a familias' },
+        { name: 'auth', description: 'Endpoints de autenticação e sessão' },
+        { name: 'group', description: 'Endpoints relacionados a grupos' },
         { name: 'market', description: 'Endpoints relacionados a mercados' },
         {
           name: 'shopping-event',
           description: 'Endpoints relacionados a eventos de compra',
         },
         { name: 'cart', description: 'Endpoints relacionados ao carrinho' },
+        {
+          name: 'admin',
+          description: 'Endpoints de administração (Backoffice)',
+        },
       ],
     },
     transform: jsonSchemaTransform,
@@ -43,5 +48,11 @@ export const setupDocsAndPrototipation = (app: FastifyTypedInstance) => {
 
   app.register(ScalarApiReference, {
     routePrefix: '/scalar',
+    configuration: {
+      theme: 'kepler',
+      darkMode: true,
+      hideDarkModeToggle: true,
+      defaultOpenAllTags: true,
+    },
   });
 };
