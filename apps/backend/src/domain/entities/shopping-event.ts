@@ -1,8 +1,9 @@
 import { Entity, TimerHelper } from '../core';
+import { ProductNotFoundException } from '../exceptions';
 import { monetaryCalc } from '../helper';
 import type { CollaborationGroup } from './collaboration-group';
 import type { Market } from './market';
-import type { Product } from './product';
+import { Product } from './product';
 import type { Products } from './products';
 
 export const validShoppingEventStatus = [
@@ -180,17 +181,55 @@ export class ShoppingEvent extends Entity<ShoppingEventProps> {
   };
 
   /**
-   * Adds a product to the event and invalidates current calculations.
+   * Upserts a product into the event. Creates if it doesn't exist, updates if it does.
    */
-  addProduct = (product: Product): void => {
+  upsertProduct = (
+    productId: string | undefined,
+    data: {
+      name: string;
+      amount: number;
+      price: number;
+      wholesaleMinAmount?: number;
+      wholesalePrice?: number;
+      addedBy: string;
+      addedAt?: Date;
+    },
+  ): Product => {
+    let product = productId
+      ? this.props.products.getItemById(productId)
+      : undefined;
+
+    if (product) {
+      product.update(data);
+    } else {
+      product = Product.create(
+        {
+          shoppingEventId: this.id,
+          name: data.name,
+          amount: data.amount,
+          price: data.price,
+          wholesaleMinAmount: data.wholesaleMinAmount,
+          wholesalePrice: data.wholesalePrice,
+          addedAt: data.addedAt ?? new Date(),
+          addedBy: data.addedBy,
+        },
+        productId,
+      );
+    }
+
     this.props.products.add(product);
     this._isCalculated = false;
+
+    return product;
   };
 
   /**
-   * Removes a product from the event and invalidates current calculations.
+   * Removes a product from the event by ID.
    */
-  removeProduct = (product: Product) => {
+  removeProductById = (productId: string): void => {
+    const product = this.props.products.getItemById(productId);
+    if (!product) throw new ProductNotFoundException();
+
     this.props.products.remove(product);
     this._isCalculated = false;
   };
