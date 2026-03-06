@@ -198,6 +198,7 @@ export class GroupService {
     const joinUrl = `${webAppUrl}/join?code=${group.inviteCode}`;
 
     return {
+      // biome-ignore lint/style/noNonNullAssertion: The validation above ensures this is not undefined
       inviteCode: group.inviteCode!,
       joinUrl,
     };
