@@ -15,6 +15,7 @@ export const injection = {
     settingsRepository: 'settings-repository',
   },
   usecases: {
+    cartService: 'cart-service',
     groupService: 'group-service',
     shoppingEventService: 'shopping-event-service',
     marketService: 'market-service',

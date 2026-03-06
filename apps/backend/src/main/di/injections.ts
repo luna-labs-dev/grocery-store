@@ -11,6 +11,7 @@ import {
   ShoppingEventController,
 } from '@/api';
 import {
+  CartService,
   GroupService,
   MarketService,
   ShoppingEventService,
@@ -59,6 +60,7 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
   container.register(infra.configService, { useClass: ConfigService });
 
   // Usecases
+  container.register(usecases.cartService, { useClass: CartService });
   container.register(usecases.marketService, { useClass: MarketService });
   container.register(usecases.userService, { useClass: UserService });
   container.register(usecases.groupService, { useClass: GroupService });

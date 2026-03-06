@@ -1,16 +1,22 @@
 import type { FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
 import type { UserService } from '@/application';
+import type { GroupRepositories } from '@/application/contracts';
+import { RequesterContext } from '@/domain/core/requester-context';
 import {
-    UnauthorizedException,
-    UserNotMemberOfAnyGroupBarrierException,
+  GroupNotFoundException,
+  UnauthorizedException,
+  UserNotMemberOfAnyGroupBarrierException,
 } from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
-const { usecases } = injection;
+const { usecases, infra } = injection;
 
 export const groupBarrierMiddleware = async (request: FastifyRequest) => {
   const userService = container.resolve<UserService>(usecases.userService);
+  const groupRepository = container.resolve<GroupRepositories>(
+    infra.groupRepositories,
+  );
 
   const { user } = request.auth;
   if (!user?.id) {
@@ -29,16 +35,18 @@ export const groupBarrierMiddleware = async (request: FastifyRequest) => {
   }
 
   // Determine the active group.
-  // Priority:
-  // 1. x-group-id header (for explicit selection)
-  // 2. The first group in their list
   const headerGroupId = request.headers['x-group-id'] as string | undefined;
+  let activeGroupId = groups[0].groupId;
 
   if (headerGroupId && groups.some((g) => g.groupId === headerGroupId)) {
-    request.groupId = headerGroupId;
-    return;
+    activeGroupId = headerGroupId;
   }
 
-  const activeGroupId = groups[0].groupId;
+  const group = await groupRepository.getById(activeGroupId);
+  if (!group) {
+    throw new GroupNotFoundException();
+  }
+
   request.groupId = activeGroupId;
+  request.requesterContext = new RequesterContext(dbUser, group);
 };
