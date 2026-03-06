@@ -5,8 +5,12 @@ import type {
   UserRepositories,
 } from '@/application/contracts';
 import { GroupService } from '@/application/usecases/group-service';
+import { RequesterContext } from '@/domain/core/requester-context';
 import { CollaborationGroup, GroupMember, User } from '@/domain/entities';
-import { UnauthorizedGroupOperationException } from '@/domain/exceptions';
+import {
+  UnauthorizedGroupOperationException,
+  UserNotInGroupException,
+} from '@/domain/exceptions';
 
 describe('GroupService', () => {
   let sut: GroupService;
@@ -24,12 +28,10 @@ describe('GroupService', () => {
       add: vi.fn(),
       getById: vi.fn(),
       getByInviteCode: vi.fn(),
-      addMember: vi.fn(),
-      removeMember: vi.fn(),
-      updateMemberRole: vi.fn(),
       getMembers: vi.fn(),
       getGroups: vi.fn(),
       updateInviteCode: vi.fn(),
+      update: vi.fn(),
     } as any;
 
     sut = new GroupService(userRepository, groupRepository);
@@ -94,20 +96,25 @@ describe('GroupService', () => {
         { name: 'Group 1', createdAt: new Date(), createdBy: 'user-owner' },
         'group-1',
       );
+      mockGroup.addMember(
+        GroupMember.create({
+          groupId: 'group-1',
+          userId: 'user-member',
+          role: 'member',
+          joinedAt: new Date(),
+        }),
+      );
+      const ctx = new RequesterContext(mockUser, mockGroup);
 
-      vi.mocked(userRepository.getById).mockResolvedValue(mockUser);
-      vi.mocked(groupRepository.getById).mockResolvedValue(mockGroup);
-
-      await sut.removeMember({
-        userId: 'user-owner',
-        groupId: 'group-1',
+      await sut.removeMember(ctx, {
         targetUserId: 'user-member',
       });
 
-      expect(groupRepository.removeMember).toHaveBeenCalledWith({
-        groupId: 'group-1',
-        userId: 'user-member',
-      });
+      expect(groupRepository.update).toHaveBeenCalled();
+      const updatedGroup = vi.mocked(groupRepository.update).mock.calls[0][0];
+      expect(updatedGroup.members.some((m) => m.userId === 'user-member')).toBe(
+        false,
+      );
     });
 
     it('should throw UnauthorizedGroupOperationException if a Global ADMIN tries to remove a MEMBER but is NOT in group', async () => {
@@ -116,17 +123,13 @@ describe('GroupService', () => {
         { name: 'Group 1', createdAt: new Date(), createdBy: 'user-owner' },
         'group-1',
       );
-
-      vi.mocked(userRepository.getById).mockResolvedValue(mockAdmin);
-      vi.mocked(groupRepository.getById).mockResolvedValue(mockGroup);
+      const ctx = new RequesterContext(mockAdmin, mockGroup);
 
       await expect(
-        sut.removeMember({
-          userId: 'user-admin',
-          groupId: 'group-1',
+        sut.removeMember(ctx, {
           targetUserId: 'user-member',
         }),
-      ).rejects.toThrow(UnauthorizedGroupOperationException);
+      ).rejects.toThrow(UserNotInGroupException);
     });
 
     it('should throw UnauthorizedGroupOperationException if a MEMBER tries to remove someone', async () => {
@@ -138,14 +141,10 @@ describe('GroupService', () => {
         { name: 'Group 1', createdAt: new Date(), createdBy: 'user-owner' },
         'group-1',
       );
-
-      vi.mocked(userRepository.getById).mockResolvedValue(mockUser);
-      vi.mocked(groupRepository.getById).mockResolvedValue(mockGroup);
+      const ctx = new RequesterContext(mockUser, mockGroup);
 
       await expect(
-        sut.removeMember({
-          userId: 'user-member',
-          groupId: 'group-1',
+        sut.removeMember(ctx, {
           targetUserId: 'user-other',
         }),
       ).rejects.toThrow(UnauthorizedGroupOperationException);
@@ -162,22 +161,27 @@ describe('GroupService', () => {
         { name: 'Group 1', createdAt: new Date(), createdBy: 'user-owner' },
         'group-1',
       );
+      mockGroup.addMember(
+        GroupMember.create({
+          groupId: 'group-1',
+          userId: 'user-member',
+          role: 'member',
+          joinedAt: new Date(),
+        }),
+      );
+      const ctx = new RequesterContext(mockUser, mockGroup);
 
-      vi.mocked(userRepository.getById).mockResolvedValue(mockUser);
-      vi.mocked(groupRepository.getById).mockResolvedValue(mockGroup);
-
-      await sut.updateMemberRole({
-        userId: 'user-owner',
-        groupId: 'group-1',
+      await sut.updateMemberRole(ctx, {
         targetUserId: 'user-member',
         role: 'moderator',
       });
 
-      expect(groupRepository.updateMemberRole).toHaveBeenCalledWith({
-        groupId: 'group-1',
-        userId: 'user-member',
-        role: 'moderator',
-      });
+      expect(groupRepository.update).toHaveBeenCalled();
+      const updatedGroup = vi.mocked(groupRepository.update).mock.calls[0][0];
+      const member = updatedGroup.members.find(
+        (m) => m.userId === 'user-member',
+      );
+      expect(member?.role).toBe('moderator');
     });
   });
 

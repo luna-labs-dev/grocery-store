@@ -40,7 +40,12 @@ describe('ShoppingEvent Entity - Repro', () => {
       addedBy: 'any_user',
     });
 
-    shoppingEvent.addProduct(p2);
+    shoppingEvent.upsertProduct(p2.id, {
+      name: p2.name,
+      amount: p2.amount,
+      price: p2.price,
+      addedBy: p2.addedBy,
+    });
 
     // Should trigger recalc
     const totals2 = shoppingEvent.getCalculatedTotals();

@@ -5,6 +5,7 @@ import type {
   UserRepositories,
 } from '@/application/contracts';
 import { GroupService } from '@/application/usecases/group-service';
+import { RequesterContext } from '@/domain/core/requester-context';
 import { CollaborationGroup, GroupMember, User } from '@/domain/entities';
 import { UserNotInGroupException } from '@/domain/exceptions';
 
@@ -75,13 +76,10 @@ describe('GroupService - Magic Link', () => {
         'group-1',
       );
 
-      vi.mocked(userRepository.getById).mockResolvedValue(mockUser);
       vi.mocked(groupRepository.getById).mockResolvedValue(mockGroup);
+      const ctx = new RequesterContext(mockUser, mockGroup);
 
-      const result = await sut.getInviteInfo({
-        userId: 'user-1',
-        groupId: 'group-1',
-      });
+      const result = await sut.getInviteInfo(ctx);
 
       expect(result.inviteCode).toBe('ABC-123');
       expect(result.joinUrl).toContain('ABC-123');
@@ -102,14 +100,11 @@ describe('GroupService - Magic Link', () => {
         }),
       } as any;
 
-      vi.mocked(userRepository.getById).mockResolvedValue(mockUser);
       vi.mocked(groupRepository.getById).mockResolvedValue(mockGroup);
       vi.mocked(groupRepository.updateInviteCode).mockResolvedValue(undefined);
+      const ctx = new RequesterContext(mockUser, mockGroup);
 
-      const result = await sut.getInviteInfo({
-        userId: 'user-1',
-        groupId: 'group-1',
-      });
+      const result = await sut.getInviteInfo(ctx);
 
       expect(result.inviteCode).toBe('NEW-CODE');
       expect(result.joinUrl).toContain('NEW-CODE');
@@ -131,15 +126,12 @@ describe('GroupService - Magic Link', () => {
         'group-1',
       );
 
-      vi.mocked(userRepository.getById).mockResolvedValue(mockUser);
       vi.mocked(groupRepository.getById).mockResolvedValue(mockGroup);
+      const ctx = new RequesterContext(mockUser, mockGroup);
 
-      await expect(
-        sut.getInviteInfo({
-          userId: 'user-stranger',
-          groupId: 'group-1',
-        }),
-      ).rejects.toThrow(UserNotInGroupException);
+      await expect(sut.getInviteInfo(ctx)).rejects.toThrow(
+        UserNotInGroupException,
+      );
     });
 
     it('should throw UserNotInGroupException if a Global ADMIN tries to get invite info but is NOT in group', async () => {
@@ -154,15 +146,12 @@ describe('GroupService - Magic Link', () => {
         'group-1',
       );
 
-      vi.mocked(userRepository.getById).mockResolvedValue(mockAdmin);
       vi.mocked(groupRepository.getById).mockResolvedValue(mockGroup);
+      const ctx = new RequesterContext(mockAdmin, mockGroup);
 
-      await expect(
-        sut.getInviteInfo({
-          userId: 'admin-1',
-          groupId: 'group-1',
-        }),
-      ).rejects.toThrow(UserNotInGroupException);
+      await expect(sut.getInviteInfo(ctx)).rejects.toThrow(
+        UserNotInGroupException,
+      );
     });
   });
 

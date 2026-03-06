@@ -8,20 +8,29 @@ import {
   UnauthorizedException,
   UserNotMemberOfAnyGroupBarrierException,
 } from '@/domain/exceptions';
+import { injection } from '@/main/di/injection-tokens';
 import { groupBarrierMiddleware } from '@/main/fastify/middlewares/group-barrier-middleware';
 
 vi.mock('@/application/usecases/user-service');
 
+const { usecases, infra } = injection;
+
 describe('groupBarrierMiddleware', () => {
   let userService: Mocked<UserService>;
+  let groupRepository: any;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // When a module is mocked with vi.mock, the imported class becomes a mock constructor.
-    // We can then use vi.mocked on the constructor to get a typed mock instance.
     userService = vi.mocked(new UserService(null as any));
-    // We need to mock container.resolve because the middleware uses it internally
-    vi.spyOn(container, 'resolve').mockReturnValue(userService);
+    groupRepository = {
+      getById: vi.fn(),
+    };
+
+    vi.spyOn(container, 'resolve').mockImplementation((token: any) => {
+      if (token === usecases.userService) return userService;
+      if (token === infra.groupRepositories) return groupRepository;
+      return null;
+    });
   });
 
   const mockUser = { id: 'user-1' };
@@ -82,6 +91,7 @@ describe('groupBarrierMiddleware', () => {
 
   it('should set the first group as active by default', async () => {
     userService.getUser.mockResolvedValue(mockDbUser);
+    groupRepository.getById.mockResolvedValue({ id: 'group-1' });
 
     const request = {
       auth: { user: mockUser },
@@ -95,6 +105,7 @@ describe('groupBarrierMiddleware', () => {
 
   it('should set the group from x-group-id header if valid', async () => {
     userService.getUser.mockResolvedValue(mockDbUser);
+    groupRepository.getById.mockResolvedValue({ id: 'group-2' });
 
     const request = {
       auth: { user: mockUser },
@@ -108,6 +119,7 @@ describe('groupBarrierMiddleware', () => {
 
   it('should fallback to first group if x-group-id is invalid for the user', async () => {
     userService.getUser.mockResolvedValue(mockDbUser);
+    groupRepository.getById.mockResolvedValue({ id: 'group-1' });
 
     const request = {
       auth: { user: mockUser },

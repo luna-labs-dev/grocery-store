@@ -1,9 +1,9 @@
 import 'reflect-metadata';
-import { describe, expect, it, vi, beforeEach, type Mocked } from 'vitest';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
+import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import { MarketController } from '@/api/controllers/market-controller';
 import { MarketService } from '@/application/usecases/market-service';
-import type { FastifyRequest, FastifyReply } from 'fastify';
 
 vi.mock('@/application/usecases/market-service');
 
@@ -41,7 +41,7 @@ describe('MarketController Integration', () => {
       const request = {
         query: { pageIndex: 0, pageSize: 10 },
         auth: { user: { id: 'user-1' } },
-        groupId: 'group-1'
+        groupId: 'group-1',
       } as any as FastifyRequest;
 
       const reply = {
@@ -52,20 +52,22 @@ describe('MarketController Integration', () => {
       let capturedHandler: any;
       await (marketController as any).registerRoutes({
         addHook: vi.fn(),
-        get: async (path: string, opts: any, handler: any) => {
+        get: async (path: string, _opts: any, handler: any) => {
           if (path === '') capturedHandler = handler;
-        }
+        },
       } as any);
 
       await capturedHandler(request, reply);
 
       expect(reply.status).toHaveBeenCalledWith(200);
-      expect(reply.send).toHaveBeenCalledWith(expect.objectContaining({
-        total: 1,
-        items: expect.arrayContaining([
-          expect.objectContaining({ id: 'market-1', name: 'Test Market' })
-        ])
-      }));
+      expect(reply.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          total: 1,
+          items: expect.arrayContaining([
+            expect.objectContaining({ id: 'market-1', name: 'Test Market' }),
+          ]),
+        }),
+      );
     });
   });
 
@@ -77,7 +79,7 @@ describe('MarketController Integration', () => {
         params: { marketId: 'market-1' },
         query: {},
         auth: { user: { id: 'user-1' } },
-        groupId: 'group-1'
+        groupId: 'group-1',
       } as any as FastifyRequest;
 
       const reply = {
@@ -88,17 +90,19 @@ describe('MarketController Integration', () => {
       let capturedHandler: any;
       await (marketController as any).registerRoutes({
         addHook: vi.fn(),
-        get: async (path: string, opts: any, handler: any) => {
+        get: async (path: string, _opts: any, handler: any) => {
           if (path === '/:marketId') capturedHandler = handler;
-        }
+        },
       } as any);
 
       await capturedHandler(request, reply);
 
       expect(reply.status).toHaveBeenCalledWith(200);
-      expect(reply.send).toHaveBeenCalledWith(expect.objectContaining({
-        id: 'market-1'
-      }));
+      expect(reply.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'market-1',
+        }),
+      );
     });
   });
 });

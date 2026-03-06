@@ -127,6 +127,7 @@ describe('GroupController Integration', () => {
       const request = {
         auth: { user: mockUser },
         params: { groupId: 'group-1' },
+        requesterContext: { user: mockUser, group: mockGroup },
       } as any as FastifyRequest;
 
       const reply = {
@@ -158,6 +159,7 @@ describe('GroupController Integration', () => {
         auth: { user: mockUser },
         params: { groupId: 'group-1', memberId: 'user-2' },
         body: { role: 'ADMIN' },
+        requesterContext: { user: mockUser, group: mockGroup },
       } as any as FastifyRequest;
 
       const reply = {
@@ -179,12 +181,13 @@ describe('GroupController Integration', () => {
 
       await capturedHandler(request, reply);
 
-      expect(groupService.updateMemberRole).toHaveBeenCalledWith({
-        userId: 'user-1',
-        groupId: 'group-1',
-        targetUserId: 'user-2',
-        role: 'ADMIN',
-      });
+      expect(groupService.updateMemberRole).toHaveBeenCalledWith(
+        request.requesterContext,
+        {
+          targetUserId: 'user-2',
+          role: 'ADMIN',
+        },
+      );
       expect(reply.status).toHaveBeenCalledWith(204);
     });
   });
