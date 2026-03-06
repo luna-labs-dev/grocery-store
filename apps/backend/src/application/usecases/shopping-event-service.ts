@@ -2,24 +2,12 @@ import { inject, injectable } from 'tsyringe';
 import type {
   GetMarketByIdRepository,
   ShoppingEventRepositories,
-  UserRepositories,
 } from '@/application/contracts';
-import type {
-  AddProductToCartParams,
-  EndShoppingEventParams,
-  GetShoppingEventByIdParams,
-  GetShoppingEventListParams,
-  GetShoppingEventListResult,
-  RemoveProductFromCartParams,
-  StartShoppingEventParams,
-  UpdateProductInCartParams,
-} from '@/domain';
-import { Product, ShoppingEvent } from '@/domain';
-import { hasGroupPermission } from '@/domain/core/logic/permissions';
+import { ShoppingEvent } from '@/domain';
+import type { RequesterContext } from '@/domain/core/requester-context';
 import { Products } from '@/domain/entities/products';
 import {
   MarketNotFoundException,
-  ProductNotFoundException,
   ShoppingEventAlreadyEndedException,
   ShoppingEventEmptyCartException,
   ShoppingEventNotFoundException,
@@ -35,35 +23,24 @@ export class ShoppingEventService {
     private readonly shoppingEventRepository: ShoppingEventRepositories,
     @inject(infra.marketRepositories)
     private readonly marketRepository: GetMarketByIdRepository,
-    @inject(infra.userRepositories)
-    private readonly userRepository: UserRepositories,
   ) {}
 
-  async startShoppingEvent({
-    userId,
-    groupId,
-    marketId,
-  }: StartShoppingEventParams): Promise<ShoppingEvent> {
+  async startShoppingEvent(
+    ctx: RequesterContext,
+    { marketId }: { marketId: string },
+  ): Promise<ShoppingEvent> {
+    ctx.checkPermission('create', 'shoppingEvent');
+
     const market = await this.marketRepository.getById({ id: marketId });
     if (!market) throw new MarketNotFoundException();
 
-    const user = await this.userRepository.getById(userId);
-    if (
-      !user ||
-      !hasGroupPermission(user, 'create', 'shoppingEvent', {
-        groupId,
-      })
-    ) {
-      throw new ShoppingEventNotFoundException(); // using a generic/unauthorized type error if possible, or Unexpected
-    }
-
     const shoppingEvent = ShoppingEvent.create({
-      groupId,
+      groupId: ctx.group.id,
       marketId,
       market,
       status: 'ongoing',
       createdAt: new Date(),
-      createdBy: userId,
+      createdBy: ctx.user.id,
       products: Products.create([]),
     });
 
@@ -72,25 +49,21 @@ export class ShoppingEventService {
     return shoppingEvent;
   }
 
-  async endShoppingEvent({
-    shoppingEventId,
-    groupId,
-    totalPaid,
-    userId,
-  }: EndShoppingEventParams): Promise<ShoppingEvent> {
-    const user = await this.userRepository.getById(userId);
-    if (
-      !user ||
-      !hasGroupPermission(user, 'create', 'shoppingEvent', {
-        groupId,
-      })
-    ) {
-      throw new ShoppingEventNotFoundException();
-    }
+  async endShoppingEvent(
+    ctx: RequesterContext,
+    {
+      shoppingEventId,
+      totalPaid,
+    }: {
+      shoppingEventId: string;
+      totalPaid: number;
+    },
+  ): Promise<ShoppingEvent> {
+    ctx.checkPermission('create', 'shoppingEvent');
 
     const shoppingEvent = await this.shoppingEventRepository.getById({
       shoppingEventId,
-      groupId,
+      groupId: ctx.group.id,
     });
 
     if (!shoppingEvent) throw new ShoppingEventNotFoundException();
@@ -106,209 +79,58 @@ export class ShoppingEventService {
     return shoppingEvent;
   }
 
-  async getShoppingEventList({
-    groupId,
-    status,
-    period,
-    pageIndex,
-    pageSize,
-    orderBy,
-    orderDirection,
-    userId,
-  }: GetShoppingEventListParams): Promise<GetShoppingEventListResult> {
-    const user = await this.userRepository.getById(userId);
-    if (
-      !user ||
-      !hasGroupPermission(user, 'read', 'shoppingEvent', {
-        groupId,
-      })
-    ) {
-      throw new ShoppingEventNotFoundException();
-    }
+  async getShoppingEventList(
+    ctx: RequesterContext,
+    params: {
+      status?: string;
+      period?: { start: Date; end: Date };
+      pageIndex?: number;
+      pageSize?: number;
+      orderBy?: string;
+      orderDirection?: 'asc' | 'desc';
+    },
+  ): Promise<{ total: number; shoppingEvents: ShoppingEvent[] }> {
+    ctx.checkPermission('read', 'shoppingEvent');
 
     const total = await this.shoppingEventRepository.count({
-      groupId,
-      status,
-      period,
+      groupId: ctx.group.id,
+      status: params.status as any,
+      period: params.period,
     });
 
-    const response: GetShoppingEventListResult = {
+    const response = {
       total,
-      shoppingEvents: [],
+      shoppingEvents: [] as ShoppingEvent[],
     };
 
     if (total > 0) {
       response.shoppingEvents = await this.shoppingEventRepository.getAll({
-        groupId,
-        status,
-        period,
-        pageIndex,
-        pageSize,
-        orderBy,
-        orderDirection,
+        groupId: ctx.group.id,
+        status: params.status as any,
+        period: params.period,
+        pageIndex: params.pageIndex ?? 0,
+        pageSize: params.pageSize ?? 10,
+        orderBy: params.orderBy ?? 'createdAt',
+        orderDirection: (params.orderDirection?.toUpperCase() as any) ?? 'DESC',
       });
     }
 
     return response;
   }
 
-  async getShoppingEventById({
-    groupId,
-    shoppingEventId,
-    userId,
-  }: GetShoppingEventByIdParams): Promise<ShoppingEvent> {
-    const user = await this.userRepository.getById(userId);
-    if (
-      !user ||
-      !hasGroupPermission(user, 'read', 'shoppingEvent', {
-        groupId,
-      })
-    ) {
-      throw new ShoppingEventNotFoundException();
-    }
+  async getShoppingEventById(
+    ctx: RequesterContext,
+    { shoppingEventId }: { shoppingEventId: string },
+  ): Promise<ShoppingEvent> {
+    ctx.checkPermission('read', 'shoppingEvent');
 
     const shoppingEvent = await this.shoppingEventRepository.getById({
       shoppingEventId,
-      groupId,
+      groupId: ctx.group.id,
     });
 
     if (!shoppingEvent) throw new ShoppingEventNotFoundException();
 
     return shoppingEvent;
-  }
-
-  async addProductToCart({
-    userId,
-    groupId,
-    shoppingEventId,
-    name,
-    amount,
-    price,
-    wholesaleMinAmount,
-    wholesalePrice,
-  }: AddProductToCartParams): Promise<Product> {
-    const user = await this.userRepository.getById(userId);
-    if (
-      !user ||
-      !hasGroupPermission(user, 'create', 'shoppingEvent', {
-        groupId,
-      })
-    ) {
-      throw new ShoppingEventNotFoundException();
-    }
-
-    const shoppingEvent = await this.shoppingEventRepository.getById({
-      shoppingEventId,
-      groupId,
-    });
-
-    if (!shoppingEvent) throw new ShoppingEventNotFoundException();
-    if (shoppingEvent.status !== 'ongoing')
-      throw new ShoppingEventAlreadyEndedException();
-
-    const product = Product.create({
-      shoppingEventId,
-      name,
-      amount,
-      price,
-      wholesaleMinAmount,
-      wholesalePrice,
-      addedAt: new Date(),
-      addedBy: userId,
-    });
-
-    shoppingEvent.addProduct(product);
-
-    await this.shoppingEventRepository.update(shoppingEvent);
-
-    return product;
-  }
-
-  async updateProductInCart({
-    groupId,
-    shoppingEventId,
-    productId,
-    name,
-    amount,
-    price,
-    wholesaleMinAmount,
-    wholesalePrice,
-    userId,
-  }: UpdateProductInCartParams): Promise<Product> {
-    const user = await this.userRepository.getById(userId);
-    if (
-      !user ||
-      !hasGroupPermission(user, 'create', 'shoppingEvent', {
-        groupId,
-      })
-    ) {
-      throw new ShoppingEventNotFoundException();
-    }
-
-    const shoppingEvent = await this.shoppingEventRepository.getById({
-      groupId,
-      shoppingEventId,
-    });
-
-    if (!shoppingEvent) throw new ShoppingEventNotFoundException();
-    if (shoppingEvent.status !== 'ongoing')
-      throw new ShoppingEventAlreadyEndedException();
-
-    const currentProduct = shoppingEvent.products.getItemById(productId);
-
-    if (!currentProduct) throw new ProductNotFoundException();
-
-    const product = Product.create(
-      { ...currentProduct.props },
-      currentProduct.id,
-    );
-
-    product.update({
-      name,
-      amount,
-      price,
-      wholesaleMinAmount,
-      wholesalePrice,
-    });
-
-    shoppingEvent.products.add(product);
-
-    await this.shoppingEventRepository.update(shoppingEvent);
-
-    return product;
-  }
-
-  async removeProductFromCart({
-    groupId,
-    shoppingEventId,
-    productId,
-    userId,
-  }: RemoveProductFromCartParams): Promise<void> {
-    const user = await this.userRepository.getById(userId);
-    if (
-      !user ||
-      !hasGroupPermission(user, 'create', 'shoppingEvent', {
-        groupId,
-      })
-    ) {
-      throw new ShoppingEventNotFoundException();
-    }
-
-    const shoppingEvent = await this.shoppingEventRepository.getById({
-      groupId,
-      shoppingEventId,
-    });
-
-    if (!shoppingEvent) throw new ShoppingEventNotFoundException();
-    if (shoppingEvent.status !== 'ongoing')
-      throw new ShoppingEventAlreadyEndedException();
-
-    const product = shoppingEvent.products.getItemById(productId);
-
-    if (!product) throw new ProductNotFoundException();
-
-    shoppingEvent.removeProduct(product);
-
-    await this.shoppingEventRepository.update(shoppingEvent);
   }
 }

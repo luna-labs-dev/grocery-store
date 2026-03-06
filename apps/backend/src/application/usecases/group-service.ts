@@ -3,26 +3,16 @@ import type {
   GroupRepositories,
   UserRepositories,
 } from '@/application/contracts';
-import {
-  type GroupRole,
-  hasGroupPermission,
-} from '@/domain/core/logic/permissions';
+import type { GroupRole } from '@/domain/core/logic/permissions';
+import type { RequesterContext } from '@/domain/core/requester-context';
 import { CollaborationGroup, GroupMember } from '@/domain/entities';
 import {
-  GroupNotFoundException,
   InvalidGroupInvitationCodeException,
   LastOwnerCannotLeaveException,
-  UnauthorizedGroupOperationException,
   UserNotFoundException,
   UserNotInGroupException,
 } from '@/domain/exceptions';
-import type {
-  GetInviteInfoParams,
-  GetInviteInfoResult,
-  JoinGroupParams,
-  LeaveGroupParams,
-  RemoveMemberParams,
-} from '@/domain/usecases';
+import type { GetInviteInfoResult, JoinGroupParams } from '@/domain/usecases';
 import { env } from '@/main/config/env';
 import { injection } from '@/main/di/injection-tokens';
 
@@ -83,17 +73,18 @@ export class GroupService {
       joinedAt: new Date(),
     });
 
-    await this.groupRepository.addMember(member);
+    group.addMember(member);
+    await this.groupRepository.update(group);
   }
 
-  async leaveGroup({ userId, groupId }: LeaveGroupParams): Promise<void> {
-    const members = await this.groupRepository.getMembers(groupId);
-    const requester = members.find((m) => m.userId === userId);
+  async leaveGroup(ctx: RequesterContext): Promise<void> {
+    const members = ctx.group.members;
+    const requester = members.find((m) => m.userId === ctx.user.id);
 
     if (!requester) throw new UserNotInGroupException();
 
     const isRequesterOwner = requester.role === 'owner';
-    const otherMembers = members.filter((m) => m.userId !== userId);
+    const otherMembers = members.filter((m) => m.userId !== ctx.user.id);
     const hasOtherOwners = otherMembers.some((m) => m.role === 'owner');
 
     // If owner is trying to leave and there are other members, but no other owner
@@ -101,60 +92,28 @@ export class GroupService {
       throw new LastOwnerCannotLeaveException();
     }
 
-    await this.groupRepository.removeMember({ groupId, userId });
+    ctx.group.removeMember(ctx.user.id);
+    await this.groupRepository.update(ctx.group);
   }
 
-  async removeMember({
-    userId,
-    groupId,
-    targetUserId,
-  }: RemoveMemberParams): Promise<void> {
-    const user = await this.userRepository.getById(userId);
-    if (!user) throw new UserNotFoundException();
+  async removeMember(
+    ctx: RequesterContext,
+    { targetUserId }: { targetUserId: string },
+  ): Promise<void> {
+    ctx.checkPermission('removeMember', 'group');
 
-    const group = await this.groupRepository.getById(groupId);
-    if (!group) throw new GroupNotFoundException();
-
-    const canRemove = hasGroupPermission(user, 'removeMember', 'group', group);
-    if (!canRemove) throw new UnauthorizedGroupOperationException();
-
-    await this.groupRepository.removeMember({
-      groupId,
-      userId: targetUserId,
-    });
-    return;
+    ctx.group.removeMember(targetUserId);
+    await this.groupRepository.update(ctx.group);
   }
 
-  async updateMemberRole({
-    userId,
-    groupId,
-    targetUserId,
-    role,
-  }: {
-    userId: string;
-    groupId: string;
-    targetUserId: string;
-    role: GroupRole;
-  }): Promise<void> {
-    const user = await this.userRepository.getById(userId);
-    if (!user) throw new UserNotFoundException();
+  async updateMemberRole(
+    ctx: RequesterContext,
+    { targetUserId, role }: { targetUserId: string; role: GroupRole },
+  ): Promise<void> {
+    ctx.checkPermission('updateMemberRole', 'group');
 
-    const group = await this.groupRepository.getById(groupId);
-    if (!group) throw new GroupNotFoundException();
-
-    const canUpdate = hasGroupPermission(
-      user,
-      'updateMemberRole',
-      'group',
-      group,
-    );
-    if (!canUpdate) throw new UnauthorizedGroupOperationException();
-
-    await this.groupRepository.updateMemberRole({
-      groupId,
-      userId: targetUserId,
-      role,
-    });
+    ctx.group.updateMemberRole(targetUserId, role);
+    await this.groupRepository.update(ctx.group);
   }
 
   async getGroups(userId: string): Promise<CollaborationGroup[]> {
@@ -172,34 +131,26 @@ export class GroupService {
     return group;
   }
 
-  async getInviteInfo({
-    userId,
-    groupId,
-  }: GetInviteInfoParams): Promise<GetInviteInfoResult> {
-    const user = await this.userRepository.getById(userId);
-    if (!user) throw new UserNotFoundException();
+  async getInviteInfo(ctx: RequesterContext): Promise<GetInviteInfoResult> {
+    ctx.checkPermission('inviteMember', 'group');
 
-    const group = await this.groupRepository.getById(groupId);
-    if (!group) throw new GroupNotFoundException();
-
-    const canInvite = hasGroupPermission(user, 'inviteMember', 'group', group);
-    if (!canInvite) throw new UserNotInGroupException(); // Using existing exception or Forbidden
-
-    if (!group.inviteCode) {
-      // Fallback: generate if missing (shouldn't happen with current logic)
-      group.generateInviteCode();
-      if (group.inviteCode) {
-        await this.groupRepository.updateInviteCode(group.id, group.inviteCode);
+    if (!ctx.group.inviteCode) {
+      ctx.group.generateInviteCode();
+      if (ctx.group.inviteCode) {
+        await this.groupRepository.updateInviteCode(
+          ctx.group.id,
+          ctx.group.inviteCode,
+        );
       }
     }
 
     // Use configured web app URL
     const { webAppUrl } = env.baseConfig;
-    const joinUrl = `${webAppUrl}/join?code=${group.inviteCode}`;
+    const joinUrl = `${webAppUrl}/join?code=${ctx.group.inviteCode}`;
 
     return {
       // biome-ignore lint/style/noNonNullAssertion: The validation above ensures this is not undefined
-      inviteCode: group.inviteCode!,
+      inviteCode: ctx.group.inviteCode!,
       joinUrl,
     };
   }
