@@ -63,7 +63,7 @@ export class DrizzleUserRepository implements UserRepositories {
   };
 
   private toDomain(userModel: any): User {
-    const mapUser = (u: any) =>
+    const _mapUser = (u: any) =>
       User.create(
         {
           externalId: u.externalId ?? undefined,

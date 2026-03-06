@@ -3,18 +3,14 @@ import { injectable } from 'tsyringe';
 import { db } from './setup/connection';
 import * as schema from './setup/schema';
 import type {
-  AddGroupMemberRepository,
   AddGroupRepository,
   GetGroupByIdRepository,
   GetGroupByInviteCodeParams,
   GetGroupByInviteCodeRepository,
   GetGroupMembersRepository,
   GetGroupsByUserIdRepository,
-  RemoveGroupMemberParams,
-  RemoveGroupMemberRepository,
   UpdateGroupInviteCodeRepository,
-  UpdateGroupMemberRoleParams,
-  UpdateGroupMemberRoleRepository,
+  UpdateGroupRepository,
 } from '@/application/contracts/repositories/group';
 import type { GroupRole } from '@/domain/core/logic/permissions/group/types';
 import { CollaborationGroup, GroupMember, User } from '@/domain/entities';
@@ -25,12 +21,10 @@ export class DrizzleGroupRepository
     AddGroupRepository,
     GetGroupByIdRepository,
     GetGroupByInviteCodeRepository,
-    AddGroupMemberRepository,
-    RemoveGroupMemberRepository,
-    UpdateGroupMemberRoleRepository,
     GetGroupMembersRepository,
     GetGroupsByUserIdRepository,
-    UpdateGroupInviteCodeRepository
+    UpdateGroupInviteCodeRepository,
+    UpdateGroupRepository
 {
   async add(group: CollaborationGroup): Promise<void> {
     await db.transaction(async (tx) => {
@@ -59,11 +53,16 @@ export class DrizzleGroupRepository
   async getById(id: string): Promise<CollaborationGroup | undefined> {
     const groupModel = await db.query.groupTable.findFirst({
       where: eq(schema.groupTable.id, id),
+      with: {
+        members: {
+          with: { user: true },
+        },
+      },
     });
 
     if (!groupModel) return undefined;
 
-    return CollaborationGroup.create(
+    const group = CollaborationGroup.create(
       {
         name: groupModel.name,
         description: groupModel.description ?? undefined,
@@ -73,6 +72,33 @@ export class DrizzleGroupRepository
       },
       groupModel.id,
     );
+
+    if (groupModel.members) {
+      group.props.members = groupModel.members.map((m) =>
+        GroupMember.create({
+          groupId: m.groupId,
+          userId: m.userId,
+          role: m.role as GroupRole,
+          joinedAt: m.joinedAt,
+          user: User.create(
+            {
+              name: m.user.name,
+              email: m.user.email,
+              emailVerified: m.user.emailVerified,
+              image: m.user.image ?? undefined,
+              roles: [],
+              reputationScore: 0,
+              createdAt: m.user.createdAt,
+              updatedAt: m.user.updatedAt,
+              externalId: m.user.externalId ?? undefined,
+            },
+            m.user.id,
+          ),
+        }),
+      );
+    }
+
+    return group;
   }
 
   async getByInviteCode({
@@ -80,11 +106,16 @@ export class DrizzleGroupRepository
   }: GetGroupByInviteCodeParams): Promise<CollaborationGroup | undefined> {
     const groupModel = await db.query.groupTable.findFirst({
       where: eq(schema.groupTable.inviteCode, inviteCode),
+      with: {
+        members: {
+          with: { user: true },
+        },
+      },
     });
 
     if (!groupModel) return undefined;
 
-    return CollaborationGroup.create(
+    const group = CollaborationGroup.create(
       {
         name: groupModel.name,
         description: groupModel.description ?? undefined,
@@ -94,46 +125,108 @@ export class DrizzleGroupRepository
       },
       groupModel.id,
     );
+
+    if (groupModel.members) {
+      group.props.members = groupModel.members.map((m) =>
+        GroupMember.create({
+          groupId: m.groupId,
+          userId: m.userId,
+          role: m.role as GroupRole,
+          joinedAt: m.joinedAt,
+          user: User.create(
+            {
+              name: m.user.name,
+              email: m.user.email,
+              emailVerified: m.user.emailVerified,
+              image: m.user.image ?? undefined,
+              roles: [],
+              reputationScore: 0,
+              createdAt: m.user.createdAt,
+              updatedAt: m.user.updatedAt,
+              externalId: m.user.externalId ?? undefined,
+            },
+            m.user.id,
+          ),
+        }),
+      );
+    }
+
+    return group;
   }
 
-  async addMember(member: GroupMember, transaction?: any): Promise<void> {
-    const client = transaction || db;
-    await client.insert(schema.groupMemberTable).values({
-      groupId: member.groupId,
-      userId: member.userId,
-      role: member.role,
-      joinedAt: member.joinedAt,
+  async update(group: CollaborationGroup): Promise<void> {
+    await db.transaction(async (tx) => {
+      await tx
+        .update(schema.groupTable)
+        .set({
+          name: group.name,
+          description: group.description ?? null,
+          inviteCode: group.inviteCode ?? null,
+        })
+        .where(eq(schema.groupTable.id, group.id));
+
+      if (group.members) {
+        const currentMembers = await tx.query.groupMemberTable.findMany({
+          where: eq(schema.groupMemberTable.groupId, group.id),
+        });
+
+        const newMemberIds = group.members.map((m) => m.userId);
+        const currentMemberIds = currentMembers.map((m) => m.userId);
+
+        const toAdd = group.members.filter(
+          (m) => !currentMemberIds.includes(m.userId),
+        );
+        const toRemove = currentMembers.filter(
+          (m) => !newMemberIds.includes(m.userId),
+        );
+        const toUpdate = group.members.filter((m) =>
+          currentMemberIds.includes(m.userId),
+        );
+
+        if (toAdd.length > 0) {
+          for (const member of toAdd) {
+            await tx.insert(schema.groupMemberTable).values({
+              groupId: group.id,
+              userId: member.userId,
+              role: member.role,
+              joinedAt: member.joinedAt,
+            });
+          }
+        }
+
+        if (toRemove.length > 0) {
+          for (const member of toRemove) {
+            await tx
+              .delete(schema.groupMemberTable)
+              .where(
+                and(
+                  eq(schema.groupMemberTable.groupId, member.groupId),
+                  eq(schema.groupMemberTable.userId, member.userId),
+                ),
+              );
+          }
+        }
+
+        if (toUpdate.length > 0) {
+          for (const member of toUpdate) {
+            const current = currentMembers.find(
+              (m) => m.userId === member.userId,
+            );
+            if (current && current.role !== member.role) {
+              await tx
+                .update(schema.groupMemberTable)
+                .set({ role: member.role })
+                .where(
+                  and(
+                    eq(schema.groupMemberTable.groupId, member.groupId),
+                    eq(schema.groupMemberTable.userId, member.userId),
+                  ),
+                );
+            }
+          }
+        }
+      }
     });
-  }
-
-  async removeMember({
-    groupId,
-    userId,
-  }: RemoveGroupMemberParams): Promise<void> {
-    await db
-      .delete(schema.groupMemberTable)
-      .where(
-        and(
-          eq(schema.groupMemberTable.groupId, groupId),
-          eq(schema.groupMemberTable.userId, userId),
-        ),
-      );
-  }
-
-  async updateMemberRole({
-    groupId,
-    userId,
-    role,
-  }: UpdateGroupMemberRoleParams): Promise<void> {
-    await db
-      .update(schema.groupMemberTable)
-      .set({ role })
-      .where(
-        and(
-          eq(schema.groupMemberTable.groupId, groupId),
-          eq(schema.groupMemberTable.userId, userId),
-        ),
-      );
   }
 
   async getMembers(groupId: string): Promise<GroupMember[]> {
