@@ -1,11 +1,14 @@
 import 'reflect-metadata';
-import { describe, expect, it, vi, beforeEach, type Mocked } from 'vitest';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
+import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import { GroupController } from '@/api/controllers/group-controller';
 import { GroupService } from '@/application/usecases/group-service';
-import type { FastifyRequest, FastifyReply } from 'fastify';
-import { UserNotInGroupException, UnexpectedException } from '@/domain/exceptions';
 import { HttpStatusCode } from '@/domain/core/enums';
+import {
+  UnexpectedException,
+  UserNotInGroupException,
+} from '@/domain/exceptions';
 
 vi.mock('@/application/usecases/group-service');
 
@@ -24,12 +27,12 @@ describe('GroupController - Invite Link Integration', () => {
     it('should return 200 with invite info', async () => {
       groupService.getInviteInfo.mockResolvedValue({
         inviteCode: 'ABC-123',
-        joinUrl: 'https://app.grocery.app/join?code=ABC-123'
+        joinUrl: 'https://app.grocery.app/join?code=ABC-123',
       });
 
       const request = {
         auth: { user: { id: 'user-1' } },
-        params: { groupId: 'group-1' }
+        params: { groupId: 'group-1' },
       } as any as FastifyRequest;
 
       const reply = {
@@ -38,31 +41,35 @@ describe('GroupController - Invite Link Integration', () => {
       } as any as FastifyReply;
 
       let capturedHandler: any;
-      await (groupController as any).registerRoutes({ 
-        addHook: vi.fn(), 
-        get: async (path: string, opts: any, handler: any) => {
+      await (groupController as any).registerRoutes({
+        addHook: vi.fn(),
+        get: async (path: string, _opts: any, handler: any) => {
           if (path === '/:groupId/invite') capturedHandler = handler;
         },
         post: vi.fn(),
         delete: vi.fn(),
-        patch: vi.fn()
+        patch: vi.fn(),
       } as any);
 
       await capturedHandler(request, reply);
 
       expect(reply.status).toHaveBeenCalledWith(HttpStatusCode.Ok);
-      expect(reply.send).toHaveBeenCalledWith(expect.objectContaining({
-        inviteCode: 'ABC-123',
-        joinUrl: expect.stringContaining('ABC-123')
-      }));
+      expect(reply.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          inviteCode: 'ABC-123',
+          joinUrl: expect.stringContaining('ABC-123'),
+        }),
+      );
     });
 
     it('should return 403 when user is not in group', async () => {
-      groupService.getInviteInfo.mockRejectedValue(new UserNotInGroupException());
+      groupService.getInviteInfo.mockRejectedValue(
+        new UserNotInGroupException(),
+      );
 
       const request = {
         auth: { user: { id: 'user-1' } },
-        params: { groupId: 'group-1' }
+        params: { groupId: 'group-1' },
       } as any as FastifyRequest;
 
       const reply = {
@@ -71,17 +78,19 @@ describe('GroupController - Invite Link Integration', () => {
       } as any as FastifyReply;
 
       let capturedHandler: any;
-      await (groupController as any).registerRoutes({ 
-        addHook: vi.fn(), 
-        get: async (path: string, opts: any, handler: any) => {
+      await (groupController as any).registerRoutes({
+        addHook: vi.fn(),
+        get: async (path: string, _opts: any, handler: any) => {
           if (path === '/:groupId/invite') capturedHandler = handler;
         },
         post: vi.fn(),
         delete: vi.fn(),
-        patch: vi.fn()
+        patch: vi.fn(),
       } as any);
 
-      await expect(capturedHandler(request, reply)).rejects.toThrow(UserNotInGroupException);
+      await expect(capturedHandler(request, reply)).rejects.toThrow(
+        UserNotInGroupException,
+      );
     });
 
     it('should return 500 on unexpected error', async () => {
@@ -89,7 +98,7 @@ describe('GroupController - Invite Link Integration', () => {
 
       const request = {
         auth: { user: { id: 'user-1' } },
-        params: { groupId: 'group-1' }
+        params: { groupId: 'group-1' },
       } as any as FastifyRequest;
 
       const reply = {
@@ -98,17 +107,19 @@ describe('GroupController - Invite Link Integration', () => {
       } as any as FastifyReply;
 
       let capturedHandler: any;
-      await (groupController as any).registerRoutes({ 
-        addHook: vi.fn(), 
-        get: async (path: string, opts: any, handler: any) => {
+      await (groupController as any).registerRoutes({
+        addHook: vi.fn(),
+        get: async (path: string, _opts: any, handler: any) => {
           if (path === '/:groupId/invite') capturedHandler = handler;
         },
         post: vi.fn(),
         delete: vi.fn(),
-        patch: vi.fn()
+        patch: vi.fn(),
       } as any);
 
-      await expect(capturedHandler(request, reply)).rejects.toThrow(UnexpectedException);
+      await expect(capturedHandler(request, reply)).rejects.toThrow(
+        UnexpectedException,
+      );
     });
   });
 });

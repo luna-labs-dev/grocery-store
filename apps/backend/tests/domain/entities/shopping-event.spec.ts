@@ -29,7 +29,7 @@ describe('ShoppingEvent Entity', () => {
     const shoppingEvent = ShoppingEvent.create({
       groupId: 'any_group',
       marketId: 'any_market',
-      status: 'ONGOING',
+      status: 'ongoing',
       products,
       createdAt: new Date(),
       createdBy: 'any_user',
@@ -62,7 +62,7 @@ describe('ShoppingEvent Entity', () => {
     const shoppingEvent = ShoppingEvent.create({
       groupId: 'any_group',
       marketId: 'any_market',
-      status: 'ONGOING',
+      status: 'ongoing',
       products,
       createdAt: new Date(),
       createdBy: 'any_user',

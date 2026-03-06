@@ -1,13 +1,11 @@
 import 'reflect-metadata';
-import { describe, expect, it, vi, beforeEach, type Mocked } from 'vitest';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
+import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import { GroupController } from '@/api/controllers/group-controller';
 import { GroupService } from '@/application/usecases/group-service';
 import { CollaborationGroup } from '@/domain/entities';
-import {
-    LastOwnerCannotLeaveException
-} from '@/domain/exceptions';
-import type { FastifyRequest, FastifyReply } from 'fastify';
+import { LastOwnerCannotLeaveException } from '@/domain/exceptions';
 
 // Mock everything from helpers to ensure groupMapper is controlled
 vi.mock('@/api/helpers', async (importOriginal) => {
@@ -15,14 +13,14 @@ vi.mock('@/api/helpers', async (importOriginal) => {
   return {
     ...actual,
     groupMapper: {
-      toResponse: vi.fn().mockImplementation((g) => ({ 
-        id: g.id, 
+      toResponse: vi.fn().mockImplementation((g) => ({
+        id: g.id,
         name: g.name || g.props?.name, // Support both real and mock props
         createdAt: g.createdAt,
-        createdBy: g.createdBy
+        createdBy: g.createdBy,
       })),
-      toMemberResponse: vi.fn()
-    }
+      toMemberResponse: vi.fn(),
+    },
   };
 });
 
@@ -40,68 +38,73 @@ describe('GroupController Integration', () => {
   });
 
   const mockUser = { id: 'user-1' };
-  const mockGroup = CollaborationGroup.create({
-    name: 'Test Group',
-    createdBy: 'user-1',
-    createdAt: new Date(),
-  }, 'group-1');
+  const mockGroup = CollaborationGroup.create(
+    {
+      name: 'Test Group',
+      createdBy: 'user-1',
+      createdAt: new Date(),
+    },
+    'group-1',
+  );
 
   describe('getGroups', () => {
     it('should return all groups for the user', async () => {
       groupService.getGroups.mockResolvedValue([mockGroup]);
-      
+
       const request = {
-        auth: { user: mockUser }
+        auth: { user: mockUser },
       } as any as FastifyRequest;
-      
+
       const reply = {
         status: vi.fn().mockReturnThis(),
         send: vi.fn(),
       } as any as FastifyReply;
 
       let capturedHandler: any;
-      await (groupController as any).registerRoutes({ 
-        addHook: vi.fn(), 
-        get: async (path: string, opts: any, handler: any) => {
+      await (groupController as any).registerRoutes({
+        addHook: vi.fn(),
+        get: async (path: string, _opts: any, handler: any) => {
           if (path === '') capturedHandler = handler;
         },
         post: vi.fn(),
         delete: vi.fn(),
-        patch: vi.fn()
+        patch: vi.fn(),
       } as any);
 
       await capturedHandler(request, reply);
 
       expect(reply.status).toHaveBeenCalledWith(200);
-      expect(reply.send).toHaveBeenCalledWith(expect.arrayContaining([
-        expect.objectContaining({ id: 'group-1', name: 'Test Group' })
-      ]));
+      expect(reply.send).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ id: 'group-1', name: 'Test Group' }),
+        ]),
+      );
     });
   });
 
   describe('createGroup', () => {
     it('should create a group and return it', async () => {
       groupService.createGroup.mockResolvedValue(mockGroup);
-      
+
       const request = {
         auth: { user: mockUser },
-        body: { name: 'New Group' }
+        body: { name: 'New Group' },
       } as any as FastifyRequest;
-      
+
       const reply = {
         status: vi.fn().mockReturnThis(),
         send: vi.fn(),
       } as any as FastifyReply;
-      
+
       let capturedHandler: any;
-      await (groupController as any).registerRoutes({ 
-        addHook: vi.fn(), 
+      await (groupController as any).registerRoutes({
+        addHook: vi.fn(),
         get: vi.fn(),
-        post: async (path: string, opts: any, handler: any) => {
+        post: async (path: string, _opts: any, handler: any) => {
           if (path === '') capturedHandler = handler;
         },
         delete: vi.fn(),
-        patch: vi.fn()
+        patch: vi.fn(),
       } as any);
 
       await capturedHandler(request, reply);
@@ -109,7 +112,7 @@ describe('GroupController Integration', () => {
       expect(groupService.createGroup).toHaveBeenCalledWith({
         userId: 'user-1',
         name: 'New Group',
-        description: undefined
+        description: undefined,
       });
       expect(reply.status).toHaveBeenCalledWith(201);
     });
@@ -117,13 +120,15 @@ describe('GroupController Integration', () => {
 
   describe('leaveGroup', () => {
     it('should throw error if service fails', async () => {
-      groupService.leaveGroup.mockRejectedValue(new LastOwnerCannotLeaveException());
-      
+      groupService.leaveGroup.mockRejectedValue(
+        new LastOwnerCannotLeaveException(),
+      );
+
       const request = {
         auth: { user: mockUser },
-        params: { groupId: 'group-1' }
+        params: { groupId: 'group-1' },
       } as any as FastifyRequest;
-      
+
       const reply = {
         status: vi.fn().mockReturnThis(),
         send: vi.fn(),
@@ -131,14 +136,14 @@ describe('GroupController Integration', () => {
 
       const runHandler = async () => {
         let capturedHandler: any;
-        await (groupController as any).registerRoutes({ 
-          addHook: vi.fn(), 
+        await (groupController as any).registerRoutes({
+          addHook: vi.fn(),
           get: vi.fn(),
-          post: async (path: string, opts: any, handler: any) => {
+          post: async (path: string, _opts: any, handler: any) => {
             if (path === '/:groupId/leave') capturedHandler = handler;
           },
           delete: vi.fn(),
-          patch: vi.fn()
+          patch: vi.fn(),
         } as any);
         await capturedHandler(request, reply);
       };
@@ -152,23 +157,24 @@ describe('GroupController Integration', () => {
       const request = {
         auth: { user: mockUser },
         params: { groupId: 'group-1', memberId: 'user-2' },
-        body: { role: 'ADMIN' }
+        body: { role: 'ADMIN' },
       } as any as FastifyRequest;
-      
+
       const reply = {
         status: vi.fn().mockReturnThis(),
         send: vi.fn(),
       } as any as FastifyReply;
 
       let capturedHandler: any;
-      await (groupController as any).registerRoutes({ 
-        addHook: vi.fn(), 
+      await (groupController as any).registerRoutes({
+        addHook: vi.fn(),
         get: vi.fn(),
         post: vi.fn(),
         delete: vi.fn(),
-        patch: async (path: string, opts: any, handler: any) => {
-          if (path === '/:groupId/members/:memberId/role') capturedHandler = handler;
-        }
+        patch: async (path: string, _opts: any, handler: any) => {
+          if (path === '/:groupId/members/:memberId/role')
+            capturedHandler = handler;
+        },
       } as any);
 
       await capturedHandler(request, reply);
@@ -177,7 +183,7 @@ describe('GroupController Integration', () => {
         userId: 'user-1',
         groupId: 'group-1',
         targetUserId: 'user-2',
-        role: 'ADMIN'
+        role: 'ADMIN',
       });
       expect(reply.status).toHaveBeenCalledWith(204);
     });
