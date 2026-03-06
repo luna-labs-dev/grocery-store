@@ -11,6 +11,7 @@ export const GROUP_ROLES: GroupRolesWithPermissions = {
     },
     shoppingList: { update: true, read: true },
     shoppingEvent: { create: true, read: true },
+    settings: { read: true, update: true },
   },
   moderator: {
     group: {

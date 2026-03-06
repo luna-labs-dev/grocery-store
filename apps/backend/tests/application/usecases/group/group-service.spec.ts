@@ -104,7 +104,9 @@ describe('GroupService', () => {
           joinedAt: new Date(),
         }),
       );
-      const ctx = new RequesterContext(mockUser, mockGroup);
+      const ctx = new RequesterContext(mockUser, mockGroup, {
+        isAllowed: vi.fn().mockResolvedValue(true),
+      } as any);
 
       await sut.removeMember(ctx, {
         targetUserId: 'user-member',
@@ -123,7 +125,9 @@ describe('GroupService', () => {
         { name: 'Group 1', createdAt: new Date(), createdBy: 'user-owner' },
         'group-1',
       );
-      const ctx = new RequesterContext(mockAdmin, mockGroup);
+      const ctx = new RequesterContext(mockAdmin, mockGroup, {
+        isAllowed: vi.fn().mockResolvedValue(true),
+      } as any);
 
       await expect(
         sut.removeMember(ctx, {
@@ -141,7 +145,9 @@ describe('GroupService', () => {
         { name: 'Group 1', createdAt: new Date(), createdBy: 'user-owner' },
         'group-1',
       );
-      const ctx = new RequesterContext(mockUser, mockGroup);
+      const ctx = new RequesterContext(mockUser, mockGroup, {
+        isAllowed: vi.fn().mockResolvedValue(false),
+      } as any);
 
       await expect(
         sut.removeMember(ctx, {
@@ -169,7 +175,9 @@ describe('GroupService', () => {
           joinedAt: new Date(),
         }),
       );
-      const ctx = new RequesterContext(mockUser, mockGroup);
+      const ctx = new RequesterContext(mockUser, mockGroup, {
+        isAllowed: vi.fn().mockResolvedValue(true),
+      } as any);
 
       await sut.updateMemberRole(ctx, {
         targetUserId: 'user-member',

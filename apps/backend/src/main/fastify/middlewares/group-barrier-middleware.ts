@@ -2,6 +2,7 @@ import type { FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
 import type { UserService } from '@/application';
 import type { GroupRepositories } from '@/application/contracts';
+import type { PermissionService } from '@/domain/core/logic/permissions/permission-service';
 import { RequesterContext } from '@/domain/core/requester-context';
 import {
   GroupNotFoundException,
@@ -16,6 +17,9 @@ export const groupBarrierMiddleware = async (request: FastifyRequest) => {
   const userService = container.resolve<UserService>(usecases.userService);
   const groupRepository = container.resolve<GroupRepositories>(
     infra.groupRepositories,
+  );
+  const permissionService = container.resolve<PermissionService>(
+    infra.permissionService,
   );
 
   const { user } = request.auth;
@@ -36,9 +40,16 @@ export const groupBarrierMiddleware = async (request: FastifyRequest) => {
 
   // Determine the active group.
   const headerGroupId = request.headers['x-group-id'] as string | undefined;
+  const paramGroupId = (request.params as any)?.groupId;
+
   let activeGroupId = groups[0].groupId;
 
-  if (headerGroupId && groups.some((g) => g.groupId === headerGroupId)) {
+  if (paramGroupId && groups.some((g: any) => g.groupId === paramGroupId)) {
+    activeGroupId = paramGroupId;
+  } else if (
+    headerGroupId &&
+    groups.some((g: any) => g.groupId === headerGroupId)
+  ) {
     activeGroupId = headerGroupId;
   }
 
@@ -48,5 +59,9 @@ export const groupBarrierMiddleware = async (request: FastifyRequest) => {
   }
 
   request.groupId = activeGroupId;
-  request.requesterContext = new RequesterContext(dbUser, group);
+  request.requesterContext = new RequesterContext(
+    dbUser,
+    group,
+    permissionService,
+  );
 };

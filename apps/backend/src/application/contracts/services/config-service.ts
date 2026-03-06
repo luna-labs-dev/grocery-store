@@ -1,3 +1,3 @@
 export interface IConfigService {
-  getThreshold(key: string): number;
+  getThreshold(groupId: string, key: string): Promise<number>;
 }

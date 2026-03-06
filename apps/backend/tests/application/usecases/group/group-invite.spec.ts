@@ -77,7 +77,9 @@ describe('GroupService - Magic Link', () => {
       );
 
       vi.mocked(groupRepository.getById).mockResolvedValue(mockGroup);
-      const ctx = new RequesterContext(mockUser, mockGroup);
+      const ctx = new RequesterContext(mockUser, mockGroup, {
+        isAllowed: vi.fn().mockResolvedValue(true),
+      } as any);
 
       const result = await sut.getInviteInfo(ctx);
 
@@ -102,7 +104,9 @@ describe('GroupService - Magic Link', () => {
 
       vi.mocked(groupRepository.getById).mockResolvedValue(mockGroup);
       vi.mocked(groupRepository.updateInviteCode).mockResolvedValue(undefined);
-      const ctx = new RequesterContext(mockUser, mockGroup);
+      const ctx = new RequesterContext(mockUser, mockGroup, {
+        isAllowed: vi.fn().mockResolvedValue(true),
+      } as any);
 
       const result = await sut.getInviteInfo(ctx);
 
@@ -127,7 +131,9 @@ describe('GroupService - Magic Link', () => {
       );
 
       vi.mocked(groupRepository.getById).mockResolvedValue(mockGroup);
-      const ctx = new RequesterContext(mockUser, mockGroup);
+      const ctx = new RequesterContext(mockUser, mockGroup, {
+        isAllowed: vi.fn(),
+      } as any);
 
       await expect(sut.getInviteInfo(ctx)).rejects.toThrow(
         UserNotInGroupException,
@@ -147,7 +153,9 @@ describe('GroupService - Magic Link', () => {
       );
 
       vi.mocked(groupRepository.getById).mockResolvedValue(mockGroup);
-      const ctx = new RequesterContext(mockAdmin, mockGroup);
+      const ctx = new RequesterContext(mockAdmin, mockGroup, {
+        isAllowed: vi.fn().mockResolvedValue(true),
+      } as any);
 
       await expect(sut.getInviteInfo(ctx)).rejects.toThrow(
         UserNotInGroupException,

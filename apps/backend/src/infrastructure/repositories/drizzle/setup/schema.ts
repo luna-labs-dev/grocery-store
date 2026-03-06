@@ -178,6 +178,19 @@ export const productTable = pgTable('product', {
   addedBy: varchar('addedBy', { length: 320 }).notNull(),
 });
 
+export const settingsTable = pgTable(
+  'settings',
+  {
+    groupId: uuid('groupId')
+      .notNull()
+      .references(() => groupTable.id),
+    key: varchar('key', { length: 255 }).notNull(),
+    value: jsonb('value').notNull(),
+    updatedAt: timestamp('updatedAt', { precision: 6 }).defaultNow().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.groupId, table.key] })],
+);
+
 export const groupRelations = relations(groupTable, ({ many }) => ({
   members: many(groupMemberTable),
   shopping_events: many(shopping_eventTable),

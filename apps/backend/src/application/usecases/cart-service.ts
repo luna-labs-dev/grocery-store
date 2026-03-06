@@ -36,7 +36,7 @@ export class CartService {
       wholesalePrice?: number;
     },
   ): Promise<Product> {
-    ctx.checkPermission('create', 'shoppingEvent');
+    await ctx.checkPermission('create', 'shoppingEvent');
 
     const shoppingEvent = await this.shoppingEventRepository.getById({
       shoppingEventId,
@@ -82,7 +82,7 @@ export class CartService {
       wholesalePrice?: number;
     },
   ): Promise<Product> {
-    ctx.checkPermission('create', 'shoppingEvent');
+    await ctx.checkPermission('create', 'shoppingEvent');
 
     const shoppingEvent = await this.shoppingEventRepository.getById({
       groupId: ctx.group.id,
@@ -122,7 +122,7 @@ export class CartService {
       productId: string;
     },
   ): Promise<void> {
-    ctx.checkPermission('create', 'shoppingEvent');
+    await ctx.checkPermission('create', 'shoppingEvent');
 
     const shoppingEvent = await this.shoppingEventRepository.getById({
       groupId: ctx.group.id,

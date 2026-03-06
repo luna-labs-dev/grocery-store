@@ -29,7 +29,7 @@ export class ShoppingEventService {
     ctx: RequesterContext,
     { marketId }: { marketId: string },
   ): Promise<ShoppingEvent> {
-    ctx.checkPermission('create', 'shoppingEvent');
+    await ctx.checkPermission('create', 'shoppingEvent');
 
     const market = await this.marketRepository.getById({ id: marketId });
     if (!market) throw new MarketNotFoundException();
@@ -59,7 +59,7 @@ export class ShoppingEventService {
       totalPaid: number;
     },
   ): Promise<ShoppingEvent> {
-    ctx.checkPermission('create', 'shoppingEvent');
+    await ctx.checkPermission('create', 'shoppingEvent');
 
     const shoppingEvent = await this.shoppingEventRepository.getById({
       shoppingEventId,
@@ -90,7 +90,7 @@ export class ShoppingEventService {
       orderDirection?: 'asc' | 'desc';
     },
   ): Promise<{ total: number; shoppingEvents: ShoppingEvent[] }> {
-    ctx.checkPermission('read', 'shoppingEvent');
+    await ctx.checkPermission('read', 'shoppingEvent');
 
     const total = await this.shoppingEventRepository.count({
       groupId: ctx.group.id,
@@ -122,7 +122,7 @@ export class ShoppingEventService {
     ctx: RequesterContext,
     { shoppingEventId }: { shoppingEventId: string },
   ): Promise<ShoppingEvent> {
-    ctx.checkPermission('read', 'shoppingEvent');
+    await ctx.checkPermission('read', 'shoppingEvent');
 
     const shoppingEvent = await this.shoppingEventRepository.getById({
       shoppingEventId,

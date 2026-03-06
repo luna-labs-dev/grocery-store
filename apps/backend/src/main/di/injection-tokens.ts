@@ -13,6 +13,7 @@ export const injection = {
     places: 'places-service',
     configService: 'config-service',
     settingsRepository: 'settings-repository',
+    permissionService: 'permission-service',
   },
   usecases: {
     cartService: 'cart-service',

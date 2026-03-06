@@ -100,7 +100,7 @@ export class GroupService {
     ctx: RequesterContext,
     { targetUserId }: { targetUserId: string },
   ): Promise<void> {
-    ctx.checkPermission('removeMember', 'group');
+    await ctx.checkPermission('removeMember', 'group');
 
     ctx.group.removeMember(targetUserId);
     await this.groupRepository.update(ctx.group);
@@ -110,7 +110,7 @@ export class GroupService {
     ctx: RequesterContext,
     { targetUserId, role }: { targetUserId: string; role: GroupRole },
   ): Promise<void> {
-    ctx.checkPermission('updateMemberRole', 'group');
+    await ctx.checkPermission('updateMemberRole', 'group');
 
     ctx.group.updateMemberRole(targetUserId, role);
     await this.groupRepository.update(ctx.group);
@@ -132,7 +132,7 @@ export class GroupService {
   }
 
   async getInviteInfo(ctx: RequesterContext): Promise<GetInviteInfoResult> {
-    ctx.checkPermission('inviteMember', 'group');
+    await ctx.checkPermission('inviteMember', 'group');
 
     if (!ctx.group.inviteCode) {
       ctx.group.generateInviteCode();

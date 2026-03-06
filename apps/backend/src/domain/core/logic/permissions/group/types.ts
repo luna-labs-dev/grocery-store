@@ -33,4 +33,8 @@ export type GroupPermissions = {
     dataType: ShoppingEvent | { groupId: string };
     action: 'read' | 'create';
   };
+  settings: {
+    dataType: { groupId: string };
+    action: 'read' | 'update';
+  };
 };

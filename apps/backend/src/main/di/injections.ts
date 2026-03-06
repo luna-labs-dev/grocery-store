@@ -3,6 +3,7 @@ import { env } from '../config/env';
 import type { FastifyTypedInstance } from '../fastify/types';
 import { injection } from './injection-tokens';
 import {
+  AdminController,
   AuthController,
   CartController,
   type FastifyController,
@@ -22,10 +23,12 @@ import {
   DrizzleGroupRepository,
   DrizzleMarketRepository,
   DrizzleProductRepository,
+  DrizzleSettingsRepository,
   DrizzleShoppingEventRepository,
   DrizzleUserRepository,
   GooglePlaces,
   GooglePlacesHttpClient,
+  SecurityPermissionService,
 } from '@/infrastructure';
 
 const { infra, usecases, controllers } = injection;
@@ -57,7 +60,12 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
   });
   container.register(infra.places, { useClass: GooglePlaces });
   container.register(infra.configService, { useClass: ConfigService });
-  container.register(infra.configService, { useClass: ConfigService });
+  container.register(infra.settingsRepository, {
+    useClass: DrizzleSettingsRepository,
+  });
+  container.register(infra.permissionService, {
+    useClass: SecurityPermissionService,
+  });
 
   // Usecases
   container.register(usecases.cartService, { useClass: CartService });
@@ -80,4 +88,5 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
     ShoppingEventController,
   );
   container.register<FastifyController>(controllers.fastify, CartController);
+  container.register<FastifyController>(controllers.fastify, AdminController);
 };
