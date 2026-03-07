@@ -61,4 +61,15 @@ export class CanonicalProduct extends Entity<CanonicalProductProps> {
       id,
     );
   }
+
+  public hydrate(data: {
+    name: string;
+    brand?: string;
+    description?: string;
+  }): void {
+    this.props.name = data.name;
+    if (data.brand) this.props.brand = data.brand;
+    if (data.description) this.props.description = data.description;
+    this.props.updatedAt = new Date();
+  }
 }
