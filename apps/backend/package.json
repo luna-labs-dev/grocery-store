@@ -13,8 +13,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/infrastructure/repositories/drizzle/setup/migrate.ts",
     "db:studio": "drizzle-kit studio",
-    "test": "vitest --exclude **/tests/e2e/**",
-    "test:e2e": "vitest tests/e2e/ --run --no-file-parallelism",
+    "test": "vitest run --exclude **/tests/e2e/**",
+    "test:e2e": "NODE_ENV=test npm run db:migrate && NODE_ENV=test vitest tests/e2e/ --run --no-file-parallelism",
     "test:all": "npm test && npm run test:e2e"
   },
   "dependencies": {

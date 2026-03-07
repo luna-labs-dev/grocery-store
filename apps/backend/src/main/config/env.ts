@@ -89,6 +89,11 @@ const {
   GOOGLE_CLIENT_SECRET,
 } = parsedVariables.data;
 
+const actualDbName =
+  NODE_ENV === 'test' && !DATABASE_NAME.endsWith('_test')
+    ? `${DATABASE_NAME}_test`
+    : DATABASE_NAME;
+
 export const env = {
   baseConfig: {
     environment: NODE_ENV,
@@ -100,8 +105,8 @@ export const env = {
   },
   database: {
     baseUrl: `postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}`,
-    url: `postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}`,
-    dbName: DATABASE_NAME,
+    url: `postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${actualDbName}`,
+    dbName: actualDbName,
   },
   auth: {
     secret: BETTER_AUTH_SECRET,
