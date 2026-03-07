@@ -107,7 +107,11 @@ The project follows a Clean Architecture approach with a strict separation of co
 
 ---
 
-## 🤝 Collaboration & Workflow
-- **Commits**: Follow semantic commit conventions (e.g., `feat:`, `fix:`, `refactor:`, `test:`). Only perform `git commit` when explicitly instructed by the USER.
-- **Progress Tracking**: Agents MUST actively maintain both the internal `task.md` and the official `docs/refactor/ROADMAP.md`. When a feature is implemented, tested, and verified, the agent must check off `[x]` the corresponding tasks in these documents before notifying the USER of completion.
-- **Agent Guidelines**: All specialist agents are located in `.agents/specialists/` and follow kebab-case naming. Always consult the relevant specialist before making high-impact changes.
+## 🛡️ CRITICAL: Workflow Safety
+
+> [!IMPORTANT]
+> **Commit Governance**: ONLY perform `git commit` when explicitly instructed by the USER. You may stage files (`git add`) as part of your verification process, but you MUST NOT create a commit unless the USER says "commit this".
+
+- **Semantic Commits**: When instructed to commit, follow conventions: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `style:`, `perf:`, `chore:`.
+- **Progress Tracking**: Agents MUST actively maintain `task.md` and `docs/refactor/ROADMAP.md`. Check off `[x]` tasks before notifying completion.
+- **Agent Guidelines**: Consult relevant specialist profiles in `.agents/specialists/` before high-impact changes.
