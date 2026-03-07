@@ -5,6 +5,7 @@ import { setupDocsAndPrototipation } from './docs-and-prototipation';
 import { setupErrorHandler } from './error-handler';
 import { setupLogger } from './logger';
 import { setupServer } from './server';
+import { setupSocket } from './socket';
 
 export const setupFastifyApp = () => {
   const app = fastify({
@@ -15,6 +16,7 @@ export const setupFastifyApp = () => {
 
   setupServer(app);
   setupDocsAndPrototipation(app);
+  void setupSocket(app);
 
   app.setErrorHandler(setupErrorHandler);
 
