@@ -53,9 +53,9 @@ describe('Real-Time Sync (Socket.io) Integration', () => {
       groupId,
       marketId,
       status: 'ongoing',
-      totalPaid: '0',
-      wholesaleTotal: '0',
-      retailTotal: '0',
+      totalPaid: 0,
+      wholesaleTotal: 0,
+      retailTotal: 0,
       createdBy: userId,
     });
   });
