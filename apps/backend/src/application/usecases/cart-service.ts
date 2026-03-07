@@ -3,9 +3,15 @@ import type {
   AddCanonicalProductRepository,
   AddProductIdentityRepository,
   GetProductIdentityByValueRepository,
+  OutboxEventRepositories,
   ShoppingEventRepositories,
 } from '@/application/contracts';
-import { CanonicalProduct, type Product, ProductIdentity } from '@/domain';
+import {
+  CanonicalProduct,
+  OutboxEvent,
+  type Product,
+  ProductIdentity,
+} from '@/domain';
 import type { RequesterContext } from '@/domain/core/requester-context';
 import {
   ProductNotFoundException,
@@ -26,6 +32,8 @@ export class CartService {
     @inject(infra.productIdentityRepositories)
     private readonly productIdentityRepository: AddProductIdentityRepository &
       GetProductIdentityByValueRepository,
+    @inject(infra.outboxEventRepositories)
+    private readonly outboxEventRepository: OutboxEventRepositories,
   ) {}
 
   async addProductToCart(
@@ -117,6 +125,13 @@ export class CartService {
       value: barcode,
     });
     await this.productIdentityRepository.add(pi);
+
+    // Outbox event to hydrate asynchronously
+    const outboxEvent = OutboxEvent.create({
+      type: 'ProductScanned',
+      payload: { canonicalProductId: cp.id, barcode },
+    });
+    await this.outboxEventRepository.add(outboxEvent);
 
     return cp.id;
   }

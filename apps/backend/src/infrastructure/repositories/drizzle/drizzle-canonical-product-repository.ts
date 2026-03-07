@@ -5,12 +5,16 @@ import * as schema from './setup/schema';
 import type {
   AddCanonicalProductRepository,
   GetCanonicalProductByIdRepository,
+  UpdateCanonicalProductRepository,
 } from '@/application';
 import { CanonicalProduct } from '@/domain';
 
 @injectable()
 export class DrizzleCanonicalProductRepository
-  implements AddCanonicalProductRepository, GetCanonicalProductByIdRepository
+  implements
+    AddCanonicalProductRepository,
+    GetCanonicalProductByIdRepository,
+    UpdateCanonicalProductRepository
 {
   add = async (
     canonicalProduct: CanonicalProduct,
@@ -49,5 +53,21 @@ export class DrizzleCanonicalProductRepository
       },
       row.id,
     );
+  };
+
+  update = async (
+    canonicalProduct: CanonicalProduct,
+    transaction?: any,
+  ): Promise<void> => {
+    const client = transaction || db;
+    await client
+      .update(schema.canonicalProductTable)
+      .set({
+        name: canonicalProduct.name,
+        brand: canonicalProduct.brand,
+        description: canonicalProduct.description,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.canonicalProductTable.id, canonicalProduct.id));
   };
 }

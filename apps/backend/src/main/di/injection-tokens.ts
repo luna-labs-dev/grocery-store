@@ -10,6 +10,10 @@ export const injection = {
     productRepositories: 'product-repositories',
     canonicalProductRepositories: 'canonical-product-repositories',
     productIdentityRepositories: 'product-identity-repositories',
+    outboxEventRepositories: 'outbox-event-repositories',
+    openFoodFactsClient: 'open-food-facts-client',
+    upcItemDbClient: 'upc-item-db-client',
+    compositeProductClient: 'composite-product-client',
     userInfo: 'user-info-service',
 
     placesHttpClient: 'places-http-client',

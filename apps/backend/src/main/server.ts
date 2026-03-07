@@ -26,6 +26,22 @@ app
     writeFileSync('./auto-generated-api.yaml', yaml);
     uuid();
 
+    // Start background worker for outbox
+    const { OutboxWorker } = await import('./workers/outbox-worker');
+    const worker = new OutboxWorker(5000);
+    worker.start();
+
+    // Graceful shutdown
+    process.on('SIGINT', () => {
+      worker.stop();
+      app.close().then(() => process.exit(0));
+    });
+
+    process.on('SIGTERM', () => {
+      worker.stop();
+      app.close().then(() => process.exit(0));
+    });
+
     await new Promise((resolve) => setTimeout(resolve, 100));
     console.log(
       `🔥 HTTP server running on http://localhost:${baseConfig.port}`,

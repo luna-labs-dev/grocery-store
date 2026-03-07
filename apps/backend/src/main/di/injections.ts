@@ -14,15 +14,18 @@ import {
 import {
   CartService,
   GroupService,
+  HydrateProductJob,
   MarketService,
   ShoppingEventService,
   UserService,
 } from '@/application';
 import {
+  CompositeExternalProductClient,
   ConfigService,
   DrizzleCanonicalProductRepository,
   DrizzleGroupRepository,
   DrizzleMarketRepository,
+  DrizzleOutboxEventRepository,
   DrizzleProductIdentityRepository,
   DrizzleProductRepository,
   DrizzleSettingsRepository,
@@ -30,7 +33,9 @@ import {
   DrizzleUserRepository,
   GooglePlaces,
   GooglePlacesHttpClient,
+  OpenFoodFactsClient,
   SecurityPermissionService,
+  UpcItemDbClient,
 } from '@/infrastructure';
 
 const { infra, usecases, controllers } = injection;
@@ -58,6 +63,9 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
   container.register(infra.productIdentityRepositories, {
     useClass: DrizzleProductIdentityRepository,
   });
+  container.register(infra.outboxEventRepositories, {
+    useClass: DrizzleOutboxEventRepository,
+  });
 
   // Services
   container.register(infra.placesHttpClient, {
@@ -75,6 +83,15 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
   container.register(infra.permissionService, {
     useClass: SecurityPermissionService,
   });
+  container.register(infra.openFoodFactsClient, {
+    useClass: OpenFoodFactsClient,
+  });
+  container.register(infra.upcItemDbClient, {
+    useClass: UpcItemDbClient,
+  });
+  container.register(infra.compositeProductClient, {
+    useClass: CompositeExternalProductClient,
+  });
 
   // Usecases
   container.register(usecases.cartService, { useClass: CartService });
@@ -84,6 +101,7 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
   container.register(usecases.shoppingEventService, {
     useClass: ShoppingEventService,
   });
+  container.register(HydrateProductJob, { useClass: HydrateProductJob });
 
   // Fastify Instance
   container.registerInstance<FastifyTypedInstance>('FastifyInstance', app);

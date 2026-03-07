@@ -280,3 +280,21 @@ export const productIdentityRelations = relations(
     }),
   }),
 );
+
+export const outboxEventStatusEnum = pgEnum('outboxEventStatusEnum', [
+  'pending',
+  'processing',
+  'completed',
+  'failed',
+]);
+
+export const outboxEventTable = pgTable('outbox_event', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  type: varchar('type', { length: 100 }).notNull(),
+  payload: jsonb('payload').notNull(),
+  status: outboxEventStatusEnum('status').default('pending').notNull(),
+  lastError: text('lastError'),
+  retryCount: bigint('retryCount', { mode: 'number' }).default(0).notNull(),
+  createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
+  processedAt: timestamp('processedAt', { precision: 6 }),
+});
