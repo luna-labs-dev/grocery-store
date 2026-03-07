@@ -75,8 +75,8 @@ This backlog follows Scrum patterns to ensure every technical task delivers clea
 **AC**:
 - Scanner falls back to Open Food Facts/UPCitemdb when local miss occurs.
 - **Technical Tasks**:
-    - [ ] `ExternalProductClient` (OFF + UPCitemdb).
-    - [ ] Async hydration queue (Outbox Pattern).
+    - [x] `ExternalProductClient` (OFF + UPCitemdb).
+    - [x] Async hydration queue (Outbox Pattern).
 
 ---
 
