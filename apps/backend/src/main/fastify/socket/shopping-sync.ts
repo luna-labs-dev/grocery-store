@@ -66,14 +66,17 @@ export const onConnection = (socket: Socket, app: FastifyInstance) => {
   });
 
   socket.on('product_added', ({ shoppingEventId, product }) => {
+    if (!socket.rooms.has(shoppingEventId)) return;
     socket.to(shoppingEventId).emit('product_added', { product });
   });
 
   socket.on('product_updated', ({ shoppingEventId, product }) => {
+    if (!socket.rooms.has(shoppingEventId)) return;
     socket.to(shoppingEventId).emit('product_updated', { product });
   });
 
   socket.on('product_deleted', ({ shoppingEventId, productId }) => {
+    if (!socket.rooms.has(shoppingEventId)) return;
     socket.to(shoppingEventId).emit('product_deleted', { productId });
   });
 
