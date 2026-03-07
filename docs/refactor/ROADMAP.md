@@ -87,8 +87,8 @@ This backlog follows Scrum patterns to ensure every technical task delivers clea
 **AC**:
 - Visual indicator when User B adds an item while User A is watching.
 - **Technical Tasks**:
-    - [ ] Socket.io Room orchestration (Fastify).
-    - [ ] TDD: `shopping-sync.spec.ts`.
+    - [x] Socket.io Room orchestration (Fastify).
+    - [x] TDD: `shopping-sync.spec.ts`.
 
 ### Story 7: Pricing Truth (Consensus)
 **AC**:
