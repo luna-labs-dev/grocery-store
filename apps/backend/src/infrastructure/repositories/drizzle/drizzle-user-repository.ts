@@ -1,9 +1,18 @@
 import { eq } from 'drizzle-orm';
 import { injectable } from 'tsyringe';
 import { db } from './setup/connection';
+import type * as schema from './setup/schema';
 import { userTable } from './setup/schema';
 import type { UserRepositories } from '@/application';
 import { GroupMember, User } from '@/domain';
+
+type UserGroupModel = typeof schema.groupMemberTable.$inferSelect & {
+  group?: typeof schema.groupTable.$inferSelect;
+};
+
+type UserModel = typeof schema.userTable.$inferSelect & {
+  groups?: UserGroupModel[];
+};
 
 @injectable()
 export class DrizzleUserRepository implements UserRepositories {
@@ -62,33 +71,14 @@ export class DrizzleUserRepository implements UserRepositories {
     return this.toDomain(userModel);
   };
 
-  private toDomain(userModel: any): User {
-    const _mapUser = (u: any) =>
-      User.create(
-        {
-          externalId: u.externalId ?? undefined,
-          email: u.email,
-          emailVerified: u.emailVerified ?? false,
-          name: u.name,
-          image: u.image ?? undefined,
-          roles: ['user'],
-          reputationScore: 0,
-          createdAt: u.createdAt ?? new Date(),
-          updatedAt: u.updatedAt ?? new Date(),
-        },
-        u.id,
-      );
-
-    const groups = userModel.groups?.map((gm: any) =>
-      GroupMember.create(
-        {
-          groupId: gm.groupId,
-          userId: gm.userId,
-          role: gm.role,
-          joinedAt: gm.joinedAt,
-        },
-        // Optional: you could include gm.group mapped to CollaborationGroup if needed
-      ),
+  private toDomain(userModel: UserModel): User {
+    const groups = userModel.groups?.map((gm: UserGroupModel) =>
+      GroupMember.create({
+        groupId: gm.groupId,
+        userId: gm.userId,
+        role: gm.role,
+        joinedAt: gm.joinedAt,
+      }),
     );
 
     return User.create(

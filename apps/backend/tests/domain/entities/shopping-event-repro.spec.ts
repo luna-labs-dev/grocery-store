@@ -7,6 +7,7 @@ describe('ShoppingEvent Entity - Repro', () => {
   it('should optimize calculations using dirty flag', () => {
     const p1 = Product.create({
       shoppingEventId: 'any_id',
+      canonicalProductId: 'any_canonical_id',
       name: 'Product 1',
       amount: 1,
       price: 10,
@@ -33,6 +34,7 @@ describe('ShoppingEvent Entity - Repro', () => {
 
     const p2 = Product.create({
       shoppingEventId: 'any_id',
+      canonicalProductId: 'any_canonical_id',
       name: 'Product 2',
       amount: 1,
       price: 20,
@@ -41,6 +43,7 @@ describe('ShoppingEvent Entity - Repro', () => {
     });
 
     shoppingEvent.upsertProduct(p2.id, {
+      canonicalProductId: p2.canonicalProductId,
       name: p2.name,
       amount: p2.amount,
       price: p2.price,

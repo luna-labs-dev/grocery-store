@@ -15,6 +15,7 @@ export class DrizzleProductRepository implements ProductRepositories {
     await client.insert(schema.productTable).values({
       id: product.id,
       shoppingEventId: product.shoppingEventId,
+      canonicalProductId: product.canonicalProductId,
       name: product.name,
       amount: product.amount,
       price: product.price,

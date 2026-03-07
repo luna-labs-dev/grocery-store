@@ -20,8 +20,10 @@ import {
 } from '@/application';
 import {
   ConfigService,
+  DrizzleCanonicalProductRepository,
   DrizzleGroupRepository,
   DrizzleMarketRepository,
+  DrizzleProductIdentityRepository,
   DrizzleProductRepository,
   DrizzleSettingsRepository,
   DrizzleShoppingEventRepository,
@@ -50,6 +52,13 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
   container.register(infra.productRepositories, {
     useClass: DrizzleProductRepository,
   });
+  container.register(infra.canonicalProductRepositories, {
+    useClass: DrizzleCanonicalProductRepository,
+  });
+  container.register(infra.productIdentityRepositories, {
+    useClass: DrizzleProductIdentityRepository,
+  });
+
   // Services
   container.register(infra.placesHttpClient, {
     useFactory: () =>

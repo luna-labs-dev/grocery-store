@@ -79,6 +79,7 @@ export const shoppingEventSummaryDtoSchema = z.object({
   products: z.array(
     z.object({
       id: z.uuid(),
+      canonicalProductId: z.uuid(),
       name: z.string(),
       amount: z.number(),
       price: z.number(),

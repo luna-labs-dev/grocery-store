@@ -1,6 +1,11 @@
 import { inject, injectable } from 'tsyringe';
-import type { ShoppingEventRepositories } from '@/application/contracts';
-import type { Product } from '@/domain';
+import type {
+  AddCanonicalProductRepository,
+  AddProductIdentityRepository,
+  GetProductIdentityByValueRepository,
+  ShoppingEventRepositories,
+} from '@/application/contracts';
+import { CanonicalProduct, type Product, ProductIdentity } from '@/domain';
 import type { RequesterContext } from '@/domain/core/requester-context';
 import {
   ProductNotFoundException,
@@ -16,6 +21,11 @@ export class CartService {
   constructor(
     @inject(infra.shoppingEventRepositories)
     private readonly shoppingEventRepository: ShoppingEventRepositories,
+    @inject(infra.canonicalProductRepositories)
+    private readonly canonicalProductRepository: AddCanonicalProductRepository,
+    @inject(infra.productIdentityRepositories)
+    private readonly productIdentityRepository: AddProductIdentityRepository &
+      GetProductIdentityByValueRepository,
   ) {}
 
   async addProductToCart(
@@ -23,6 +33,7 @@ export class CartService {
     {
       shoppingEventId,
       name,
+      barcode,
       amount,
       price,
       wholesaleMinAmount,
@@ -30,6 +41,7 @@ export class CartService {
     }: {
       shoppingEventId: string;
       name: string;
+      barcode?: string;
       amount: number;
       price: number;
       wholesaleMinAmount?: number;
@@ -47,7 +59,13 @@ export class CartService {
     if (shoppingEvent.status !== 'ongoing')
       throw new ShoppingEventAlreadyEndedException();
 
+    const canonicalProductId = await this.resolveCanonicalProduct(
+      name,
+      barcode,
+    );
+
     const product = shoppingEvent.upsertProduct(undefined, {
+      canonicalProductId,
       name,
       amount,
       price,
@@ -60,6 +78,57 @@ export class CartService {
     await this.shoppingEventRepository.update(shoppingEvent);
 
     return product;
+  }
+
+  private async resolveCanonicalProduct(
+    name: string,
+    barcode?: string,
+  ): Promise<string> {
+    if (barcode) {
+      return this.handleBarcodeEntry(name, barcode);
+    }
+
+    return this.handleManualEntry(name);
+  }
+
+  private async handleBarcodeEntry(
+    name: string,
+    barcode: string,
+  ): Promise<string> {
+    const identity = await this.productIdentityRepository.getByValue(
+      'EAN',
+      barcode,
+    );
+
+    if (identity) {
+      return identity.canonicalProductId;
+    }
+
+    // "Pending Hydration" strategy: Create canonical product on the fly
+    const cp = CanonicalProduct.create({
+      name,
+      description: 'Pending enrichment',
+    });
+    await this.canonicalProductRepository.add(cp);
+
+    const pi = ProductIdentity.create({
+      canonicalProductId: cp.id,
+      type: 'EAN',
+      value: barcode,
+    });
+    await this.productIdentityRepository.add(pi);
+
+    return cp.id;
+  }
+
+  private async handleManualEntry(name: string): Promise<string> {
+    // Manual entry: Create a "Global" entry for this name if it doesn't exist
+    const cp = CanonicalProduct.create({
+      name,
+      description: 'Manual entry',
+    });
+    await this.canonicalProductRepository.add(cp);
+    return cp.id;
   }
 
   async updateProductInCart(
@@ -98,6 +167,7 @@ export class CartService {
     if (!existing) throw new ProductNotFoundException();
 
     const product = shoppingEvent.upsertProduct(productId, {
+      canonicalProductId: existing.canonicalProductId,
       name: name ?? existing.name,
       amount: amount ?? existing.amount,
       price: price ?? existing.price,

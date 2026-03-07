@@ -16,6 +16,7 @@ export const shoppingEventMapper = {
           prod.getCalculatedTotals();
         return {
           id: prod.id,
+          canonicalProductId: prod.canonicalProductId,
           name: prod.name,
           amount: prod.amount,
           price: prod.price,

@@ -164,11 +164,33 @@ export const shopping_eventTable = pgTable('shopping_event', {
   createdBy: varchar('createdBy', { length: 320 }).notNull(),
 });
 
+export const canonicalProductTable = pgTable('canonical_product', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: varchar('name', { length: 256 }).notNull(),
+  brand: varchar('brand', { length: 256 }),
+  description: text('description'),
+  createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
+  updatedAt: timestamp('updatedAt', { precision: 6 }).defaultNow().notNull(),
+});
+
+export const productIdentityTable = pgTable('product_identity', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  canonicalProductId: uuid('canonicalProductId')
+    .notNull()
+    .references(() => canonicalProductTable.id),
+  type: varchar('type', { length: 50 }).notNull(), // e.g., 'EAN'
+  value: varchar('value', { length: 256 }).notNull(),
+  createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
+});
+
 export const productTable = pgTable('product', {
   id: uuid('id').primaryKey().defaultRandom(),
   shoppingEventId: uuid('shoppingEventId')
     .notNull()
     .references(() => shopping_eventTable.id),
+  canonicalProductId: uuid('canonicalProductId')
+    .notNull()
+    .references(() => canonicalProductTable.id),
   name: varchar('name', { length: 256 }).notNull(),
   amount: real('amount').notNull(),
   price: money('price').notNull(),
@@ -235,4 +257,26 @@ export const productRelations = relations(productTable, ({ one }) => ({
     fields: [productTable.shoppingEventId],
     references: [shopping_eventTable.id],
   }),
+  canonicalProduct: one(canonicalProductTable, {
+    fields: [productTable.canonicalProductId],
+    references: [canonicalProductTable.id],
+  }),
 }));
+
+export const canonicalProductRelations = relations(
+  canonicalProductTable,
+  ({ many }) => ({
+    identities: many(productIdentityTable),
+    products: many(productTable),
+  }),
+);
+
+export const productIdentityRelations = relations(
+  productIdentityTable,
+  ({ one }) => ({
+    canonicalProduct: one(canonicalProductTable, {
+      fields: [productIdentityTable.canonicalProductId],
+      references: [canonicalProductTable.id],
+    }),
+  }),
+);

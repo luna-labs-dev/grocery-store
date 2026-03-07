@@ -5,7 +5,9 @@ export interface AddProductToCartParams {
   groupId: string;
   shoppingEventId: string;
   name: string;
+  barcode?: string;
   amount: number;
+
   wholesaleMinAmount?: number;
   price: number;
   wholesalePrice?: number;

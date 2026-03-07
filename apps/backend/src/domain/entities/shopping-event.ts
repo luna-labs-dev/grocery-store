@@ -186,6 +186,7 @@ export class ShoppingEvent extends Entity<ShoppingEventProps> {
   upsertProduct = (
     productId: string | undefined,
     data: {
+      canonicalProductId: string;
       name: string;
       amount: number;
       price: number;
@@ -205,6 +206,7 @@ export class ShoppingEvent extends Entity<ShoppingEventProps> {
       product = Product.create(
         {
           shoppingEventId: this.id,
+          canonicalProductId: data.canonicalProductId,
           name: data.name,
           amount: data.amount,
           price: data.price,

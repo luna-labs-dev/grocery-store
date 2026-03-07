@@ -7,6 +7,7 @@ describe('ShoppingEvent Entity', () => {
   it('should calculate new metrics correctly in a single iteration', () => {
     const p1 = Product.create({
       shoppingEventId: 'any_id',
+      canonicalProductId: 'any_canonical_id',
       name: 'Product 1',
       amount: 2,
       price: 10,
@@ -16,6 +17,7 @@ describe('ShoppingEvent Entity', () => {
 
     const p2 = Product.create({
       shoppingEventId: 'any_id',
+      canonicalProductId: 'any_canonical_id',
       name: 'Product 2',
       amount: 1,
       price: 25,

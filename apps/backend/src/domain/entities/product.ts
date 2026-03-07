@@ -4,6 +4,7 @@ import type { ShoppingEvent } from './shopping-event';
 export interface ProductProps {
   shoppingEventId: string;
   shoppingEvent?: ShoppingEvent;
+  canonicalProductId: string;
   name: string;
   amount: number;
   wholesaleMinAmount?: number;
@@ -17,6 +18,7 @@ export interface ProductProps {
 }
 
 export interface UpdateProps {
+  canonicalProductId?: string;
   name?: string;
   amount?: number;
   wholesaleMinAmount?: number;
@@ -41,6 +43,10 @@ export class Product extends Entity<ProductProps> {
 
   get shoppingEvent(): ShoppingEvent | undefined {
     return this.props.shoppingEvent;
+  }
+
+  get canonicalProductId(): string {
+    return this.props.canonicalProductId;
   }
 
   get name(): string {
@@ -110,12 +116,15 @@ export class Product extends Entity<ProductProps> {
   }
 
   update({
+    canonicalProductId,
     name,
     amount,
     price,
     wholesaleMinAmount,
     wholesalePrice,
   }: UpdateProps): void {
+    this.props.canonicalProductId =
+      canonicalProductId ?? this.props.canonicalProductId;
     this.props.name = name ?? this.props.name;
     this.props.amount = amount ?? this.props.amount;
     this.props.price = price ?? this.props.price;

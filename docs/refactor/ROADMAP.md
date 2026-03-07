@@ -68,8 +68,8 @@ This backlog follows Scrum patterns to ensure every technical task delivers clea
 **AC**:
 - Barcode lookup maps to a conceptual "Canonical" parent.
 - **Technical Tasks**:
-    - [ ] Hierarchy table migrations.
-    - [ ] TDD: `canonical-product.spec.ts`, `product-identity.spec.ts`.
+    - [x] Hierarchy table migrations.
+    - [x] TDD: `canonical-product.spec.ts`, `product-identity.spec.ts`.
 
 ### Story 5: External Sourcing Harmony
 **AC**:

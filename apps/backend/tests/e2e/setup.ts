@@ -27,7 +27,10 @@ export const cleanupDatabase = async () => {
   // Delete in reverse order of dependencies to avoid FK violations
   // Use sequential await to ensure order
   await db.delete(schema.productTable);
+  await db.delete(schema.productIdentityTable);
+  await db.delete(schema.canonicalProductTable);
   await db.delete(schema.shopping_eventTable);
+
   await db.delete(schema.groupMemberTable);
   await db.delete(schema.groupTable);
   await db.delete(schema.marketTable);

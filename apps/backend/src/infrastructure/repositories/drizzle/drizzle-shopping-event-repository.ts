@@ -257,6 +257,7 @@ export class DrizzleShoppingEventRepository
                 Product.create(
                   {
                     shoppingEventId: shoppingEventModel.id,
+                    canonicalProductId: p.canonicalProductId,
                     name: p.name,
                     amount: p.amount,
                     wholesaleMinAmount: p.wholesaleMinAmount ?? undefined,
