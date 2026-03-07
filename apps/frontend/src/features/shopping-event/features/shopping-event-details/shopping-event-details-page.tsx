@@ -17,7 +17,10 @@ import {
 import { CheckCheck } from '@/components/animate-ui/icons/check-check';
 import { Cherry } from '@/components/animate-ui/icons/cherry';
 import { Page } from '@/components/layout/page-layout';
-import { useGetShoppingEventByIdQuery } from '@/features/shopping-event/infrastructure';
+import {
+  useGetShoppingEventByIdQuery,
+  useShoppingSync,
+} from '@/features/shopping-event/infrastructure';
 import { cn } from '@/lib/utils';
 
 interface ShoppingEventDetailsPageProps {
@@ -27,6 +30,8 @@ interface ShoppingEventDetailsPageProps {
 export const ShoppingEventDetailsPage = ({
   shoppingEventId,
 }: ShoppingEventDetailsPageProps) => {
+  useShoppingSync(shoppingEventId);
+
   const { data, refetch, isFetching } = useGetShoppingEventByIdQuery({
     shoppingEventId,
   });
