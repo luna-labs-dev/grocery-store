@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { ProductIdentity } from '../../../src/domain/entities/product-identity';
+import { ProductIdentity } from '@/domain/entities/product-identity';
 
 describe('ProductIdentity Entity', () => {
   test('should create a product identity with type and value', () => {

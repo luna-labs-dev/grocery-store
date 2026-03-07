@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { CanonicalProduct } from '../../../src/domain/entities/canonical-product';
+import { CanonicalProduct } from '@/domain/entities/canonical-product';
 
 describe('CanonicalProduct Entity', () => {
   test('should create a canonical product with name and brand', () => {

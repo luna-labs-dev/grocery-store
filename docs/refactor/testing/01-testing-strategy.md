@@ -7,11 +7,13 @@ In an AI-augmented development environment, tests are the only source of truth. 
 
 ### 2.1 Tier 1: Unit Testing (Vitest)
 - **Scope**: Entities, Value Objects, Domain Services, and Pure Logic.
+- **Location**: All unit tests must live in the `tests/unit/` directory, side by side with the `src/` directory, echoing its structure. Do not place test files directly inside `src/`.
 - **Goal**: 100% coverage on complex business rules (e.g., Consensus Threshold, ABAC Policy evaluation).
 - **Execution**: Mock all external dependencies. Fast and isolated.
 
 ### 2.2 Tier 2: Integration Testing (Supertest / Drizzle-mock)
 - **Scope**: UseCases and Repositories.
+- **Location**: Organized in `tests/integration/` (or functionally within `tests/unit/` if testing handlers directly).
 - **Goal**: Verify data persistence and cross-layer communication.
 - **Execution**: Run against a local test database (ephemeral) or high-fidelity mocks.
 
@@ -22,6 +24,7 @@ In an AI-augmented development environment, tests are the only source of truth. 
 
 ### 2.4 Tier 4: End-to-End (E2E) Testing (Playwright)
 - **Scope**: Critical User Journeys (CUJs).
+- **Location**: All E2E tests belong in the dedicated `tests/e2e/` folder.
 - **Goal**: Realistic verification of the entire system.
 - **Execution**: Parallel execution in a staging-like environment.
 

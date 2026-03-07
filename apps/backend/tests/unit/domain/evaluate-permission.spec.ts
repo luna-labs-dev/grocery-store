@@ -5,12 +5,8 @@ import {
   type GroupRole,
   hasGroupPermission,
   hasPermission,
-} from '../../src/domain/core/logic/permissions';
-import {
-  CollaborationGroup,
-  GroupMember,
-  User,
-} from '../../src/domain/entities';
+} from '@/domain/core/logic/permissions';
+import { CollaborationGroup, GroupMember, User } from '@/domain/entities';
 
 describe('Domain Permissions - hasPermission & hasGroupPermission', () => {
   const createUser = (
