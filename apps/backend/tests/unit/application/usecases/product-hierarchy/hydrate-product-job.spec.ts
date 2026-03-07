@@ -88,4 +88,122 @@ describe('HydrateProductJob', () => {
     expect(event.props.lastError).toBe('Network failure');
     expect(mockOutboxRepository.update).toHaveBeenCalledTimes(2); // markProcessing, markFailed
   });
+
+  it('should mark event as failed when external data is null', async () => {
+    const event = OutboxEvent.create(
+      {
+        type: 'ProductScanned',
+        payload: { canonicalProductId: 'cp-123', barcode: '123456' },
+      },
+      'event-1',
+    );
+
+    mockOutboxRepository.getPending.mockResolvedValue([event]);
+    mockExternalClient.fetchByBarcode.mockResolvedValue(null);
+
+    await job.execute();
+
+    expect(mockExternalClient.fetchByBarcode).toHaveBeenCalled();
+    expect(mockCanonicalProductRepository.update).not.toHaveBeenCalled();
+    expect(event.props.status).toBe('failed');
+    expect(event.props.lastError).toContain('No external data found');
+  });
+
+  it('should mark event as failed when canonical product is missing', async () => {
+    const event = OutboxEvent.create(
+      {
+        type: 'ProductScanned',
+        payload: { canonicalProductId: 'cp-123', barcode: '123456' },
+      },
+      'event-1',
+    );
+
+    mockOutboxRepository.getPending.mockResolvedValue([event]);
+    mockExternalClient.fetchByBarcode.mockResolvedValue({
+      name: 'Enriched',
+      brand: 'Enriched',
+      description: 'Enriched',
+    });
+    mockCanonicalProductRepository.getById.mockResolvedValue(null);
+
+    await job.execute();
+
+    expect(mockCanonicalProductRepository.getById).toHaveBeenCalledWith(
+      'cp-123',
+    );
+    expect(mockCanonicalProductRepository.update).not.toHaveBeenCalled();
+    expect(event.props.status).toBe('failed');
+    expect(event.props.lastError).toContain('Canonical product not found');
+  });
+
+  it('should handle unknown event types by marking them as failed', async () => {
+    const event = OutboxEvent.create(
+      {
+        type: 'UnknownType',
+        payload: { something: 'else' },
+      },
+      'event-1',
+    );
+
+    mockOutboxRepository.getPending.mockResolvedValue([event]);
+
+    await job.execute();
+
+    expect(event.props.status).toBe('failed');
+    expect(event.props.lastError).toContain('Unknown event type');
+    expect(mockOutboxRepository.update).toHaveBeenCalled();
+  });
+
+  it('should continue processing the batch even if one event fails', async () => {
+    const event1 = OutboxEvent.create(
+      {
+        type: 'ProductScanned',
+        payload: { canonicalProductId: 'cp-1', barcode: '1' },
+      },
+      'event-1',
+    );
+    const event2 = OutboxEvent.create(
+      {
+        type: 'ProductScanned',
+        payload: { canonicalProductId: 'cp-2', barcode: '2' },
+      },
+      'event-2',
+    );
+
+    mockOutboxRepository.getPending.mockResolvedValue([event1, event2]);
+
+    // Event 1 fails (missing data)
+    mockExternalClient.fetchByBarcode.mockResolvedValueOnce(null);
+    // Event 2 succeeds
+    mockExternalClient.fetchByBarcode.mockResolvedValueOnce({
+      name: 'Success',
+    });
+    mockCanonicalProductRepository.getById.mockResolvedValue(
+      CanonicalProduct.create({ name: 'Old' }, 'cp-2'),
+    );
+
+    await job.execute();
+
+    expect(event1.props.status).toBe('failed');
+    expect(event2.props.status).toBe('completed');
+    expect(mockOutboxRepository.update).toHaveBeenCalledTimes(4); // (P1, F1) + (P2, C2)
+  });
+
+  it('should mark event as failed when payload is missing required fields', async () => {
+    const event = OutboxEvent.create(
+      {
+        type: 'ProductScanned',
+        payload: { somethingElse: 'wrong' } as any,
+      },
+      'event-1',
+    );
+
+    mockOutboxRepository.getPending.mockResolvedValue([event]);
+
+    await job.execute();
+
+    expect(event.props.status).toBe('failed');
+    // It should fail either because fetchByBarcode(undefined) fails or one of the subsequent checks
+    expect(mockOutboxRepository.update).toHaveBeenCalled();
+  });
 });

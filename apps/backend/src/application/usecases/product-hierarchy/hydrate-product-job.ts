@@ -26,7 +26,8 @@ export class HydrateProductJob {
 
     for (const event of pendingEvents) {
       if (event.type !== 'ProductScanned') {
-        event.markFailed('Unknown event type: ' + event.type);
+        event.markProcessing();
+        event.markFailed(`Unknown event type: ${event.type}`);
         await this.outboxRepository.update(event);
         continue;
       }
@@ -42,26 +43,30 @@ export class HydrateProductJob {
 
         const externalData = await this.externalClient.fetchByBarcode(barcode);
 
-        if (externalData) {
-          const cp =
-            await this.canonicalProductRepository.getById(canonicalProductId);
-          if (cp) {
-            // Update using CanonicalProduct constructor or methods if available
-            // Note: Since Domain Entities should encapsulate logic, if there is no `update` method we reconstruct.
-            // Let's assume CanonicalProduct.create works for updating since it accepts CreateProps and ID.
-            const updatedCp = Object.assign(cp, {
-              props: {
-                ...cp.props,
-                name: externalData.name,
-                brand: externalData.brand ?? cp.props.brand,
-                description: externalData.description ?? cp.props.description,
-                updatedAt: new Date(),
-              },
-            });
-
-            await this.canonicalProductRepository.update(updatedCp);
-          }
+        if (!externalData) {
+          event.markFailed(`No external data found for barcode: ${barcode}`);
+          await this.outboxRepository.update(event);
+          continue;
         }
+
+        const cp =
+          await this.canonicalProductRepository.getById(canonicalProductId);
+
+        if (!cp) {
+          event.markFailed(
+            `Canonical product not found: ${canonicalProductId}`,
+          );
+          await this.outboxRepository.update(event);
+          continue;
+        }
+
+        cp.hydrate({
+          name: externalData.name,
+          brand: externalData.brand,
+          description: externalData.description,
+        });
+
+        await this.canonicalProductRepository.update(cp);
 
         event.markCompleted();
         await this.outboxRepository.update(event);
