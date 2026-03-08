@@ -10,7 +10,7 @@ export type GetShoppingEventListStatus =
   (typeof GetShoppingEventListStatus)[keyof typeof GetShoppingEventListStatus];
 
 export const GetShoppingEventListStatus = {
-  CANCELED: 'CANCELED',
-  FINISHED: 'FINISHED',
-  ONGOING: 'ONGOING',
+  canceled: 'canceled',
+  finished: 'finished',
+  ongoing: 'ongoing',
 } as const;

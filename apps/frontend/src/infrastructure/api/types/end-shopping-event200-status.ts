@@ -10,7 +10,7 @@ export type EndShoppingEvent200Status =
   (typeof EndShoppingEvent200Status)[keyof typeof EndShoppingEvent200Status];
 
 export const EndShoppingEvent200Status = {
-  CANCELED: 'CANCELED',
-  FINISHED: 'FINISHED',
-  ONGOING: 'ONGOING',
+  canceled: 'canceled',
+  finished: 'finished',
+  ongoing: 'ongoing',
 } as const;

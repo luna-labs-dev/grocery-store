@@ -10,7 +10,7 @@ export type GetShoppingEventById200Status =
   (typeof GetShoppingEventById200Status)[keyof typeof GetShoppingEventById200Status];
 
 export const GetShoppingEventById200Status = {
-  CANCELED: 'CANCELED',
-  FINISHED: 'FINISHED',
-  ONGOING: 'ONGOING',
+  canceled: 'canceled',
+  finished: 'finished',
+  ongoing: 'ongoing',
 } as const;
