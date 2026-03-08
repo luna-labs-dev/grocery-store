@@ -39,4 +39,10 @@ export const auth = betterAuth({
     : [env.baseConfig.origins],
   secret: env.auth.secret,
   baseURL: env.auth.url,
+  advanced: {
+    defaultCookieAttributes: {
+      sameSite: 'lax',
+      secure: false,
+    },
+  },
 });

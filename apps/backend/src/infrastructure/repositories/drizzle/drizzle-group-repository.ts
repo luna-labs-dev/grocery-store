@@ -9,6 +9,7 @@ import type {
   GetGroupByInviteCodeRepository,
   GetGroupMembersRepository,
   GetGroupsByUserIdRepository,
+  RemoveGroupRepository,
   UpdateGroupInviteCodeRepository,
   UpdateGroupRepository,
 } from '@/application/contracts/repositories/group';
@@ -32,7 +33,8 @@ export class DrizzleGroupRepository
     GetGroupMembersRepository,
     GetGroupsByUserIdRepository,
     UpdateGroupInviteCodeRepository,
-    UpdateGroupRepository
+    UpdateGroupRepository,
+    RemoveGroupRepository
 {
   async add(group: CollaborationGroup): Promise<void> {
     await db.transaction(async (tx) => {
@@ -135,6 +137,19 @@ export class DrizzleGroupRepository
       if (group.members) {
         await this.syncMembers(tx, group);
       }
+    });
+  }
+
+  async remove(groupId: string): Promise<void> {
+    await db.transaction(async (tx) => {
+      // First remove members (though cascading is usually handled by DB, we follow aggregate rules here)
+      await tx
+        .delete(schema.groupMemberTable)
+        .where(eq(schema.groupMemberTable.groupId, groupId));
+
+      await tx
+        .delete(schema.groupTable)
+        .where(eq(schema.groupTable.id, groupId));
     });
   }
 
@@ -256,22 +271,58 @@ export class DrizzleGroupRepository
     const result = await db.query.groupMemberTable.findMany({
       where: eq(schema.groupMemberTable.userId, userId),
       with: {
-        group: true,
+        group: {
+          with: {
+            members: {
+              with: { user: true },
+            },
+          },
+        },
       },
     });
 
-    return result.map((r) =>
-      CollaborationGroup.create(
+    return result.map((r) => {
+      const groupModel = r.group as GroupModel;
+      const group = CollaborationGroup.create(
         {
-          name: r.group.name,
-          description: r.group.description ?? undefined,
-          inviteCode: r.group.inviteCode ?? undefined,
-          createdAt: r.group.createdAt,
-          createdBy: r.group.createdBy,
+          name: groupModel.name,
+          description: groupModel.description ?? undefined,
+          inviteCode: groupModel.inviteCode ?? undefined,
+          createdAt: groupModel.createdAt,
+          createdBy: groupModel.createdBy,
         },
-        r.group.id,
-      ),
-    );
+        groupModel.id,
+      );
+
+      if (groupModel.members) {
+        group.props.members = groupModel.members.map((m: GroupMemberModel) =>
+          GroupMember.create({
+            groupId: m.groupId,
+            userId: m.userId,
+            role: m.role as GroupRole,
+            joinedAt: m.joinedAt,
+            user: m.user
+              ? User.create(
+                  {
+                    name: m.user.name,
+                    email: m.user.email,
+                    emailVerified: m.user.emailVerified,
+                    image: m.user.image ?? undefined,
+                    roles: ['user'],
+                    reputationScore: 0,
+                    createdAt: m.user.createdAt,
+                    updatedAt: m.user.updatedAt,
+                    externalId: m.user.externalId ?? undefined,
+                  },
+                  m.user.id,
+                )
+              : undefined,
+          }),
+        );
+      }
+
+      return group;
+    });
   }
 
   async updateInviteCode(groupId: string, inviteCode: string): Promise<void> {

@@ -34,9 +34,17 @@ export class AuthController extends FastifyController {
     );
 
     // Copy Set-Cookie and other headers from the Web Response to Fastify Reply
-    response.headers.forEach((value, key) => {
+    for (const [key, value] of response.headers.entries()) {
+      if (key.toLowerCase() === 'set-cookie') {
+        continue;
+      }
       reply.header(key, value);
-    });
+    }
+
+    const setCookies = response.headers.getSetCookie();
+    if (setCookies.length > 0) {
+      reply.header('set-cookie', setCookies);
+    }
 
     reply.status(response.status);
 
@@ -129,7 +137,7 @@ export class AuthController extends FastifyController {
     );
 
     app.get(
-      '/session',
+      '/get-session',
       {
         schema: {
           tags: [this.prefix],

@@ -33,7 +33,7 @@ export class UpcItemDbClient implements ExternalProductClient {
         brand: item.brand || undefined,
         description: item.description || undefined,
       };
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }

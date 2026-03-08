@@ -33,7 +33,7 @@ export class OpenFoodFactsClient implements ExternalProductClient {
         brand: brands ? brands.split(',')[0].trim() : undefined,
         description: generic_name,
       };
-    } catch (error) {
+    } catch (_error) {
       // Return null on network or parsing error out of caution (resilience)
       return null;
     }

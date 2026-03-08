@@ -154,4 +154,46 @@ export class GroupService {
       joinUrl,
     };
   }
+
+  async updateGroup(
+    ctx: RequesterContext,
+    { name, description }: { name: string; description?: string },
+  ): Promise<CollaborationGroup> {
+    await ctx.checkPermission('update', 'group');
+
+    ctx.group.updateName(name);
+    ctx.group.updateDescription(description);
+
+    await this.groupRepository.update(ctx.group);
+    return ctx.group;
+  }
+
+  async deleteGroup(ctx: RequesterContext): Promise<void> {
+    // Only owner can delete group (this would be enforced in permission service, but explicit here for safety)
+    await ctx.checkPermission('delete', 'group');
+
+    await this.groupRepository.remove(ctx.group.id);
+  }
+
+  async regenerateInviteCode(
+    ctx: RequesterContext,
+  ): Promise<GetInviteInfoResult> {
+    await ctx.checkPermission('update', 'group');
+
+    ctx.group.generateInviteCode();
+
+    // Non-null assertion as generateInviteCode always produces a code
+    // biome-ignore lint/style/noNonNullAssertion: generateInviteCode ensures this
+    const newCode = ctx.group.inviteCode!;
+
+    await this.groupRepository.updateInviteCode(ctx.group.id, newCode);
+
+    const { webAppUrl } = env.baseConfig;
+    const joinUrl = `${webAppUrl}/join?code=${newCode}`;
+
+    return {
+      inviteCode: newCode,
+      joinUrl,
+    };
+  }
 }

@@ -244,5 +244,98 @@ export class GroupController extends FastifyController {
         reply.status(HttpStatusCode.Ok).send(response);
       },
     );
+
+    app.post(
+      '/:groupId/invite/regenerate',
+      {
+        preHandler: [groupBarrierMiddleware],
+        schema: {
+          tags: [this.prefix],
+          description: 'Regenerate group invitation code',
+          summary: 'Regenerar convite',
+          operationId: 'regenerateInviteCode',
+          params: groupParamsSchema,
+          response: {
+            ...getPossibleExceptionsSchemas([
+              new UnauthorizedGroupOperationException(),
+              new UserNotInGroupException(),
+            ]),
+            [HttpStatusCode.Ok]: groupInviteResponseSchema,
+          },
+        },
+      },
+      async (request, reply) => {
+        const { requesterContext } = request;
+
+        const inviteInfo =
+          await this.groupService.regenerateInviteCode(requesterContext);
+
+        const response = groupMapper.toInviteResponse(inviteInfo);
+        reply.status(HttpStatusCode.Ok).send(response);
+      },
+    );
+
+    app.patch(
+      '/:groupId',
+      {
+        preHandler: [groupBarrierMiddleware],
+        schema: {
+          tags: [this.prefix],
+          description: 'Update group details',
+          summary: 'Atualizar grupo',
+          operationId: 'updateGroup',
+          params: groupParamsSchema,
+          body: createGroupRequestSchema.partial(),
+          response: {
+            ...getPossibleExceptionsSchemas([
+              new UnauthorizedGroupOperationException(),
+              new UserNotInGroupException(),
+            ]),
+            [HttpStatusCode.Ok]: groupResponseSchema,
+          },
+        },
+      },
+      async (request, reply) => {
+        const { name, description } = request.body;
+        const { requesterContext } = request;
+
+        const group = await this.groupService.updateGroup(requesterContext, {
+          name: name ?? requesterContext.group.name,
+          description: description ?? requesterContext.group.description,
+        });
+
+        const response = groupMapper.toResponse(group);
+        reply.status(HttpStatusCode.Ok).send(response);
+      },
+    );
+
+    app.delete(
+      '/:groupId',
+      {
+        preHandler: [groupBarrierMiddleware],
+        schema: {
+          tags: [this.prefix],
+          description: 'Delete a collaboration group',
+          summary: 'Deletar grupo',
+          operationId: 'deleteGroup',
+          params: groupParamsSchema,
+          response: {
+            ...getPossibleExceptionsSchemas([
+              new UnauthorizedGroupOperationException(),
+              new UserNotInGroupException(),
+            ]),
+            [HttpStatusCode.NoContent]: z
+              .never()
+              .describe('Group deleted successfully'),
+          },
+        },
+      },
+      async (request, reply) => {
+        const { requesterContext } = request;
+
+        await this.groupService.deleteGroup(requesterContext);
+        reply.status(HttpStatusCode.NoContent).send();
+      },
+    );
   }
 }

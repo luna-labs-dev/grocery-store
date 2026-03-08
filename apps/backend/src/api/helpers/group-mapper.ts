@@ -27,7 +27,9 @@ export const groupMapper = {
     name: group.name,
     description: group.description,
     inviteCode: group.inviteCode,
-    members: members?.map((m) => groupMapper.toMemberResponse(m)),
+    members: (members ?? group.members).map((m) =>
+      groupMapper.toMemberResponse(m),
+    ),
     createdAt: group.createdAt,
     createdBy: group.createdBy,
   }),
