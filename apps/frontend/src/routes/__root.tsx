@@ -1,4 +1,3 @@
-import type { useAuth } from '@clerk/clerk-react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import {
   createRootRouteWithContext,
@@ -6,9 +5,10 @@ import {
   Outlet,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import type { useSession } from '@/infrastructure/auth/auth-client';
 
 interface RootRouteContext {
-  auth?: ReturnType<typeof useAuth>;
+  auth?: ReturnType<typeof useSession>;
 }
 const RootLayout = () => {
   return (

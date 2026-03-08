@@ -1,4 +1,3 @@
-import { useAuth, useUser } from '@clerk/clerk-react';
 import { AnimateIcon } from '@/components/animate-ui/icons/icon';
 import { LogOut } from '@/components/animate-ui/icons/log-out';
 import {
@@ -9,26 +8,29 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from '@/components/ui';
+import { signOut, useSession } from '@/infrastructure/auth/auth-client';
 
 export const SidebarUser = () => {
-  const { user } = useUser();
-  const { signOut } = useAuth();
+  const { data: session } = useSession();
+  const user = session?.user;
+
+  if (!user) return null;
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <div className="data-state-open:bg-sidebar-accent data-state-open:text-sidebar-accent-foreground flex p-2 justify-between items-center">
-          <div className="flex items-cebter gap-2">
+          <div className="flex items-center gap-2">
             <Avatar>
-              <AvatarImage src={user?.imageUrl} />
+              <AvatarImage src={user.image || undefined} />
               <AvatarFallback className="rounded-lg">
-                {user?.fullName}
+                {user.name?.charAt(0)}
               </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">{user?.firstName}</span>
+              <span className="truncate font-medium">{user.name}</span>
               <span className="text-muted-foreground truncate text-xs">
-                {user?.primaryEmailAddress?.emailAddress}
+                {user.email}
               </span>
             </div>
           </div>
@@ -40,7 +42,6 @@ export const SidebarUser = () => {
                 className="cursor-pointer"
               >
                 <LogOut />
-                {/* <Icon icon="uit:signout" className="w-4! h-4! text-red-600" /> */}
               </Button>
             </AnimateIcon>
           </div>

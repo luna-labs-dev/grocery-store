@@ -3,8 +3,7 @@ import { SigninPage } from '@/features/auth/pages/signin';
 
 export const Route = createFileRoute('/_public/signin')({
   beforeLoad: async ({ context }) => {
-    const token = await context.auth?.getToken();
-    if (token) {
+    if (context.auth?.data) {
       throw redirect({
         to: '/dashboard',
       });

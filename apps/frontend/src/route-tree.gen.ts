@@ -12,12 +12,16 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicSigninRouteImport } from './routes/_public/signin'
+import { Route as ProtectedManageGroupsRouteImport } from './routes/_protected/manage-groups'
+import { Route as ProtectedJoinRouteImport } from './routes/_protected/join'
 import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dashboard'
 import { Route as ProtectedShoppingEventIndexRouteImport } from './routes/_protected/shopping-event/index'
 import { Route as ProtectedMarketIndexRouteImport } from './routes/_protected/market/index'
-import { Route as ProtectedFamilyIndexRouteImport } from './routes/_protected/family/index'
+import { Route as ProtectedManageGroupsIndexRouteImport } from './routes/_protected/manage-groups.index'
 import { Route as ProtectedShoppingEventStartShoppingEventRouteImport } from './routes/_protected/shopping-event/start-shopping-event'
 import { Route as ProtectedShoppingEventShoppingEventIdRouteImport } from './routes/_protected/shopping-event/$shoppingEventId'
+import { Route as ProtectedManageGroupsGroupIdIndexRouteImport } from './routes/_protected/manage-groups/$groupId/index'
+import { Route as ProtectedManageGroupsGroupIdSettingsRouteImport } from './routes/_protected/manage-groups/$groupId/settings'
 
 const ProtectedRoute = ProtectedRouteImport.update({
   id: '/_protected',
@@ -32,6 +36,16 @@ const PublicSigninRoute = PublicSigninRouteImport.update({
   id: '/_public/signin',
   path: '/signin',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ProtectedManageGroupsRoute = ProtectedManageGroupsRouteImport.update({
+  id: '/manage-groups',
+  path: '/manage-groups',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const ProtectedJoinRoute = ProtectedJoinRouteImport.update({
+  id: '/join',
+  path: '/join',
+  getParentRoute: () => ProtectedRoute,
 } as any)
 const ProtectedDashboardRoute = ProtectedDashboardRouteImport.update({
   id: '/dashboard',
@@ -49,11 +63,12 @@ const ProtectedMarketIndexRoute = ProtectedMarketIndexRouteImport.update({
   path: '/market/',
   getParentRoute: () => ProtectedRoute,
 } as any)
-const ProtectedFamilyIndexRoute = ProtectedFamilyIndexRouteImport.update({
-  id: '/family/',
-  path: '/family/',
-  getParentRoute: () => ProtectedRoute,
-} as any)
+const ProtectedManageGroupsIndexRoute =
+  ProtectedManageGroupsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProtectedManageGroupsRoute,
+  } as any)
 const ProtectedShoppingEventStartShoppingEventRoute =
   ProtectedShoppingEventStartShoppingEventRouteImport.update({
     id: '/shopping-event/start-shopping-event',
@@ -66,71 +81,105 @@ const ProtectedShoppingEventShoppingEventIdRoute =
     path: '/shopping-event/$shoppingEventId',
     getParentRoute: () => ProtectedRoute,
   } as any)
+const ProtectedManageGroupsGroupIdIndexRoute =
+  ProtectedManageGroupsGroupIdIndexRouteImport.update({
+    id: '/$groupId/',
+    path: '/$groupId/',
+    getParentRoute: () => ProtectedManageGroupsRoute,
+  } as any)
+const ProtectedManageGroupsGroupIdSettingsRoute =
+  ProtectedManageGroupsGroupIdSettingsRouteImport.update({
+    id: '/$groupId/settings',
+    path: '/$groupId/settings',
+    getParentRoute: () => ProtectedManageGroupsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/dashboard': typeof ProtectedDashboardRoute
+  '/join': typeof ProtectedJoinRoute
+  '/manage-groups': typeof ProtectedManageGroupsRouteWithChildren
   '/signin': typeof PublicSigninRoute
   '/shopping-event/$shoppingEventId': typeof ProtectedShoppingEventShoppingEventIdRoute
   '/shopping-event/start-shopping-event': typeof ProtectedShoppingEventStartShoppingEventRoute
-  '/family/': typeof ProtectedFamilyIndexRoute
+  '/manage-groups/': typeof ProtectedManageGroupsIndexRoute
   '/market/': typeof ProtectedMarketIndexRoute
   '/shopping-event/': typeof ProtectedShoppingEventIndexRoute
+  '/manage-groups/$groupId/settings': typeof ProtectedManageGroupsGroupIdSettingsRoute
+  '/manage-groups/$groupId/': typeof ProtectedManageGroupsGroupIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/dashboard': typeof ProtectedDashboardRoute
+  '/join': typeof ProtectedJoinRoute
   '/signin': typeof PublicSigninRoute
   '/shopping-event/$shoppingEventId': typeof ProtectedShoppingEventShoppingEventIdRoute
   '/shopping-event/start-shopping-event': typeof ProtectedShoppingEventStartShoppingEventRoute
-  '/family': typeof ProtectedFamilyIndexRoute
+  '/manage-groups': typeof ProtectedManageGroupsIndexRoute
   '/market': typeof ProtectedMarketIndexRoute
   '/shopping-event': typeof ProtectedShoppingEventIndexRoute
+  '/manage-groups/$groupId/settings': typeof ProtectedManageGroupsGroupIdSettingsRoute
+  '/manage-groups/$groupId': typeof ProtectedManageGroupsGroupIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_protected': typeof ProtectedRouteWithChildren
   '/_protected/dashboard': typeof ProtectedDashboardRoute
+  '/_protected/join': typeof ProtectedJoinRoute
+  '/_protected/manage-groups': typeof ProtectedManageGroupsRouteWithChildren
   '/_public/signin': typeof PublicSigninRoute
   '/_public/': typeof PublicIndexRoute
   '/_protected/shopping-event/$shoppingEventId': typeof ProtectedShoppingEventShoppingEventIdRoute
   '/_protected/shopping-event/start-shopping-event': typeof ProtectedShoppingEventStartShoppingEventRoute
-  '/_protected/family/': typeof ProtectedFamilyIndexRoute
+  '/_protected/manage-groups/': typeof ProtectedManageGroupsIndexRoute
   '/_protected/market/': typeof ProtectedMarketIndexRoute
   '/_protected/shopping-event/': typeof ProtectedShoppingEventIndexRoute
+  '/_protected/manage-groups/$groupId/settings': typeof ProtectedManageGroupsGroupIdSettingsRoute
+  '/_protected/manage-groups/$groupId/': typeof ProtectedManageGroupsGroupIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/join'
+    | '/manage-groups'
     | '/signin'
     | '/shopping-event/$shoppingEventId'
     | '/shopping-event/start-shopping-event'
-    | '/family/'
+    | '/manage-groups/'
     | '/market/'
     | '/shopping-event/'
+    | '/manage-groups/$groupId/settings'
+    | '/manage-groups/$groupId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/dashboard'
+    | '/join'
     | '/signin'
     | '/shopping-event/$shoppingEventId'
     | '/shopping-event/start-shopping-event'
-    | '/family'
+    | '/manage-groups'
     | '/market'
     | '/shopping-event'
+    | '/manage-groups/$groupId/settings'
+    | '/manage-groups/$groupId'
   id:
     | '__root__'
     | '/_protected'
     | '/_protected/dashboard'
+    | '/_protected/join'
+    | '/_protected/manage-groups'
     | '/_public/signin'
     | '/_public/'
     | '/_protected/shopping-event/$shoppingEventId'
     | '/_protected/shopping-event/start-shopping-event'
-    | '/_protected/family/'
+    | '/_protected/manage-groups/'
     | '/_protected/market/'
     | '/_protected/shopping-event/'
+    | '/_protected/manage-groups/$groupId/settings'
+    | '/_protected/manage-groups/$groupId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -162,6 +211,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicSigninRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected/manage-groups': {
+      id: '/_protected/manage-groups'
+      path: '/manage-groups'
+      fullPath: '/manage-groups'
+      preLoaderRoute: typeof ProtectedManageGroupsRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/join': {
+      id: '/_protected/join'
+      path: '/join'
+      fullPath: '/join'
+      preLoaderRoute: typeof ProtectedJoinRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
     '/_protected/dashboard': {
       id: '/_protected/dashboard'
       path: '/dashboard'
@@ -183,12 +246,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedMarketIndexRouteImport
       parentRoute: typeof ProtectedRoute
     }
-    '/_protected/family/': {
-      id: '/_protected/family/'
-      path: '/family'
-      fullPath: '/family/'
-      preLoaderRoute: typeof ProtectedFamilyIndexRouteImport
-      parentRoute: typeof ProtectedRoute
+    '/_protected/manage-groups/': {
+      id: '/_protected/manage-groups/'
+      path: '/'
+      fullPath: '/manage-groups/'
+      preLoaderRoute: typeof ProtectedManageGroupsIndexRouteImport
+      parentRoute: typeof ProtectedManageGroupsRoute
     }
     '/_protected/shopping-event/start-shopping-event': {
       id: '/_protected/shopping-event/start-shopping-event'
@@ -204,25 +267,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedShoppingEventShoppingEventIdRouteImport
       parentRoute: typeof ProtectedRoute
     }
+    '/_protected/manage-groups/$groupId/': {
+      id: '/_protected/manage-groups/$groupId/'
+      path: '/$groupId'
+      fullPath: '/manage-groups/$groupId/'
+      preLoaderRoute: typeof ProtectedManageGroupsGroupIdIndexRouteImport
+      parentRoute: typeof ProtectedManageGroupsRoute
+    }
+    '/_protected/manage-groups/$groupId/settings': {
+      id: '/_protected/manage-groups/$groupId/settings'
+      path: '/$groupId/settings'
+      fullPath: '/manage-groups/$groupId/settings'
+      preLoaderRoute: typeof ProtectedManageGroupsGroupIdSettingsRouteImport
+      parentRoute: typeof ProtectedManageGroupsRoute
+    }
   }
 }
 
+interface ProtectedManageGroupsRouteChildren {
+  ProtectedManageGroupsIndexRoute: typeof ProtectedManageGroupsIndexRoute
+  ProtectedManageGroupsGroupIdSettingsRoute: typeof ProtectedManageGroupsGroupIdSettingsRoute
+  ProtectedManageGroupsGroupIdIndexRoute: typeof ProtectedManageGroupsGroupIdIndexRoute
+}
+
+const ProtectedManageGroupsRouteChildren: ProtectedManageGroupsRouteChildren = {
+  ProtectedManageGroupsIndexRoute: ProtectedManageGroupsIndexRoute,
+  ProtectedManageGroupsGroupIdSettingsRoute:
+    ProtectedManageGroupsGroupIdSettingsRoute,
+  ProtectedManageGroupsGroupIdIndexRoute:
+    ProtectedManageGroupsGroupIdIndexRoute,
+}
+
+const ProtectedManageGroupsRouteWithChildren =
+  ProtectedManageGroupsRoute._addFileChildren(
+    ProtectedManageGroupsRouteChildren,
+  )
+
 interface ProtectedRouteChildren {
   ProtectedDashboardRoute: typeof ProtectedDashboardRoute
+  ProtectedJoinRoute: typeof ProtectedJoinRoute
+  ProtectedManageGroupsRoute: typeof ProtectedManageGroupsRouteWithChildren
   ProtectedShoppingEventShoppingEventIdRoute: typeof ProtectedShoppingEventShoppingEventIdRoute
   ProtectedShoppingEventStartShoppingEventRoute: typeof ProtectedShoppingEventStartShoppingEventRoute
-  ProtectedFamilyIndexRoute: typeof ProtectedFamilyIndexRoute
   ProtectedMarketIndexRoute: typeof ProtectedMarketIndexRoute
   ProtectedShoppingEventIndexRoute: typeof ProtectedShoppingEventIndexRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedDashboardRoute: ProtectedDashboardRoute,
+  ProtectedJoinRoute: ProtectedJoinRoute,
+  ProtectedManageGroupsRoute: ProtectedManageGroupsRouteWithChildren,
   ProtectedShoppingEventShoppingEventIdRoute:
     ProtectedShoppingEventShoppingEventIdRoute,
   ProtectedShoppingEventStartShoppingEventRoute:
     ProtectedShoppingEventStartShoppingEventRoute,
-  ProtectedFamilyIndexRoute: ProtectedFamilyIndexRoute,
   ProtectedMarketIndexRoute: ProtectedMarketIndexRoute,
   ProtectedShoppingEventIndexRoute: ProtectedShoppingEventIndexRoute,
 }

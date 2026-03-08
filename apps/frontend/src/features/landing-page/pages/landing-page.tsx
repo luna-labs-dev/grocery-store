@@ -1,13 +1,12 @@
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-} from '@clerk/clerk-react';
-import { BarChart3, ShieldCheck, Users } from 'lucide-react';
+import { useNavigate } from '@tanstack/react-router';
+import { BarChart3, LogOut, ShieldCheck, Users } from 'lucide-react';
 import { Button, GroceryfyLogo } from '@/components';
+import { signOut, useSession } from '@/infrastructure/auth/auth-client';
 
 export const LandingPage = () => {
+  const navigate = useNavigate();
+  const session = useSession();
+
   return (
     <div className="w-full flex flex-col min-h-screen">
       {/* Header/Navigation */}
@@ -35,20 +34,30 @@ export const LandingPage = () => {
             </a>
           </nav>
           <div className="flex items-center gap-4">
-            {/* <Button variant="outline" size="sm">
-              Começar
-            </Button> */}
-
-            <SignedOut>
-              <SignInButton mode="modal">
-                <Button size="sm" className="bg-violet-600 hover:bg-violet-700">
-                  Experimente agora
+            {session.data ? (
+              <div className="flex items-center gap-3">
+                <span className="hidden text-sm font-medium md:inline-block">
+                  Olá, {session.data.user.name}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => signOut()}
+                  className="text-gray-400 hover:text-white"
+                >
+                  <LogOut className="size-4 mr-2" />
+                  Sair
                 </Button>
-              </SignInButton>
-            </SignedOut>
-            <SignedIn>
-              <UserButton showName />
-            </SignedIn>
+              </div>
+            ) : (
+              <Button
+                size="sm"
+                className="bg-emerald-600 hover:bg-emerald-700"
+                onClick={() => navigate({ to: '/signin' })}
+              >
+                Experimente agora
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -66,10 +75,18 @@ export const LandingPage = () => {
                 forma inteligente e evitando surpresas no caixa.
               </p>
               <div className="flex flex-col justify-center gap-4 sm:flex-row">
-                <Button size="lg" className="bg-violet-600 hover:bg-violet-700">
+                <Button
+                  size="lg"
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                  onClick={() => navigate({ to: '/signin' })}
+                >
                   Experimente agora
                 </Button>
-                <Button variant="outline" size="lg">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="text-white border-gray-700 hover:bg-gray-800"
+                >
                   Saiba mais
                 </Button>
               </div>
@@ -102,8 +119,8 @@ export const LandingPage = () => {
             </h2>
             <div className="grid max-w-5xl gap-8 mx-auto md:grid-cols-3">
               <div className="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-md">
-                <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-violet-900/50">
-                  <BarChart3 className="w-6 h-6 text-violet-400" />
+                <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-emerald-900/50">
+                  <BarChart3 className="w-6 h-6 text-emerald-400" />
                 </div>
                 <h3 className="mb-2 text-xl font-semibold text-center text-white">
                   Controle de gastos
@@ -114,8 +131,8 @@ export const LandingPage = () => {
                 </p>
               </div>
               <div className="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-md">
-                <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-violet-900/50">
-                  <Users className="w-6 h-6 text-violet-400" />
+                <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-emerald-900/50">
+                  <Users className="w-6 h-6 text-emerald-400" />
                 </div>
                 <h3 className="mb-2 text-xl font-semibold text-center text-white">
                   compra em família
@@ -126,8 +143,8 @@ export const LandingPage = () => {
                 </p>
               </div>
               <div className="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-md">
-                <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-violet-900/50">
-                  <ShieldCheck className="w-6 h-6 text-violet-400" />
+                <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-emerald-900/50">
+                  <ShieldCheck className="w-6 h-6 text-emerald-400" />
                 </div>
                 <h3 className="mb-2 text-xl font-semibold text-center text-white">
                   Prevenção de erros
@@ -149,7 +166,7 @@ export const LandingPage = () => {
             </h2>
             <div className="max-w-2xl mx-auto space-y-8">
               <div className="flex items-start gap-4">
-                <div className="flex items-center justify-center shrink-0 w-8 h-8 font-bold text-white rounded-full bg-violet-600">
+                <div className="flex items-center justify-center shrink-0 w-8 h-8 font-bold text-white rounded-full bg-emerald-600">
                   1
                 </div>
                 <div>
@@ -163,7 +180,7 @@ export const LandingPage = () => {
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="flex items-center justify-center shrink-0 w-8 h-8 font-bold text-white rounded-full bg-violet-600">
+                <div className="flex items-center justify-center shrink-0 w-8 h-8 font-bold text-white rounded-full bg-emerald-600">
                   2
                 </div>
                 <div>
@@ -176,7 +193,7 @@ export const LandingPage = () => {
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="flex items-center justify-center shrink-0 w-8 h-8 font-bold text-white rounded-full bg-violet-600">
+                <div className="flex items-center justify-center shrink-0 w-8 h-8 font-bold text-white rounded-full bg-emerald-600">
                   3
                 </div>
                 <div>
@@ -190,7 +207,7 @@ export const LandingPage = () => {
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="flex items-center justify-center shrink-0 w-8 h-8 font-bold text-white rounded-full bg-violet-600">
+                <div className="flex items-center justify-center shrink-0 w-8 h-8 font-bold text-white rounded-full bg-emerald-600">
                   4
                 </div>
                 <div>
@@ -210,7 +227,7 @@ export const LandingPage = () => {
         {/* Promotion Section */}
         <section
           id="comece-hoje-mesmo"
-          className="py-16 text-white bg-linear-to-r from-violet-700 to-indigo-800"
+          className="py-16 text-white bg-linear-to-r from-emerald-700 to-navy-900"
         >
           <div className="container space-y-8 text-center">
             <h2 className="text-3xl font-bold">
@@ -221,7 +238,11 @@ export const LandingPage = () => {
               você faz compra no supermercado.
             </p>
             <div className="flex flex-col justify-center gap-4 sm:flex-row">
-              <Button size="lg" variant="secondary">
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={() => navigate({ to: '/signin' })}
+              >
                 Experimente agora
               </Button>
               {/* <Button
