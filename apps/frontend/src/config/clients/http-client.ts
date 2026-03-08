@@ -24,15 +24,18 @@ httpClient.interceptors.response.use(
 
     const { data } = error.response;
 
-    if (data.code !== 'UNAUTHORIZED_ERROR') {
+    if (
+      data.code !== 'UNAUTHORIZED_ERROR' &&
+      data.code !== 'USER_NOT_MEMBER_OF_ANY_GROUP_BARRIER_EXCEPTION'
+    ) {
       console.error(data);
       throw error;
     }
 
-    if (data.requiredAction === 'add-user-to-family') {
-      console.log('add-user-to-family');
+    if (data.code === 'USER_NOT_MEMBER_OF_ANY_GROUP_BARRIER_EXCEPTION') {
+      console.log('USER_NOT_MEMBER_OF_ANY_GROUP_BARRIER_EXCEPTION');
       router.navigate({
-        to: '/family',
+        to: '/manage-groups',
         replace: true,
       });
 

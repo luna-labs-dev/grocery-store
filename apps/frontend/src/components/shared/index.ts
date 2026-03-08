@@ -4,3 +4,4 @@ export * from './key-value-with-icon';
 export * from './loading';
 export * from './money-input';
 export * from './pagination';
+export * from './responsive-drawer';

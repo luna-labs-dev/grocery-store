@@ -20,9 +20,9 @@ function formatDate(date: string | Date): string {
 
 export function getStatusLabel(status: ShoppingEventStatus): string {
   const map: Record<ShoppingEventStatus, string> = {
-    ONGOING: 'Em andamento',
-    FINISHED: 'Finalizada',
-    CANCELED: 'Cancelada',
+    ongoing: 'Em andamento',
+    finished: 'Finalizada',
+    canceled: 'Cancelada',
   };
   return map[status] ?? status;
 }
@@ -32,9 +32,9 @@ export type StatusVariant = 'default' | 'secondary' | 'destructive' | 'outline';
 
 export function getStatusVariant(status: ShoppingEventStatus): StatusVariant {
   const map: Record<ShoppingEventStatus, StatusVariant> = {
-    ONGOING: 'default',
-    FINISHED: 'secondary',
-    CANCELED: 'destructive',
+    ongoing: 'default',
+    finished: 'secondary',
+    canceled: 'destructive',
   };
   return map[status] ?? 'outline';
 }

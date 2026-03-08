@@ -18,6 +18,7 @@ import {
 } from '@/components';
 import { Page } from '@/components/layout/page-layout';
 import { GetPositionPermissinDialog } from '@/components/shared/get-position';
+import type { ListMarketsParams } from '@/infrastructure/api/types';
 
 export const MarketPage = () => {
   const [search, setSearch] = useState('');
@@ -55,7 +56,10 @@ export const MarketPage = () => {
                       variant={'outline'}
                       size={'xs'}
                       onClick={() => {
-                        setParams((prev) => ({ ...prev, expand: true }));
+                        setParams((prev: ListMarketsParams) => ({
+                          ...prev,
+                          expand: true,
+                        }));
                         setIsExpanded(true);
                       }}
                     >

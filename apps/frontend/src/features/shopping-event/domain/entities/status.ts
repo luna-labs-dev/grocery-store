@@ -1,11 +1,10 @@
-export type ShoppingEventStatus = 'CANCELED' | 'FINISHED' | 'ONGOING';
+export type ShoppingEventStatus = 'canceled' | 'finished' | 'ongoing';
 
 const statusMapper: Record<ShoppingEventStatus, string> = {
-  ONGOING: 'Em andamento',
-  FINISHED: 'Finalizado',
-  CANCELED: 'Cancelado',
+  ongoing: 'Em andamento',
+  finished: 'Finalizada',
+  canceled: 'Cancelada',
 };
 
-export const getStatus = (status: ShoppingEventStatus) => {
-  return statusMapper[status];
-};
+export const fShoppingEventStatus = (status: ShoppingEventStatus) =>
+  statusMapper[status];

@@ -1,1 +1,1 @@
-export * from './end-shopping-event-dialog';
+export * from './end-shopping-event-drawer';

@@ -13,6 +13,7 @@ export * from './input';
 export * from './label';
 export * from './separator';
 export * from './sheet';
+export * from './drawer';
 export * from './sidebar';
 export * from './sonner';
 export * from './textarea';

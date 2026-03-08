@@ -3,7 +3,7 @@
 import { Icon } from '@iconify/react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { RemoveProductFromCartDialog, UpdateProductInCartSheet } from './cart';
+import { RemoveProductFromCartDrawer, UpdateProductInCartDrawer } from './cart';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -51,7 +51,7 @@ export function ProductItem({
   const hasWholesale = product.wholesalePrice && product.wholesaleMinAmount;
   const hasSavings = !!product.totalDifference && product.totalDifference > 0;
 
-  const isOngoing = shoppingEventStatus === 'ONGOING';
+  const isOngoing = shoppingEventStatus === 'ongoing';
 
   return (
     <Card className="transition-colors hover:bg-muted/40 p-2">
@@ -134,7 +134,7 @@ export function ProductItem({
             <TooltipProvider delayDuration={200}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <UpdateProductInCartSheet
+                  <UpdateProductInCartDrawer
                     shoppingEventId={shoppingEventId}
                     product={product}
                   >
@@ -142,14 +142,14 @@ export function ProductItem({
                       <Icon icon="mingcute:edit-2-line" className="size-3.5" />
                       <span className="sr-only">Editar</span>
                     </Button>
-                  </UpdateProductInCartSheet>
+                  </UpdateProductInCartDrawer>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">Editar</TooltipContent>
               </Tooltip>
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <RemoveProductFromCartDialog
+                  <RemoveProductFromCartDrawer
                     shoppingEventId={shoppingEventId}
                     product={product}
                   >
@@ -164,7 +164,7 @@ export function ProductItem({
                       />
                       <span className="sr-only">Remover</span>
                     </Button>
-                  </RemoveProductFromCartDialog>
+                  </RemoveProductFromCartDrawer>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">Remover</TooltipContent>
               </Tooltip>

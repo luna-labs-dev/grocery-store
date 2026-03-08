@@ -4,8 +4,8 @@ import {
   ShoppingEventDetailsProducts,
   ShoppingEventDetailsTotals,
 } from './components';
-import { AddProductToCartSheet } from './components/cart';
-import { EndShoppingEventDialog } from './components/end-shopping-event';
+import { AddProductToCartDrawer } from './components/cart';
+import { EndShoppingEventDrawer } from './components/end-shopping-event';
 import { Button, Loading } from '@/components';
 import {
   Tabs,
@@ -78,7 +78,7 @@ export const ShoppingEventDetailsPage = ({
       <Tabs className="flex-1 flex flex-col min-h-0 gap-4">
         <Page.Header className="flex flex-col gap-4">
           <ShoppingEventDetailsHeader shoppingEvent={data} />
-          {data.status === 'ONGOING' ? (
+          {data.status === 'ongoing' ? (
             <div className="flex justify-between">
               <div className="w-full flex justify-between">
                 <Button variant={'outline'} onClick={() => refetch()}>
@@ -88,7 +88,7 @@ export const ShoppingEventDetailsPage = ({
                     className={cn(isFetching && 'animate-spin')}
                   />
                 </Button>
-                <AddProductToCartSheet shoppingEventId={shoppingEventId}>
+                <AddProductToCartDrawer shoppingEventId={shoppingEventId}>
                   <Button variant={'outline'}>
                     <Cherry
                       animate
@@ -98,7 +98,7 @@ export const ShoppingEventDetailsPage = ({
                     />
                     Adicionar Produto
                   </Button>
-                </AddProductToCartSheet>
+                </AddProductToCartDrawer>
               </div>
             </div>
           ) : null}
@@ -124,9 +124,9 @@ export const ShoppingEventDetailsPage = ({
           ))}
         </TabsContents>
       </Tabs>
-      {data.status === 'ONGOING' ? (
+      {data.status === 'ongoing' ? (
         <Page.Footer className="flex justify-end pt-4 pb-2">
-          <EndShoppingEventDialog shoppingEventId={shoppingEventId}>
+          <EndShoppingEventDrawer shoppingEventId={shoppingEventId}>
             <Button variant="outline">
               <CheckCheck
                 animate
@@ -136,7 +136,7 @@ export const ShoppingEventDetailsPage = ({
               />
               Finalizar Compra
             </Button>
-          </EndShoppingEventDialog>
+          </EndShoppingEventDrawer>
         </Page.Footer>
       ) : null}
     </Page>

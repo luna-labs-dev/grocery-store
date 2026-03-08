@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button, MoneyInput } from '@/components';
 import { useEndShoppingEventMutation } from '@/features/shopping-event/infrastructure';
+import { useHaptics } from '@/hooks';
 
 const FormInputSchema = z.object({
   totalPaid: z.number().min(0.01),
@@ -29,19 +30,21 @@ export const EndShoppingEventForm = ({
   const { handleSubmit } = form;
 
   const { mutateAsync } = useEndShoppingEventMutation();
+  const { success } = useHaptics();
 
   const onFinished = () => {
     setOpen(false);
   };
 
   const onSubmit = async (data: FormInput) => {
-    const success = await mutateAsync({
+    const response = await mutateAsync({
       shoppingEventId,
       data: {
         totalPaid: data.totalPaid,
       },
     });
-    if (success) {
+    if (response) {
+      success();
       onFinished();
     }
   };

@@ -7,7 +7,6 @@ const envVariables = z.object({
 
   VITE_PORT: z.coerce.number().default(3000),
   VITE_BACKEND_URL: z.string(),
-  VITE_CLERK_PUBLISHABLE_KEY: z.string(),
 });
 
 const parsedVariables = envVariables.safeParse(import.meta.env);
@@ -16,8 +15,7 @@ if (!parsedVariables.success) {
   throw new Error(parsedVariables.error.message);
 }
 
-const { VITE_ENV, VITE_PORT, VITE_BACKEND_URL, VITE_CLERK_PUBLISHABLE_KEY } =
-  parsedVariables.data;
+const { VITE_ENV, VITE_PORT, VITE_BACKEND_URL } = parsedVariables.data;
 
 export const env = {
   baseConfig: {
@@ -26,7 +24,7 @@ export const env = {
   backend: {
     baseUrl: VITE_ENV === 'remote-backend' ? '/' : VITE_BACKEND_URL,
   },
-  clerk: {
-    publishableKey: VITE_CLERK_PUBLISHABLE_KEY,
+  auth: {
+    url: `${VITE_BACKEND_URL}/api/auth`,
   },
 };

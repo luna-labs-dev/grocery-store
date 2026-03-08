@@ -10,6 +10,7 @@ import {
   Spinner,
 } from '@/components';
 import { useGetMarketListQuery } from '@/features/market/infrastructure';
+import type { ListMarkets200ItemsItem } from '@/infrastructure/api/types';
 
 export function MarketListLoading() {
   return (
@@ -82,7 +83,7 @@ export const MarketList = () => {
 
   return (
     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-      {data?.items.map((item) => (
+      {data?.items.map((item: ListMarkets200ItemsItem) => (
         <MarketItem key={item.id} market={item} />
       ))}
     </div>
