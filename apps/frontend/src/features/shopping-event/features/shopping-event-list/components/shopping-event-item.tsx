@@ -128,21 +128,21 @@ export function ShoppingEventItem({ shoppingEvent }: ShoppingEventItemProps) {
       {/* Row 2: All totals in a compact grid */}
       <CardContent className="px-3 py-0">
         <div className="grid grid-cols-3 gap-x-3 gap-y-2">
-          {shoppingEvent.totals.retailTotal && (
+          {shoppingEvent.totals.retailTotal !== undefined && (
             <StatCell
               icon={<ShoppingCart className="size-2.5" />}
               label="Varejo"
               value={fCurrency(shoppingEvent.totals.retailTotal)}
             />
           )}
-          {shoppingEvent.totals.wholesaleTotal && (
+          {shoppingEvent.totals.wholesaleTotal !== undefined && (
             <StatCell
               icon={<Truck className="size-2.5" />}
               label="Atacado"
               value={fCurrency(shoppingEvent.totals.wholesaleTotal)}
             />
           )}
-          {shoppingEvent.totals.savingsPercentage && (
+          {shoppingEvent.totals.savingsPercentage !== undefined && (
             <StatCell
               icon={<PercentCircle className="size-2.5" />}
               label="Economia"
