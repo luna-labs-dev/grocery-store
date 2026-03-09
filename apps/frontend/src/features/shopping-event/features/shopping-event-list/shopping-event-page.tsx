@@ -2,8 +2,9 @@ import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useGetShoppingEventListQuery } from '../../infrastructure';
 import { ShoppingEventList } from './components/shopping-event-list';
-import { Button, CustomPagination } from '@/components';
+import { Button } from '@/components';
 import { Page } from '@/components/layout/page-layout';
+import { CustomPagination } from '@/components/shared/pagination';
 import type { GetShoppingEventListParams } from '@/infrastructure/api/types';
 export const ShoppingEventPage = () => {
   const navigate = useNavigate();
@@ -15,7 +16,8 @@ export const ShoppingEventPage = () => {
       orderDirection: 'desc',
     });
 
-  const { data } = useGetShoppingEventListQuery(paginationParams);
+  const { data, isLoading, isError } =
+    useGetShoppingEventListQuery(paginationParams);
   return (
     <Page>
       <Page.Header className="p-4">
@@ -34,7 +36,12 @@ export const ShoppingEventPage = () => {
       </Page.Header>
       <Page.Content>
         <div className="px-4">
-          <ShoppingEventList paginationParams={paginationParams} />
+          <ShoppingEventList
+            paginationParams={paginationParams}
+            data={data}
+            isLoading={isLoading}
+            isError={isError}
+          />
         </div>
       </Page.Content>
       <Page.Footer className="p-4 border-t">
