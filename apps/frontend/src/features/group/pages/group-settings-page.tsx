@@ -141,7 +141,7 @@ export const GroupSettingsPage = ({ groupId }: Props) => {
   return (
     <Page>
       <Page.Header>
-        <div className="flex items-center gap-4 w-full px-6 py-4 border-b">
+        <div className="flex items-center gap-4 w-full px-4 py-4 border-b">
           <Button
             variant="ghost"
             size="icon"
@@ -159,10 +159,10 @@ export const GroupSettingsPage = ({ groupId }: Props) => {
         </div>
       </Page.Header>
 
-      <Page.Content className="p-4 md:p-6 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full max-w-[1400px] mx-auto">
+      <Page.Content className="p-4 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 w-full max-w-[1400px] mx-auto">
           {/* Left Column: Form & Danger Zone */}
-          <div className="lg:col-span-5 space-y-6 order-2 lg:order-1">
+          <div className="lg:col-span-5 space-y-4 order-2 lg:order-1">
             <section className="space-y-4">
               <div className="flex flex-col gap-1">
                 <h2 className="text-lg font-semibold">Informações Gerais</h2>

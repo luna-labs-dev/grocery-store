@@ -34,15 +34,13 @@ export const ShoppingEventPage = () => {
           </Button>
         </div>
       </Page.Header>
-      <Page.Content>
-        <div className="px-4">
-          <ShoppingEventList
-            paginationParams={paginationParams}
-            data={data}
-            isLoading={isLoading}
-            isError={isError}
-          />
-        </div>
+      <Page.Content className="p-4">
+        <ShoppingEventList
+          paginationParams={paginationParams}
+          data={data}
+          isLoading={isLoading}
+          isError={isError}
+        />
       </Page.Content>
       <Page.Footer className="p-4 border-t">
         <CustomPagination

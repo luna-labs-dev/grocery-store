@@ -80,9 +80,9 @@ export const StartShoppingEventPage = () => {
 
   return (
     <>
-      <form onSubmit={onSubmint} className="w-full h-full p-4">
+      <form onSubmit={onSubmint} className="w-full h-full">
         <Page>
-          <Page.Content>
+          <Page.Content className="p-4">
             <Controller
               control={control}
               name="marketId"
@@ -129,7 +129,7 @@ export const StartShoppingEventPage = () => {
               }}
             />
           </Page.Content>
-          <Page.Footer className="flex justify-end">
+          <Page.Footer className="flex justify-end p-4 border-t">
             <ButtonGroup>
               <Button
                 variant="outline"

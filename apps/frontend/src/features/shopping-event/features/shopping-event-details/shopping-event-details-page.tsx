@@ -49,15 +49,15 @@ export const ShoppingEventDetailsPage = ({
   }
 
   const totalTab = (
-    <Page.Content>
-      <div className="flex flex-col gap-2">
+    <Page.Content className="p-4">
+      <div className="flex flex-col gap-4">
         <ShoppingEventDetailsTotals totals={data.totals} />
       </div>
     </Page.Content>
   );
 
   const productsTab = (
-    <Page.Content className="pb-4 rounded-xl">
+    <Page.Content className="p-4 pb-6 rounded-xl">
       <ShoppingEventDetailsProducts
         products={data.products}
         shoppingEventId={data.id}
@@ -74,9 +74,9 @@ export const ShoppingEventDetailsPage = ({
   ];
 
   return (
-    <Page className="px-4 py-2">
+    <Page className="p-0">
       <Tabs className="flex-1 flex flex-col min-h-0 gap-4">
-        <Page.Header className="flex flex-col gap-4">
+        <Page.Header className="flex flex-col gap-4 p-4 pb-0">
           <ShoppingEventDetailsHeader shoppingEvent={data} />
           {data.status === 'ongoing' ? (
             <div className="flex justify-between">
@@ -125,7 +125,7 @@ export const ShoppingEventDetailsPage = ({
         </TabsContents>
       </Tabs>
       {data.status === 'ongoing' ? (
-        <Page.Footer className="flex justify-end pt-4 pb-2">
+        <Page.Footer className="flex justify-end p-4 border-t">
           <EndShoppingEventDrawer shoppingEventId={shoppingEventId}>
             <Button variant="outline">
               <CheckCheck

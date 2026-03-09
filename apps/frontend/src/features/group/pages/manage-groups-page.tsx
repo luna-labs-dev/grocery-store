@@ -39,7 +39,7 @@ export const ManageGroupsPage = () => {
   return (
     <Page>
       <Page.Header>
-        <div className="flex items-center justify-between w-full px-6 py-4 border-b">
+        <div className="flex items-center justify-between w-full px-4 py-4 border-b">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold tracking-tight">Meus Grupos</h1>
             <Badge
@@ -73,8 +73,8 @@ export const ManageGroupsPage = () => {
         </div>
       </Page.Header>
 
-      <Page.Content className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Page.Content className="p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {groups?.map((group, index) => {
             const isActive = group.id === activeGroup?.id;
             const isOwner = group.createdBy === session?.user.id;
@@ -86,7 +86,7 @@ export const ManageGroupsPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 className={cn(
-                  'group relative overflow-hidden rounded-xl border bg-card p-6 transition-all hover:shadow-lg',
+                  'group relative overflow-hidden rounded-xl border bg-card p-4 transition-all hover:shadow-lg',
                   isActive
                     ? 'border-primary ring-1 ring-primary/20 shadow-sm'
                     : 'hover:border-primary/50',

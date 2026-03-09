@@ -105,7 +105,7 @@ export const GroupDetails = ({ groupId }: Props) => {
 
   return (
     <Page>
-      <Page.Header className="p-4">
+      <Page.Header className="px-4 py-4 border-b">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
           <Button
             variant="outline"
@@ -134,14 +134,14 @@ export const GroupDetails = ({ groupId }: Props) => {
           </Button>
         </div>
       </Page.Header>
-      <Page.Content>
-        <div className="w-full p-4">
+      <Page.Content className="p-4">
+        <div className="w-full">
           {/* Header with Switcher */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4"></div>
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
             {/* Group Info Sidebar */}
-            <div className="lg:col-span-4 space-y-6">
+            <div className="lg:col-span-4 space-y-4">
               <Card>
                 <CardHeader>
                   <CardTitle>{activeGroup.name}</CardTitle>
