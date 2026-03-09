@@ -29,6 +29,7 @@ interface DataTableProps<TData, TValue> {
   paginationParams?: any
   setPaginationParams?: (params: any) => void
   total?: number
+  dense?: boolean
 }
 
 export function DataTable<TData, TValue>({
@@ -36,6 +37,7 @@ export function DataTable<TData, TValue>({
   data,
   showPagination = true,
   paginationParams,
+  dense = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
 
@@ -54,7 +56,7 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       <div className="rounded-md border">
-        <Table>
+        <Table className={dense ? "[&_td]:py-2 [&_th]:py-2" : ""}>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

@@ -9,6 +9,7 @@ interface ResponsiveDataViewProps<TData, TValue> {
   MobileCard: React.ComponentType<{ data: TData }>
   keyExtractor?: (item: TData) => React.Key
   emptyMessage?: string
+  dense?: boolean
 }
 
 export function ResponsiveDataView<TData, TValue>({
@@ -17,6 +18,7 @@ export function ResponsiveDataView<TData, TValue>({
   MobileCard,
   keyExtractor = (item: any) => item.id || Math.random().toString(),
   emptyMessage = "Nenhum dado encontrado.",
+  dense = false,
 }: ResponsiveDataViewProps<TData, TValue>) {
   const isDesktop = useMediaQuery("(min-width: 768px)")
 
@@ -34,6 +36,7 @@ export function ResponsiveDataView<TData, TValue>({
         columns={columns} 
         data={data} 
         showPagination={false} // Always hide DataTable's internal pagination when using ResponsiveDataView via Page.Footer
+        dense={dense}
       />
     )
   }

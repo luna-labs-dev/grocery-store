@@ -15,6 +15,7 @@ import {
   Loading,
 } from '@/components';
 import { Page } from '@/components/layout/page-layout';
+import { ConfirmDialog } from '@/components/shared/confirm-dialog';
 import {
   useDeleteGroupMutation,
   useGetInviteInfoQuery,
@@ -98,34 +99,22 @@ export const GroupSettingsPage = ({ groupId }: Props) => {
   };
 
   const onRegenerateInvite = () => {
-    if (
-      confirm(
-        'Ao regenerar o código, o link anterior parará de funcionar. Deseja continuar?',
-      )
-    ) {
-      haptics.medium();
-      regenerateInvite(
-        { groupId },
-        {
-          onSuccess: () => {
-            haptics.success();
-            toast.success('Novo convite gerado!');
-          },
-          onError: () => haptics.error(),
+    haptics.medium();
+    regenerateInvite(
+      { groupId },
+      {
+        onSuccess: () => {
+          haptics.success();
+          toast.success('Novo convite gerado!');
         },
-      );
-    }
+        onError: () => haptics.error(),
+      },
+    );
   };
 
   const onDeleteGroup = () => {
-    if (
-      confirm(
-        'VOCÊ TEM CERTEZA? Esta ação é irreversível e deletará todos os dados do grupo.',
-      )
-    ) {
-      haptics.warning();
-      deleteGroup({ groupId });
-    }
+    haptics.warning();
+    deleteGroup({ groupId });
   };
 
   if (isLoadingGroups) {
@@ -252,19 +241,26 @@ export const GroupSettingsPage = ({ groupId }: Props) => {
                       Todos os dados e membros serão removidos permanentemente.
                     </p>
                   </div>
-                  <Button
+                  <ConfirmDialog
+                    title="Deletar Grupo"
+                    description="VOCÊ TEM CERTEZA? Esta ação é irreversível e deletará todos os dados do grupo."
+                    confirmText="Deletar Permanentemente"
                     variant="destructive"
-                    className="gap-2 w-full md:w-auto self-start"
-                    onClick={onDeleteGroup}
-                    disabled={isDeleting}
+                    onConfirm={onDeleteGroup}
                   >
-                    {isDeleting ? (
-                      <Icon icon="line-md:loading-twotone-loop" />
-                    ) : (
-                      <Icon icon="ph:trash-bold" />
-                    )}
-                    Deletar Permanentemente
-                  </Button>
+                    <Button
+                      variant="destructive"
+                      className="gap-2 w-full md:w-auto self-start"
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? (
+                        <Icon icon="line-md:loading-twotone-loop" />
+                      ) : (
+                        <Icon icon="ph:trash-bold" />
+                      )}
+                      Deletar Permanentemente
+                    </Button>
+                  </ConfirmDialog>
                 </CardContent>
               </Card>
             </section>
@@ -312,22 +308,28 @@ export const GroupSettingsPage = ({ groupId }: Props) => {
                           Mostre este código ou tela para que seus convidados
                           possam escaneá-lo e entrar no grupo.
                         </p>
-                        <Button
-                          variant="outline"
-                          onClick={onRegenerateInvite}
-                          disabled={isRegenerating}
-                          className="gap-2 w-full"
-                          size="lg"
+                        <ConfirmDialog
+                          title="Regenerar Convite"
+                          description="Ao regenerar o código, o link anterior parará de funcionar. Deseja continuar?"
+                          confirmText="Regenerar"
+                          onConfirm={onRegenerateInvite}
                         >
-                          <Icon
-                            icon="ph:arrows-clockwise-bold"
-                            className={cn(
-                              'size-5',
-                              isRegenerating && 'animate-spin',
-                            )}
-                          />
-                          Gerar Novo Código
-                        </Button>
+                          <Button
+                            variant="outline"
+                            disabled={isRegenerating}
+                            className="gap-2 w-full"
+                            size="lg"
+                          >
+                            <Icon
+                              icon="ph:arrows-clockwise-bold"
+                              className={cn(
+                                'size-5',
+                                isRegenerating && 'animate-spin',
+                              )}
+                            />
+                            Gerar Novo Código
+                          </Button>
+                        </ConfirmDialog>
                       </div>
                     </div>
                   ) : (

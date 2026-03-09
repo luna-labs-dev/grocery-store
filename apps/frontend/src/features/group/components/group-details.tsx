@@ -22,6 +22,7 @@ import {
   Loading,
 } from '@/components';
 import { Page } from '@/components/layout/page-layout';
+import { ConfirmDialog } from '@/components/shared/confirm-dialog';
 import { getInitials } from '@/domain';
 import {
   useGetInviteInfoQuery,
@@ -161,20 +162,17 @@ export const GroupDetails = ({ groupId }: Props) => {
                   </div>
 
                   <div className="pt-4 border-t">
-                    <Button
-                      variant="destructive"
-                      className="w-full gap-2"
-                      onClick={() => {
-                        if (
-                          confirm('Você tem certeza que deseja sair do grupo?')
-                        ) {
-                          leaveGroup({ groupId: activeGroup.id });
-                        }
-                      }}
+                    <ConfirmDialog
+                      title="Sair do Grupo"
+                      description="Você tem certeza que deseja sair do grupo?"
+                      confirmText="Sair"
+                      onConfirm={() => leaveGroup({ groupId: activeGroup.id })}
                     >
-                      <Icon icon="lucide:log-out" />
-                      Sair do Grupo
-                    </Button>
+                      <Button variant="destructive" className="w-full gap-2">
+                        <Icon icon="lucide:log-out" />
+                        Sair do Grupo
+                      </Button>
+                    </ConfirmDialog>
                   </div>
                 </CardContent>
               </Card>

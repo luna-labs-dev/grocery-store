@@ -233,9 +233,13 @@ export function ShoppingEventList({
             <TooltipProvider delayDuration={200}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="size-8">
-                    <ChevronRight className="size-4 text-muted-foreground" />
-                    <span className="sr-only">Ver detalhes</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 gap-1 pr-1 pl-2 text-xs hover:bg-primary/5 hover:text-primary group"
+                  >
+                    <span>Ver detalhes</span>
+                    <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="left">Ver detalhes</TooltipContent>

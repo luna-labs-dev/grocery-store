@@ -179,7 +179,6 @@ export const useRemoveProductFromCartMutation = () => {
         });
       },
       onSettled: () => {
-        alert('settled');
         queryClient.invalidateQueries({
           queryKey: ['get-shopping-event-by-id', 'get-shopping-event-list'],
         });

@@ -148,6 +148,7 @@ export const ShoppingEventDetailsProducts = ({
       )}
       keyExtractor={(product) => product.id}
       emptyMessage="Nenhum produto no carrinho."
+      dense={true}
     />
   );
 };
