@@ -78,7 +78,6 @@ import { useHaptics } from '@/hooks/use-haptics';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { groupStorage } from '@/infrastructure/storage/group-storage';
 import { cn } from '@/lib/utils';
-import { ModeToggle } from '@/providers';
 
 interface MenuItem {
   title: string;
@@ -140,9 +139,7 @@ export const AppSidebar = () => {
     <Sidebar variant="floating" collapsible="icon">
       <SidebarHeader>
         <SidebarMenu className="gap-4">
-          <SidebarMenuItem
-            className={cn(isMobile && 'flex items-center gap-4')}
-          >
+          <SidebarMenuItem>
             <SidebarMenuButton
               asChild
               className="data-[slot=sidebar-menu-button]:p-2!"
@@ -154,7 +151,6 @@ export const AppSidebar = () => {
                 <GroceryfyLogo iconOnly={!open} />
               </Link>
             </SidebarMenuButton>
-            {isMobile && <ModeToggle />}
           </SidebarMenuItem>
 
           {groups && groups.length > 0 && (
