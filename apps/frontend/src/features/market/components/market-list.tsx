@@ -1,6 +1,13 @@
+import { useMediaQuery } from '@mantine/hooks';
+import type { ColumnDef } from '@tanstack/react-table';
 import { Store } from 'lucide-react';
-import { MarketItem } from './market-item';
+import { MarketItem, StartShoppingButton } from './market-item';
 import {
+  Badge,
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
   Empty,
   EmptyDescription,
   EmptyHeader,
@@ -8,7 +15,9 @@ import {
   EmptyTitle,
   Skeleton,
   Spinner,
+  TableSkeleton,
 } from '@/components';
+import { ResponsiveDataView } from '@/components/ui/responsive-data-view';
 import { useGetMarketListQuery } from '@/features/market/infrastructure';
 import type { ListMarkets200ItemsItem } from '@/infrastructure/api/types';
 
@@ -23,13 +32,48 @@ export function MarketListLoading() {
   );
 }
 
-export function MarketListSkeleton() {
+export function MarketListSkeleton({ count = 6 }: { count?: number }) {
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+
+  if (isDesktop) {
+    return <TableSkeleton columnCount={4} rowCount={count} />;
+  }
+
   return (
     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-      {Array.from({ length: 6 }).map((_, i) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: is just a skeleton
-        <Skeleton key={i} className="h-[180px] w-full rounded-xl" />
-      ))}
+      {Array.from({ length: count }).map((_, i) => {
+        const key = i + 1;
+        return (
+          <Card
+            key={`market-skele-${key}`}
+            className="flex flex-col h-full p-3 sm:p-4 rounded-lg gap-2 sm:gap-3"
+          >
+            <CardHeader className="p-0">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex flex-col gap-1.5 w-full">
+                  <Skeleton className="h-5 w-3/4 rounded" />
+                  <Skeleton className="h-3 w-1/2 rounded" />
+                </div>
+                <Skeleton className="h-5 w-16 rounded-full shrink-0" />
+              </div>
+            </CardHeader>
+            <CardContent className="flex flex-col flex-1 p-0 justify-center">
+              <div className="flex items-start gap-1.5 mt-1 sm:mt-2">
+                <Skeleton className="size-3.5 sm:size-4 shrink-0 rounded" />
+                <div className="flex flex-col gap-1 w-full">
+                  <Skeleton className="h-3 w-full rounded" />
+                  <Skeleton className="h-3 w-2/3 rounded" />
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="p-0 mt-2 sm:mt-auto">
+              <div className="flex w-full justify-end">
+                <Skeleton className="h-8 w-28 rounded-md" />
+              </div>
+            </CardFooter>
+          </Card>
+        );
+      })}
     </div>
   );
 }
@@ -66,11 +110,33 @@ export function MarketListEmpty() {
   );
 }
 
-export const MarketList = () => {
-  const { data, isLoading, isError } = useGetMarketListQuery();
+interface MarketListProps {
+  data?: any;
+  isLoading?: boolean;
+  isError?: boolean;
+  pageSize?: number;
+}
+
+export const MarketList = ({
+  data: propsData,
+  isLoading: propsIsLoading,
+  isError: propsIsError,
+  pageSize: propsPageSize,
+}: MarketListProps) => {
+  const {
+    data: queryData,
+    isLoading: queryIsLoading,
+    isError: queryIsError,
+    params,
+  } = useGetMarketListQuery();
+
+  const data = propsData ?? queryData;
+  const isLoading = propsIsLoading ?? queryIsLoading;
+  const isError = propsIsError ?? queryIsError;
+  const pageSize = propsPageSize ?? params?.pageSize ?? 6;
 
   if (isLoading) {
-    return <MarketListLoading />;
+    return <MarketListSkeleton count={pageSize} />;
   }
 
   if (isError) {
@@ -81,11 +147,66 @@ export const MarketList = () => {
     return <MarketListEmpty />;
   }
 
+  const columns: ColumnDef<ListMarkets200ItemsItem>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Nome do Mercado',
+    },
+    {
+      id: 'location',
+      header: 'Localização',
+      cell: ({ row }) => {
+        const market = row.original;
+        return (
+          <span className="text-muted-foreground">
+            {[market.neighborhood, market.city].filter(Boolean).join(' - ')}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: 'distance',
+      header: 'Distância',
+      cell: ({ row }) => {
+        const distance = row.getValue('distance') as number | undefined;
+        if (distance === undefined) return '-';
+
+        let variant: 'success' | 'info' | 'warning' = 'warning';
+        if (distance <= 1000) variant = 'success';
+        else if (distance <= 5000) variant = 'info';
+
+        return (
+          <Badge
+            variant={variant}
+            className="whitespace-nowrap px-2 py-0 text-xs text-nowrap w-fit"
+          >
+            {(distance / 1000).toFixed(1)} km
+          </Badge>
+        );
+      },
+    },
+    {
+      id: 'actions',
+      header: '',
+      cell: ({ row }) => (
+        <div className="flex justify-end pr-2">
+          <StartShoppingButton
+            market={row.original}
+            variant="ghost"
+            iconOnly={true}
+          />
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-      {data?.items.map((item: ListMarkets200ItemsItem) => (
-        <MarketItem key={item.id} market={item} />
-      ))}
-    </div>
+    <ResponsiveDataView
+      data={data?.items || []}
+      columns={columns}
+      MobileCard={({ data: market }) => <MarketItem market={market} />}
+      keyExtractor={(market) => market.id}
+      emptyMessage="Nenhum mercado encontrado"
+    />
   );
 };

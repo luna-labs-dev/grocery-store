@@ -8,7 +8,6 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-  CustomPagination,
   Field,
   FieldDescription,
   FieldGroup,
@@ -18,13 +17,15 @@ import {
 } from '@/components';
 import { Page } from '@/components/layout/page-layout';
 import { GetPositionPermissinDialog } from '@/components/shared/get-position';
+import { CustomPagination } from '@/components/shared/pagination';
 import type { ListMarketsParams } from '@/infrastructure/api/types';
 
 export const MarketPage = () => {
   const [search, setSearch] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const { data, isFetching, setParams, params } = useGetMarketListQuery();
+  const { data, isFetching, isError, setParams, params } =
+    useGetMarketListQuery();
 
   const handleSearchDebounced = useDebouncedCallback((search: string) => {
     setParams((prev) => ({ ...prev, search }));
@@ -92,9 +93,14 @@ export const MarketPage = () => {
           </div>
         </Page.Header>
         <Page.Content className="px-4 rounded-lg">
-          <MarketList />
+          <MarketList
+            data={data}
+            isLoading={isFetching}
+            isError={isError}
+            pageSize={params.pageSize}
+          />
         </Page.Content>
-        <Page.Footer className="p-4">
+        <Page.Footer className="p-4 border-t">
           <CustomPagination
             paginationProps={{
               paginationParams: params,
