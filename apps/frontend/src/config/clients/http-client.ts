@@ -33,7 +33,6 @@ httpClient.interceptors.response.use(
     }
 
     if (data.code === 'USER_NOT_MEMBER_OF_ANY_GROUP_BARRIER_EXCEPTION') {
-      console.log('USER_NOT_MEMBER_OF_ANY_GROUP_BARRIER_EXCEPTION');
       router.navigate({
         to: '/manage-groups',
         replace: true,

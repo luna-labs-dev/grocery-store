@@ -17,8 +17,6 @@ export const useGetMarketListQuery = () => {
     orderDirection: 'asc',
   });
 
-  console.log({ params });
-
   const query = useListMarkets(params, {
     query: {
       queryKey: ['get-market-list', params],

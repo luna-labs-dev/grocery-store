@@ -7,16 +7,14 @@ export const SigninPage = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
-    console.log('Login with Google clicked');
     setIsLoading(true);
     try {
       await signIn.social({
         provider: 'google',
         callbackURL: `${window.location.origin}/dashboard`,
       });
-      console.log('SignIn social called successfully');
     } catch (error) {
-      console.error('SignIn social error:', error);
+      console.error(error);
       setIsLoading(false);
     }
   };

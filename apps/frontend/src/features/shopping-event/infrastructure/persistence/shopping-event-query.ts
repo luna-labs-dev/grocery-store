@@ -22,7 +22,6 @@ import type { GetShoppingEventListParams } from '@/infrastructure/api/types';
 export const useGetShoppingEventListQuery = (
   params: GetShoppingEventListParams,
 ) => {
-  console.log({ params });
   const query = useGetShoppingEventList(params, {
     query: {
       queryKey: ['get-shopping-event-list', params],
