@@ -137,6 +137,36 @@ export class AuthController extends FastifyController {
     );
 
     app.get(
+      '/list-sessions',
+      {
+        schema: {
+          tags: [this.prefix],
+          summary: 'List active sessions',
+          description: 'Get all active sessions for the current user',
+          operationId: 'listSessions',
+        },
+      },
+      async (request, reply) => {
+        return this.handleRequest(request, reply);
+      },
+    );
+
+    app.post(
+      '/revoke-session',
+      {
+        schema: {
+          tags: [this.prefix],
+          summary: 'Revoke session',
+          description: 'Revoke a specific session by token',
+          operationId: 'revokeSession',
+        },
+      },
+      async (request, reply) => {
+        return this.handleRequest(request, reply);
+      },
+    );
+
+    app.get(
       '/get-session',
       {
         schema: {
