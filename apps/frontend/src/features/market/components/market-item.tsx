@@ -8,6 +8,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@/components';
 import HourglassIcon from '@/components/hourglass-icon';
 import { useStartShoppingEventMutation } from '@/features/shopping-event/infrastructure';
@@ -28,9 +32,74 @@ const getDistanceVariant = (distance: number) => {
   return 'warning';
 };
 
-export const MarketItem = ({ market }: MarketItemParams) => {
+export const StartShoppingButton = ({
+  market,
+  className,
+  variant = 'default',
+  iconOnly = false,
+}: {
+  market: ListMarkets200ItemsItem;
+  className?: string;
+  variant?: 'default' | 'ghost' | 'outline' | 'secondary';
+  iconOnly?: boolean;
+}) => {
   const { mutateAsync, isPending } = useStartShoppingEventMutation();
   const navigate = useNavigate();
+
+  const buttonContent = (
+    <Button
+      size={iconOnly ? 'icon' : 'sm'}
+      variant={variant}
+      className={
+        className ||
+        (iconOnly ? 'size-8' : 'sm:w-auto h-8 sm:h-9 text-xs sm:text-sm')
+      }
+      disabled={isPending}
+      onClick={async () => {
+        const shoppingEvent = await mutateAsync({
+          data: {
+            marketId: market.id,
+          },
+        });
+        navigate({
+          to: '/shopping-event/$shoppingEventId',
+          params: {
+            shoppingEventId: shoppingEvent.id,
+          },
+          replace: true,
+        });
+      }}
+    >
+      {isPending ? (
+        <HourglassIcon
+          size={14}
+          className={iconOnly ? 'animate-spin' : 'mr-2 animate-spin sm:size-4'}
+        />
+      ) : (
+        <ShoppingBasket
+          size={14}
+          className={iconOnly ? '' : 'mr-2 sm:size-4'}
+        />
+      )}
+      {!iconOnly && 'Iniciar Compra'}
+    </Button>
+  );
+
+  if (iconOnly) {
+    return (
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>{buttonContent}</TooltipTrigger>
+          <TooltipContent side="left">Iniciar Compra</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  return buttonContent;
+};
+
+export const MarketItem = ({ market }: MarketItemParams) => {
   return (
     <Card className="flex flex-col h-full p-3 sm:p-4 rounded-lg gap-2 sm:gap-3">
       <CardHeader className="p-0">
@@ -63,35 +132,7 @@ export const MarketItem = ({ market }: MarketItemParams) => {
       </CardContent>
       <CardFooter className="p-0 mt-2 sm:mt-auto">
         <div className="flex w-full justify-end">
-          <Button
-            size="sm"
-            className="sm:w-auto h-8 sm:h-9 text-xs sm:text-sm"
-            disabled={isPending}
-            onClick={async () => {
-              const shoppingEvent = await mutateAsync({
-                data: {
-                  marketId: market.id,
-                },
-              });
-              navigate({
-                to: '/shopping-event/$shoppingEventId',
-                params: {
-                  shoppingEventId: shoppingEvent.id,
-                },
-                replace: true,
-              });
-            }}
-          >
-            {isPending ? (
-              <HourglassIcon
-                size={14}
-                className="mr-2 animate-spin sm:size-4"
-              />
-            ) : (
-              <ShoppingBasket size={14} className="mr-2 sm:size-4" />
-            )}
-            Iniciar Compra
-          </Button>
+          <StartShoppingButton market={market} />
         </div>
       </CardFooter>
     </Card>
