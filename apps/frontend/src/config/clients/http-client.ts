@@ -13,6 +13,10 @@ export const httpClient = axios.create({
 httpClient.interceptors.response.use(
   undefined,
   async (error: AxiosError<HttpError>) => {
+    if (axios.isCancel(error)) {
+      throw error;
+    }
+
     if (error.code === 'ERR_NETWORK' || !error.response) {
       const { code, message, name } = error;
       console.error({ code, message, name });
