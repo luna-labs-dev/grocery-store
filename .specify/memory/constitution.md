@@ -1,14 +1,14 @@
 <!--
 # Sync Impact Report
-- Version change: 1.0.0 -> 1.1.0
+- Version change: 1.1.0 -> 1.2.0
 - List of modified principles:
-    - [NEW] Principle VI: Organizational Cohesion & Root Hygiene
+    - [NEW] Principle VII: Fiscal Ground Truth & Audit Integrity
 - Added sections: None.
 - Templates requiring updates:
     - .specify/templates/plan-template.md (✅ updated)
     - .specify/templates/spec-template.md (✅ updated)
     - .specify/templates/tasks-template.md (✅ updated)
-- Follow-up TODOs: Relocate /specs to /.specify/specs and merge .agent into .agents.
+- Follow-up TODOs: Implement NFC-e parsing and reconciliation engine.
 -->
 
 # Grocery Store Constitution
@@ -33,6 +33,9 @@ The technology stack must prioritize Open Source (e.g., Valkey over Redis, Postg
 ### VI. Organizational Cohesion & Root Hygiene
 The project maintains a strict directory hierarchy to prevent root-level clutter. All specification artifacts MUST reside in `.specify/specs/`. All agent guidelines and workflows MUST reside in `.agents/`. The root directory is reserved for core project configuration and monorepo orchestration.
 
+### VII. Fiscal Ground Truth & Audit Integrity
+Integrated fiscal data (e.g., Brazilian NFC-e) is the supreme source of truth for pricing and product validation. When a fiscal record matches a shopping event, its data MUST supersede manual user entries in the "Golden Product" engine. Every shopping session must ideally conclude with a fiscal audit to ensure market-side consistency.
+
 ## Clean Code & Minimalism
 
 "Rule of Simplicity": Before implementation, find the most elegant core of the logic. Avoid over-engineering. All new code must be audited against SOLID principles. Technical debt must be rejected in favor of maintainable, clean solutions.
@@ -45,4 +48,4 @@ All write operations involving multiple tables MUST be orchestrated within a tra
 
 This constitution supersedes all other project practices. Amendments require documentation in a Sync Impact Report and a semantic version bump. PR reviews must verify compliance with these core principles.
 
-**Version**: 1.1.0 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-03-10
+**Version**: 1.2.0 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-03-10

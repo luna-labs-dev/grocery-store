@@ -1,6 +1,6 @@
 # Feature Specification: Cart Workflow Completion
 
-**Feature Branch**: `002-cart-workflow-completion`  
+**Feature Branch**: `003-cart-workflow-completion`  
 **Created**: 2026-03-10  
 **Status**: Draft  
 **Input**: User description: "Complete Cart Workflow: Implement product scanning with external API fallback (OFF/UPCitemdb) and manual search."

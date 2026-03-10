@@ -1,8 +1,8 @@
-# Specification Quality Checklist: Pricing Truth Consensus Engine
+# Specification Quality Checklist: Mobile UI/UX Polish
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-03-10
-**Feature**: [spec.md](file:///home/tiago/01-dev-env/personal-repos/grocery-store/specs/001-pricing-consensus/spec.md)
+**Feature**: [spec.md](file:///home/tiago/01-dev-env/personal-repos/grocery-store/.specify/.specify/specs/002-mobile-ui-polish/spec.md)
 
 ## Content Quality
 
@@ -30,5 +30,4 @@
 - [x] No implementation details leak into specification
 
 ## Notes
-
-- Initial validation passes. Requirements are derived from existing refactor docs which were already quite detailed.
+- Integrated specific specialist guardians: UX/UI Specialist, Shadcn Architect, and Frontend Specialist.

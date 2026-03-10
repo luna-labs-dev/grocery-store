@@ -1,7 +1,7 @@
 # Implementation Plan: [FEATURE]
 
 **Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
+**Input**: Feature specification from `/.specify/specs/[###-feature-name]/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/plan-template.md` for the execution workflow.
 
@@ -35,7 +35,7 @@ Verify alignment with [Grocery Store Constitution](file:///home/tiago/01-dev-env
 ### Documentation (this feature)
 
 ```text
-specs/003-mobile-ui-polish/
+.specify/.specify/specs/002-mobile-ui-polish/
 ├── plan.md              # This file
 ├── research.md          # Completed (Phase 0)
 ├── data-model.md        # N/A

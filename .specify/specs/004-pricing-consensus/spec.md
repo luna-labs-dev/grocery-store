@@ -1,6 +1,6 @@
 # Feature Specification: Pricing Truth Consensus Engine
 
-**Feature Branch**: `001-pricing-consensus`  
+**Feature Branch**: `004-pricing-consensus`  
 **Created**: 2026-03-10  
 **Status**: Draft  
 **Input**: User description: "Implement Truth-based Pricing Consensus (5-User rule) with Outlier Detection for the Golden Product Engine"

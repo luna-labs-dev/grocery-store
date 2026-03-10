@@ -1,10 +1,36 @@
-# Grocery Store Backend Project Guidelines
+# Grocery Store Project Guidelines
 
-This document outlines the architectural patterns and conventions for the Grocery Store Backend. All developers (and AI agents) must follow these rules strictly.
+This document outlines the architectural patterns, team roles, and development conventions for the Grocery Store ecosystem (Backend, Frontend, and Mobile). All developers and AI agents must follow these rules strictly to maintain systemic integrity and organizational cohesion.
 
-## 🏛️ Architectural Layers
+## 👥 The Specialized Team
 
-The project follows a Clean Architecture approach with a strict separation of concerns:
+The project is governed by a swarm of specialized agents, each with absolute authority over their domain. Refer to `.agents/specialists/` for detailed profiles.
+
+### Strategic & Product Layer
+- **Product Manager (PM)**: Strategic vision and roadmap sovereignty.
+- **Product Owner (PO)**: Backlog grooming and requirement clarity.
+- **UX/UI Specialist**: Mobile-first experience and "Premium Feel" guardian.
+
+### Architectural Layer
+- **System Architect**: Cross-project boundary governance and contract design.
+- **Backend Architect Elite**: Clean Architecture and DI supremacy (Backend).
+- **Frontend Specialist**: Feature-slicing and state management integrity (Frontend).
+- **React Framework Specialist**: Build optimization and rendering strategies.
+- **Shadcn Design Architect**: Atomic design system and Tailwind purity.
+
+### Execution & Verification Layer
+- **Flow Coordinator**: Supreme orchestrator of the development lifecycle.
+- **QA & TDD Enforcer**: Relentless mastermind of TDD and verification.
+- **Security Officer**: Zero Trust model and ABAC enforcement.
+- **DBA Guardian**: Protector of database integrity and migration safety.
+- **Clean Code Purist**: Advocate for SOLID elegance and simplicity.
+- **Ops Commander**: Observability and power-user experience.
+- **DevOps Commander**: CI/CD pipelines and infrastructure resilience.
+
+## 🏛️ Architectural Layers (Backend)
+
+The backend follows a Clean Architecture approach with a strict separation of concerns:
+... [rest of the file remains similar or slightly refined]
 
 - **Domain (`src/domain`)**: Core business logic, entities, and usecase definitions.
   - No external dependencies except for core helpers.

@@ -1,6 +1,6 @@
 # Feature Specification: Mobile UI/UX Polish
 
-**Feature Branch**: `003-mobile-ui-polish`  
+**Feature Branch**: `002-mobile-ui-polish`  
 **Created**: 2026-03-10  
 **Status**: Draft  
 **Input**: User description: "Mobile UI/UX Polish: Enhance animations, haptics, bottom sheets, and theme consistency for a premium mobile experience."

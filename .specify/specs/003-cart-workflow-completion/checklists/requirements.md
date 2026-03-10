@@ -1,8 +1,8 @@
-# Specification Quality Checklist: Mobile UI/UX Polish
+# Specification Quality Checklist: Cart Workflow Completion
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-03-10
-**Feature**: [spec.md](file:///home/tiago/01-dev-env/personal-repos/grocery-store/specs/003-mobile-ui-polish/spec.md)
+**Feature**: [spec.md](file:///home/tiago/01-dev-env/personal-repos/grocery-store/.specify/.specify/specs/003-cart-workflow-completion/spec.md)
 
 ## Content Quality
 
@@ -30,4 +30,5 @@
 - [x] No implementation details leak into specification
 
 ## Notes
-- Integrated specific specialist guardians: UX/UI Specialist, Shadcn Architect, and Frontend Specialist.
+- Integrated specific specialist guardians: Backend Architect Elite, Retail Nexus Veteran, and Flow Coordinator.
+- Strict 2000ms timeout mentioned is a business constraint for UX.
