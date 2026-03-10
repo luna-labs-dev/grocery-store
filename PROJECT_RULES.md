@@ -3,7 +3,7 @@
 **IMPORTANT: READ BEFORE ANY ACTION**
 
 This project follows a strict **Specialized Agent** and **Clean Architecture** framework.
-The source of truth for all architectural decisions and development processes is located in the `.agents/` directory.
+The source of truth for all architectural decisions and development processes is located in the `.agents/` directory. Specification artifacts and templates are maintained in `.specify/`.
 
 ## 🏛️ Core Guidelines
 - Read [guidelines.md](file:///home/tiago/01-dev-env/personal-repos/grocery-store/.agents/guidelines.md) for architectural layers, patterns, and TDD rules.
