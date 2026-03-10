@@ -9,11 +9,10 @@ To verify the implementation against this blueprint:
    npm run test:all
    ```
 
-2. **Frontend Audit (New)**:
+2. **Frontend Audit**:
    ```bash
    cd apps/frontend
-   # Placeholder for future test:behavior script
-   npm run typecheck
+   npm run test
    ```
 
 3. **Master Audit Script (Conceptual)**:

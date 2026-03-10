@@ -17,16 +17,16 @@ In an AI-augmented development environment, tests are the only source of truth. 
 - **Goal**: Verify data persistence and cross-layer communication.
 - **Execution**: Run against a local test database (ephemeral) or high-fidelity mocks.
 
-### 2.3 Tier 3: Frontend Component Testing (Vitest + Testing Library)
-- **Scope**: Atoms, Molecules, and Logic Hooks.
-- **Goal**: Verify UI behavior, state management, and Accessibility (A11y).
-- **Execution**: Mock the API using MSW (Mock Service Worker).
+### 2.3 Tier 3: Frontend Behavioral & Component Testing (Vitest + Testing Library)
+- **Scope**: Behavioral specs for complex components (`ScanProductDrawer`, `GroupInviteQR`).
+- **Goal**: Verify UI behavior, state management, and user interaction without full E2E overhead.
+- **Execution**: Mock internal hooks (`useHaptics`) and API layers.
 
 ### 2.4 Tier 4: End-to-End (E2E) Testing (Playwright)
-- **Scope**: Critical User Journeys (CUJs).
-- **Location**: All E2E tests belong in the dedicated `tests/e2e/` folder.
-- **Goal**: Realistic verification of the entire system.
-- **Execution**: Parallel execution in a staging-like environment.
+- **Scope**: Global Registration flow and Shopping flow.
+- **Location**: All E2E tests belong in `tests/e2e/playwright/`.
+- **Goal**: Realistic verification from auth to real-time sync.
+- **Execution**: Parallel execution across Chromium, Firefox, and Webkit.
 
 ## 3. Domain-Specific Testing Guards
 
