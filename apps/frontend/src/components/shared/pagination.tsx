@@ -2,6 +2,7 @@ import { Icon } from '@iconify/react';
 import { useMediaQuery, usePagination } from '@mantine/hooks';
 import { ChevronDownIcon } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
+import { useEffect } from 'react';
 import {
   Button,
   DropdownMenu,
@@ -52,9 +53,11 @@ export const CustomPagination = <TFetchParams,>({
 
   // Sync internal state with external prop changes
   const externalPage = (paginationParams as any).pageIndex + 1;
-  if (externalPage !== active) {
-    setPage(externalPage);
-  }
+  useEffect(() => {
+    if (externalPage !== active) {
+      setPage(externalPage);
+    }
+  }, [externalPage, active, setPage]);
 
   const handleSizeChange = (newSize: number) => {
     setPaginationParams({

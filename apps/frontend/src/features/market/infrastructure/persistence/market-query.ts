@@ -27,16 +27,22 @@ export const useGetMarketListQuery = () => {
   });
 
   useEffect(() => {
-    if (location) {
-      setParams((prev) => ({
-        ...prev,
-        location: {
-          ...prev.location,
-          ...location,
-        },
-      }));
+    if (location?.latitude && location?.longitude) {
+      if (
+        params.location?.latitude !== location.latitude ||
+        params.location?.longitude !== location.longitude
+      ) {
+        setParams((prev) => ({
+          ...prev,
+          location: {
+            ...prev.location,
+            latitude: location.latitude,
+            longitude: location.longitude,
+          },
+        }));
+      }
     }
-  }, [location]);
+  }, [location, params.location?.latitude, params.location?.longitude]);
 
   return {
     ...query,

@@ -1,6 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import {
+  emitProductAdded,
+  emitProductDeleted,
+  emitProductUpdated,
+} from '../use-shopping-sync';
 import { errorMapper } from '@/domain';
 import type {
   GetShoppingEventByIdParams,
@@ -40,7 +45,6 @@ export const useGetShoppingEventByIdQuery = ({
     query: {
       queryKey: ['get-shopping-event-by-id', shoppingEventId],
       staleTime: 1000 * 60 * 5,
-      refetchInterval: 1000 * 20,
     },
   });
 
@@ -120,14 +124,19 @@ export const useAddProductCartMutation = ({
         const { title } = errorMapper(error.code ?? '')();
         toast.error(title);
       },
-      onSuccess: (_, params) => {
+      onSuccess: (response, params) => {
         toast.success('Produto adicionado ao carrinho', {
           description: `O produto ${params.data.name} foi adicionado ao carrinho`,
+        });
+        emitProductAdded(shoppingEventId!, {
+          ...params.data,
+          id: response.id,
+          addedAt: response.addedAt,
         });
       },
       onSettled: () => {
         queryClient.invalidateQueries({
-          queryKey: ['get-shopping-event-by-id', shoppingEventId],
+          refetchType: 'all',
         });
       },
     },
@@ -151,10 +160,14 @@ export const useUpdateProductInCartMutation = ({
         toast.success('Produto atualizado', {
           description: `O produto ${params.data.name} foi atualizado no carrinho`,
         });
+        emitProductUpdated(shoppingEventId!, {
+          ...params.data,
+          id: params.productId,
+        });
       },
       onSettled: () => {
         queryClient.invalidateQueries({
-          queryKey: ['get-shopping-event-by-id', shoppingEventId],
+          refetchType: 'all',
         });
       },
     },
@@ -172,14 +185,15 @@ export const useRemoveProductFromCartMutation = () => {
         const { title } = errorMapper(error.code ?? '')();
         toast.error(title);
       },
-      onSuccess: () => {
+      onSuccess: (_, params) => {
         toast.success('Produto removido', {
           description: 'O produto foi removido no carrinho',
         });
+        emitProductDeleted(params.shoppingEventId, params.productId);
       },
       onSettled: () => {
         queryClient.invalidateQueries({
-          queryKey: ['get-shopping-event-by-id', 'get-shopping-event-list'],
+          refetchType: 'all',
         });
       },
     },
