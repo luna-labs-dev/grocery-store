@@ -1,9 +1,8 @@
-'use client';
-
 import { useMediaQuery } from '@mantine/hooks';
 import { Link } from '@tanstack/react-router';
 import type { ColumnDef } from '@tanstack/react-table';
 import { ChevronRight, ShoppingBasket } from 'lucide-react';
+import { useMemo } from 'react';
 import { ShoppingEventItem } from './shopping-event-item';
 import {
   Badge,
@@ -26,7 +25,6 @@ import {
   TooltipTrigger,
 } from '@/components';
 import { ResponsiveDataView } from '@/components/ui/responsive-data-view';
-import { useGetShoppingEventListQuery } from '@/features/shopping-event/infrastructure';
 import type {
   GetShoppingEventList200ItemsItem,
   GetShoppingEventListParams,
@@ -138,29 +136,6 @@ export function ShoppingEventList({
   isLoading: propsIsLoading,
   isError: propsIsError,
 }: Props) {
-  const {
-    data: queryData,
-    isLoading: queryIsLoading,
-    isError: queryIsError,
-  } = useGetShoppingEventListQuery(paginationParams);
-
-  const data = propsData ?? queryData;
-  const isLoading = propsIsLoading ?? queryIsLoading;
-  const isError = propsIsError ?? queryIsError;
-  if (isLoading) {
-    return <ShoppingEventListSkeleton count={paginationParams.pageSize} />;
-  }
-
-  if (isError) {
-    return <ShoppingEventListError />;
-  }
-
-  if (!data?.items?.length) {
-    return <ShoppingEventListEmpty />;
-  }
-
-  const { items } = data;
-
   const STATUS_CONFIG: Record<
     string,
     {
@@ -183,77 +158,96 @@ export function ShoppingEventList({
     FINISHED: { label: 'Concluido', variant: 'success' },
   };
 
-  const columns: ColumnDef<GetShoppingEventList200ItemsItem>[] = [
-    {
-      accessorKey: 'market',
-      header: 'Mercado',
-    },
-    {
-      accessorKey: 'status',
-      header: 'Status',
-      cell: ({ row }) => {
-        const config = STATUS_CONFIG[row.original.status] ?? {
-          label: row.original.status,
-          variant: 'outline',
-        };
-        return (
-          <Badge variant={config.variant} className="text-[10px] px-1.5 py-0">
-            {config.label}
-          </Badge>
-        );
+  const columns = useMemo<ColumnDef<GetShoppingEventList200ItemsItem>[]>(
+    () => [
+      {
+        accessorKey: 'market',
+        header: 'Mercado',
       },
-    },
-    {
-      id: 'totals',
-      header: 'Total Varejo',
-      cell: ({ row }) => {
-        if (!row.original.totals.retailTotal) return '-';
-        return row.original.totals.retailTotal.toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-        });
+      {
+        accessorKey: 'status',
+        header: 'Status',
+        cell: ({ row }) => {
+          const config = STATUS_CONFIG[row.original.status] ?? {
+            label: row.original.status,
+            variant: 'outline',
+          };
+          return (
+            <Badge variant={config.variant} className="text-[10px] px-1.5 py-0">
+              {config.label}
+            </Badge>
+          );
+        },
       },
-    },
-    {
-      id: 'date',
-      header: 'Data',
-      cell: ({ row }) => {
-        return new Date(row.original.createdAt).toLocaleDateString('pt-BR');
+      {
+        id: 'totals',
+        header: 'Total Varejo',
+        cell: ({ row }) => {
+          if (!row.original.totals.retailTotal) return '-';
+          return row.original.totals.retailTotal.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+          });
+        },
       },
-    },
-    {
-      id: 'actions',
-      header: '',
-      cell: ({ row }) => (
-        <div className="flex justify-end pr-2">
-          <Link
-            to="/shopping-event/$shoppingEventId"
-            params={{ shoppingEventId: row.original.id }}
-          >
-            <TooltipProvider delayDuration={200}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 gap-1 pr-1 pl-2 text-xs hover:bg-primary/5 hover:text-primary group"
-                  >
-                    <span>Ver detalhes</span>
-                    <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="left">Ver detalhes</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </Link>
-        </div>
-      ),
-    },
-  ];
+      {
+        id: 'date',
+        header: 'Data',
+        cell: ({ row }) => {
+          return new Date(row.original.createdAt).toLocaleDateString('pt-BR');
+        },
+      },
+      {
+        id: 'actions',
+        header: '',
+        cell: ({ row }) => (
+          <div className="flex justify-end pr-2">
+            <Link
+              to="/shopping-event/$shoppingEventId"
+              params={{ shoppingEventId: row.original.id }}
+            >
+              <TooltipProvider delayDuration={200}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 gap-1 pr-1 pl-2 text-xs hover:bg-primary/5 hover:text-primary group"
+                    >
+                      <span>Ver detalhes</span>
+                      <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="left">Ver detalhes</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </Link>
+          </div>
+        ),
+      },
+    ],
+    [],
+  );
+
+  const data = propsData;
+  const isLoading = propsIsLoading;
+  const isError = propsIsError;
+
+  if (isLoading) {
+    return <ShoppingEventListSkeleton count={paginationParams.pageSize} />;
+  }
+
+  if (isError) {
+    return <ShoppingEventListError />;
+  }
+
+  if (!data?.items?.length) {
+    return <ShoppingEventListEmpty />;
+  }
 
   return (
     <ResponsiveDataView
-      data={items}
+      data={data.items}
       columns={columns}
       MobileCard={({ data: se }) => <ShoppingEventItem shoppingEvent={se} />}
       keyExtractor={(se) => se.id}

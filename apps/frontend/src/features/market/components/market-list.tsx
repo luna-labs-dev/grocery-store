@@ -1,6 +1,7 @@
 import { useMediaQuery } from '@mantine/hooks';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Store } from 'lucide-react';
+import { useMemo } from 'react';
 import { MarketItem, StartShoppingButton } from './market-item';
 import {
   Badge,
@@ -18,7 +19,6 @@ import {
   TableSkeleton,
 } from '@/components';
 import { ResponsiveDataView } from '@/components/ui/responsive-data-view';
-import { useGetMarketListQuery } from '@/features/market/infrastructure';
 import type { ListMarkets200ItemsItem } from '@/infrastructure/api/types';
 
 export function MarketListLoading() {
@@ -123,17 +123,66 @@ export const MarketList = ({
   isError: propsIsError,
   pageSize: propsPageSize,
 }: MarketListProps) => {
-  const {
-    data: queryData,
-    isLoading: queryIsLoading,
-    isError: queryIsError,
-    params,
-  } = useGetMarketListQuery();
+  const columns = useMemo<ColumnDef<ListMarkets200ItemsItem>[]>(
+    () => [
+      {
+        accessorKey: 'name',
+        header: 'Nome do Mercado',
+      },
+      {
+        id: 'location',
+        header: 'Localização',
+        cell: ({ row }) => {
+          const market = row.original;
+          return (
+            <span className="text-muted-foreground">
+              {[market.neighborhood, market.city].filter(Boolean).join(' - ')}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: 'distance',
+        header: 'Distância',
+        cell: ({ row }) => {
+          const distance = row.getValue('distance') as number | undefined;
+          if (distance === undefined) return '-';
 
-  const data = propsData ?? queryData;
-  const isLoading = propsIsLoading ?? queryIsLoading;
-  const isError = propsIsError ?? queryIsError;
-  const pageSize = propsPageSize ?? params?.pageSize ?? 6;
+          let variant: 'success' | 'info' | 'warning' = 'warning';
+          if (distance <= 1000) variant = 'success';
+          else if (distance <= 5000) variant = 'info';
+
+          return (
+            <Badge
+              variant={variant}
+              className="whitespace-nowrap px-2 py-0 text-xs text-nowrap w-fit"
+            >
+              {(distance / 1000).toFixed(1)} km
+            </Badge>
+          );
+        },
+      },
+      {
+        id: 'actions',
+        header: '',
+        cell: ({ row }) => (
+          <div className="flex justify-end pr-2">
+            <StartShoppingButton
+              market={row.original}
+              variant="ghost"
+              iconOnly={true}
+            />
+          </div>
+        ),
+      },
+    ],
+    [],
+  );
+
+  const data = propsData;
+  const isLoading = propsIsLoading;
+  const isError = propsIsError;
+  const pageSize = propsPageSize ?? 6;
 
   if (isLoading) {
     return <MarketListSkeleton count={pageSize} />;
@@ -146,59 +195,6 @@ export const MarketList = ({
   if (!data?.items?.length) {
     return <MarketListEmpty />;
   }
-
-  const columns: ColumnDef<ListMarkets200ItemsItem>[] = [
-    {
-      accessorKey: 'name',
-      header: 'Nome do Mercado',
-    },
-    {
-      id: 'location',
-      header: 'Localização',
-      cell: ({ row }) => {
-        const market = row.original;
-        return (
-          <span className="text-muted-foreground">
-            {[market.neighborhood, market.city].filter(Boolean).join(' - ')}
-          </span>
-        );
-      },
-    },
-    {
-      accessorKey: 'distance',
-      header: 'Distância',
-      cell: ({ row }) => {
-        const distance = row.getValue('distance') as number | undefined;
-        if (distance === undefined) return '-';
-
-        let variant: 'success' | 'info' | 'warning' = 'warning';
-        if (distance <= 1000) variant = 'success';
-        else if (distance <= 5000) variant = 'info';
-
-        return (
-          <Badge
-            variant={variant}
-            className="whitespace-nowrap px-2 py-0 text-xs text-nowrap w-fit"
-          >
-            {(distance / 1000).toFixed(1)} km
-          </Badge>
-        );
-      },
-    },
-    {
-      id: 'actions',
-      header: '',
-      cell: ({ row }) => (
-        <div className="flex justify-end pr-2">
-          <StartShoppingButton
-            market={row.original}
-            variant="ghost"
-            iconOnly={true}
-          />
-        </div>
-      ),
-    },
-  ];
 
   return (
     <ResponsiveDataView
