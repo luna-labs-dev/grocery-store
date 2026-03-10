@@ -7,7 +7,6 @@ import {
     flexRender,
     getCoreRowModel,
     useReactTable,
-    getPaginationRowModel,
     getSortedRowModel,
 } from "@tanstack/react-table"
 
@@ -20,6 +19,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Button } from "./button"
+import { ScrollArea, ScrollBar } from "./scroll-area"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -45,19 +45,25 @@ export function DataTable<TData, TValue>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: true,
+    autoResetPageIndex: false,
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     state: {
       sorting,
+      pagination: {
+        pageIndex: paginationParams?.pageIndex ?? 0,
+        pageSize: paginationParams?.pageSize ?? 10,
+      },
     },
   })
 
   return (
-    <div>
-      <div className="rounded-md border">
-        <Table className={dense ? "[&_td]:py-2 [&_th]:py-2" : ""}>
-          <TableHeader>
+    <div className="flex flex-col h-full min-h-0">
+      <div className="rounded-xl border bg-card min-h-0 flex-1 flex flex-col overflow-hidden">
+        <ScrollArea className="flex-1 h-full w-full">
+          <Table className={dense ? "[&_td]:py-2 [&_th]:py-2 relative" : "relative"}>
+            <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -104,6 +110,8 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
+        <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
       {showPagination && !paginationParams && (
         <div className="flex items-center justify-end space-x-2 py-4">
