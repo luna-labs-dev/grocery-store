@@ -28,6 +28,10 @@ export const injection = {
     shoppingEventService: 'shopping-event-service',
     marketService: 'market-service',
     userService: 'user-service',
+    pricingConsensusService: 'pricing-consensus-service',
+    searchProductsService: 'search-products-service',
+    nfcEDecoder: 'nfc-e-decoder',
+    reconciliationEngine: 'reconciliation-engine',
   },
   controllers: {
     fastify: 'fastify-controllers',
