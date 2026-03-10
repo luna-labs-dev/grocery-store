@@ -54,7 +54,7 @@ describe('AddProductToCartDrawer Behavior', () => {
   it('should render the trigger children', () => {
     render(
       <AddProductToCartDrawer shoppingEventId={shoppingEventId}>
-        <button>Open Scanner</button>
+        <button type="button">Open Scanner</button>
       </AddProductToCartDrawer>,
     );
 
@@ -64,7 +64,7 @@ describe('AddProductToCartDrawer Behavior', () => {
   it('should close the drawer when onSuccess is called in the form', () => {
     render(
       <AddProductToCartDrawer shoppingEventId={shoppingEventId}>
-        <button>Open Scanner</button>
+        <button type="button">Open Scanner</button>
       </AddProductToCartDrawer>,
     );
 
@@ -78,7 +78,7 @@ describe('AddProductToCartDrawer Behavior', () => {
   it('should close the drawer when onCancel is called in the form', () => {
     render(
       <AddProductToCartDrawer shoppingEventId={shoppingEventId}>
-        <button>Open Scanner</button>
+        <button type="button">Open Scanner</button>
       </AddProductToCartDrawer>,
     );
 
