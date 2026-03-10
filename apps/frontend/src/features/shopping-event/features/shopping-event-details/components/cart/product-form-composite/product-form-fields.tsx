@@ -26,6 +26,7 @@ export const ProductFormFields = () => {
             <FieldLabel>Nome</FieldLabel>
             <Input
               {...field}
+              autoFocus
               aria-invalid={fieldState.invalid}
               placeholder="Nome do Produto"
             />

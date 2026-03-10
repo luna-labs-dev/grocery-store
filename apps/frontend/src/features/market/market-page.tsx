@@ -92,7 +92,7 @@ export const MarketPage = () => {
             </Collapsible>
           </div>
         </Page.Header>
-        <Page.Content className="p-4 rounded-lg">
+        <Page.Content className="p-4 rounded-lg" scrollable={false}>
           <MarketList
             data={data}
             isLoading={isFetching}

@@ -57,7 +57,7 @@ export const ShoppingEventDetailsPage = ({
   );
 
   const productsTab = (
-    <Page.Content className="p-4 pb-6 rounded-xl">
+    <Page.Content className="p-4 pb-6 rounded-xl" scrollable={false}>
       <ShoppingEventDetailsProducts
         products={data.products}
         shoppingEventId={data.id}

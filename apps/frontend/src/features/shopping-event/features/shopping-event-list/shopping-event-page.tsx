@@ -34,7 +34,7 @@ export const ShoppingEventPage = () => {
           </Button>
         </div>
       </Page.Header>
-      <Page.Content className="p-4">
+      <Page.Content className="p-4" scrollable={false}>
         <ShoppingEventList
           paginationParams={paginationParams}
           data={data}

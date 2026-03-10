@@ -72,7 +72,9 @@ export const RemoveProductFromCartDrawer = ({
             Remover
           </Button>
           <DrawerClose asChild>
-            <Button variant="outline">Cancelar</Button>
+            <Button variant="outline" autoFocus>
+              Cancelar
+            </Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
