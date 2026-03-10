@@ -24,9 +24,35 @@ export default defineConfig(({ mode }) => {
     server: {
       port,
       allowedHosts,
+      hmr: {
+        host: 'lunalabs-local.duckdns.org',
+        port,
+        clientPort: 443, // NGINX routes 443 -> 3030
+      },
       proxy: {
         '/api': {
-          target: 'https://dev-grocery-store-backend.lunalabs.com.br',
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+          secure: false,
+        },
+        '/socket.io': {
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+          secure: false,
+          ws: true,
+        },
+        '/scalar': {
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+          secure: false,
+        },
+        '/swagger': {
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+          secure: false,
+        },
+        '/openapi.json': {
+          target: 'http://localhost:8000',
           changeOrigin: true,
           secure: false,
         },

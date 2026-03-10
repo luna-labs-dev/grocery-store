@@ -1,13 +1,20 @@
 import { and, eq } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import type { Socket } from 'socket.io';
+import type {
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from './socket-types';
 import { db } from '@/infrastructure/repositories/drizzle/setup/connection';
 import {
   groupMemberTable,
   shopping_eventTable,
 } from '@/infrastructure/repositories/drizzle/setup/schema';
 
-export const onConnection = (socket: Socket, app: FastifyInstance) => {
+export const onConnection = (
+  socket: Socket<ClientToServerEvents, ServerToClientEvents>,
+  app: FastifyInstance,
+) => {
   const user = (socket as any).user;
   app.log.info(`Socket connected: ${socket.id} (User: ${user?.id})`);
 

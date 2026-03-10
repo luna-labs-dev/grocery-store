@@ -1,13 +1,15 @@
 import type { FastifyInstance } from 'fastify';
 import fastifySocketIO from 'fastify-socket.io';
+import { env } from '@/main/config/env';
 import { onConnection } from '@/main/fastify/socket/shopping-sync';
 import { socketAuthMiddleware } from '@/main/fastify/socket/socket-auth';
 
 export const setupSocket = async (app: FastifyInstance) => {
   await app.register(fastifySocketIO, {
     cors: {
-      origin: '*', // Adjust based on env.baseConfig.origins in production
+      origin: env.baseConfig.origins,
       methods: ['GET', 'POST'],
+      credentials: true,
     },
   });
 
