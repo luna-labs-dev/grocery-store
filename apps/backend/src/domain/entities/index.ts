@@ -3,6 +3,7 @@ export * from './collaboration-group';
 export * from './group-member';
 export * from './market';
 export * from './outbox-event';
+export * from './price-report';
 export * from './product';
 export * from './product-identity';
 export * from './products';
