@@ -1,5 +1,4 @@
 import type * as React from 'react';
-import { Drawer } from 'vaul';
 import {
   Dialog,
   DialogContent,
@@ -7,7 +6,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
@@ -34,33 +39,18 @@ export const ResponsiveDrawer = ({
 
   if (isMobile) {
     return (
-      <Drawer.Root open={open} onOpenChange={onOpenChange}>
-        {trigger && <Drawer.Trigger asChild>{trigger}</Drawer.Trigger>}
-        <Drawer.Portal>
-          <Drawer.Overlay className="fixed inset-0 bg-black/40 z-50 backdrop-blur-sm" />
-          <Drawer.Content
-            className={cn(
-              'fixed bottom-0 left-0 right-0 z-50 mt-24 flex h-fit max-h-[96%] flex-col rounded-t-[10px] bg-background border-t outline-none focus:ring-0',
-              className,
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
+        <DrawerContent className={className}>
+          <DrawerHeader>
+            <DrawerTitle>{title}</DrawerTitle>
+            {description && (
+              <DrawerDescription>{description}</DrawerDescription>
             )}
-          >
-            <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted shrink-0" />
-            <div className="flex flex-col p-4 pt-2 overflow-auto">
-              <div className="space-y-1 text-center sm:text-left mb-4">
-                <Drawer.Title className="text-lg font-semibold leading-none tracking-tight">
-                  {title}
-                </Drawer.Title>
-                {description && (
-                  <Drawer.Description className="text-sm text-muted-foreground">
-                    {description}
-                  </Drawer.Description>
-                )}
-              </div>
-              {children}
-            </div>
-          </Drawer.Content>
-        </Drawer.Portal>
-      </Drawer.Root>
+          </DrawerHeader>
+          <div className="px-4 pb-4">{children}</div>
+        </DrawerContent>
+      </Drawer>
     );
   }
 
