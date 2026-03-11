@@ -128,11 +128,13 @@ export const useAddProductCartMutation = ({
         toast.success('Produto adicionado ao carrinho', {
           description: `O produto ${params.data.name} foi adicionado ao carrinho`,
         });
-        emitProductAdded(shoppingEventId!, {
-          ...params.data,
-          id: response.id,
-          addedAt: response.addedAt,
-        });
+        if (shoppingEventId) {
+          emitProductAdded(shoppingEventId, {
+            ...params.data,
+            id: response.id,
+            addedAt: response.addedAt,
+          });
+        }
       },
       onSettled: () => {
         queryClient.invalidateQueries({
@@ -160,10 +162,12 @@ export const useUpdateProductInCartMutation = ({
         toast.success('Produto atualizado', {
           description: `O produto ${params.data.name} foi atualizado no carrinho`,
         });
-        emitProductUpdated(shoppingEventId!, {
-          ...params.data,
-          id: params.productId,
-        });
+        if (shoppingEventId) {
+          emitProductUpdated(shoppingEventId, {
+            ...params.data,
+            id: params.productId,
+          });
+        }
       },
       onSettled: () => {
         queryClient.invalidateQueries({

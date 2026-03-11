@@ -1,41 +1,64 @@
 import { useCallback } from 'react';
+import { useSettings } from './use-settings';
 
 /**
- * Hook for providing tactile feedback using the navigator.vibrate API.
- * Patterns are based on standard mobile haptic feedback scales.
+ * useHaptics hook provides a simple interface for the Web Vibration API.
+ * Patterns are designed to feel like native iOS/Android feedback.
  */
 export const useHaptics = () => {
-  const vibrate = useCallback((pattern: number | number[] = 10) => {
-    if (
-      typeof window !== 'undefined' &&
-      'navigator' in window &&
-      'vibrate' in navigator
-    ) {
-      try {
-        navigator.vibrate(pattern);
-      } catch (e) {
-        // Silently fail if vibration is blocked or not supported
-        console.warn('Haptic feedback failed:', e);
-      }
-    }
-  }, []);
+  const hapticsEnabled = useSettings((state) => state.hapticsEnabled);
+  const isSupported =
+    typeof window !== 'undefined' && !!window.navigator.vibrate;
 
-  const selection = useCallback(() => vibrate(10), [vibrate]);
-  const light = useCallback(() => vibrate(20), [vibrate]);
-  const medium = useCallback(() => vibrate(40), [vibrate]);
-  const heavy = useCallback(() => vibrate(60), [vibrate]);
-  const success = useCallback(() => vibrate([10, 50, 10]), [vibrate]);
-  const warning = useCallback(() => vibrate([20, 30, 20]), [vibrate]);
-  const error = useCallback(() => vibrate([30, 20, 30, 20, 50]), [vibrate]);
+  const trigger = useCallback(
+    (pattern: number | number[]) => {
+      if (isSupported && hapticsEnabled) {
+        window.navigator.vibrate(pattern);
+      }
+    },
+    [isSupported, hapticsEnabled],
+  );
+
+  const success = useCallback(() => {
+    trigger([10, 30, 10]);
+  }, [trigger]);
+
+  const error = useCallback(() => {
+    trigger([50, 100, 50, 100, 50]);
+  }, [trigger]);
+
+  const warning = useCallback(() => {
+    trigger([30, 100, 30]);
+  }, [trigger]);
+
+  const impact = useCallback(() => {
+    trigger(10);
+  }, [trigger]);
+
+  const light = useCallback(() => {
+    trigger(5);
+  }, [trigger]);
+
+  const medium = useCallback(() => {
+    trigger(15);
+  }, [trigger]);
+
+  const heavy = useCallback(() => {
+    trigger(30);
+  }, [trigger]);
+
+  const selection = useCallback(() => {
+    trigger(1);
+  }, [trigger]);
 
   return {
-    vibrate,
-    selection,
+    success,
+    error,
+    warning,
+    impact,
     light,
     medium,
     heavy,
-    success,
-    warning,
-    error,
+    selection,
   };
 };

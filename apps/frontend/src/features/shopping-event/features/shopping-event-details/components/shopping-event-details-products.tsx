@@ -26,12 +26,14 @@ interface ShoppingEventDetailsProductsProps {
   shoppingEventStatus: GetShoppingEventById200Status;
   refetch: (options?: RefetchOptions) => Promise<QueryObserverResult<any, any>>;
   isFetching: boolean;
+  className?: string;
 }
 
 export const ShoppingEventDetailsProducts = ({
   products,
   shoppingEventId,
   shoppingEventStatus,
+  className,
 }: ShoppingEventDetailsProductsProps) => {
   const isOngoing = shoppingEventStatus === 'ongoing';
 
@@ -149,6 +151,7 @@ export const ShoppingEventDetailsProducts = ({
       keyExtractor={(product) => product.id}
       emptyMessage="Nenhum produto no carrinho."
       dense={true}
+      className={className}
     />
   );
 };

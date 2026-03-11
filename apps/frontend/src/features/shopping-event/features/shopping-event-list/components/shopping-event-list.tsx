@@ -129,12 +129,14 @@ interface Props {
   data?: any;
   isLoading?: boolean;
   isError?: boolean;
+  className?: string;
 }
 export function ShoppingEventList({
   paginationParams,
   data: propsData,
   isLoading: propsIsLoading,
   isError: propsIsError,
+  className,
 }: Props) {
   const STATUS_CONFIG: Record<
     string,
@@ -252,6 +254,7 @@ export function ShoppingEventList({
       MobileCard={({ data: se }) => <ShoppingEventItem shoppingEvent={se} />}
       keyExtractor={(se) => se.id}
       emptyMessage="Nenhum evento de compra encontrado."
+      className={className}
     />
   );
 }

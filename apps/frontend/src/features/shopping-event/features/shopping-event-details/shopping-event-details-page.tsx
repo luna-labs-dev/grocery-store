@@ -49,7 +49,7 @@ export const ShoppingEventDetailsPage = ({
   }
 
   const totalTab = (
-    <Page.Content className="p-4">
+    <Page.Content className="pt-2 px-4 pb-4 h-full" scrollable={true}>
       <div className="flex flex-col gap-4">
         <ShoppingEventDetailsTotals totals={data.totals} />
       </div>
@@ -57,13 +57,14 @@ export const ShoppingEventDetailsPage = ({
   );
 
   const productsTab = (
-    <Page.Content className="p-4 pb-6 rounded-xl" scrollable={false}>
+    <Page.Content className="pt-2 px-4 pb-4 rounded-xl" scrollable={false}>
       <ShoppingEventDetailsProducts
         products={data.products}
         shoppingEventId={data.id}
         shoppingEventStatus={data.status}
         refetch={refetch}
         isFetching={isFetching}
+        className="h-full"
       />
     </Page.Content>
   );

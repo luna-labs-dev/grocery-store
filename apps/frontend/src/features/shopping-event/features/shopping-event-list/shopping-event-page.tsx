@@ -34,12 +34,13 @@ export const ShoppingEventPage = () => {
           </Button>
         </div>
       </Page.Header>
-      <Page.Content className="p-4" scrollable={false}>
+      <Page.Content className="pt-2 px-4 pb-4" scrollable={false}>
         <ShoppingEventList
           paginationParams={paginationParams}
           data={data}
           isLoading={isLoading}
           isError={isError}
+          className="h-full"
         />
       </Page.Content>
       <Page.Footer className="p-4 border-t">

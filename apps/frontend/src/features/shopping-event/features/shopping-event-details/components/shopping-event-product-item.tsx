@@ -247,9 +247,9 @@ export function ProductItem({
               product={product}
             >
               <Button
-                size="icon"
+                size="icon-xl"
                 variant="default"
-                className="size-10 rounded-full shadow-lg"
+                className="rounded-full shadow-lg"
               >
                 <Icon icon="mingcute:edit-2-line" className="size-5" />
               </Button>
@@ -266,9 +266,9 @@ export function ProductItem({
               product={product}
             >
               <Button
-                size="icon"
+                size="icon-xl"
                 variant="destructive"
-                className="size-10 rounded-full shadow-lg"
+                className="rounded-full shadow-lg"
               >
                 <Icon icon="mingcute:delete-2-line" className="size-5" />
               </Button>
