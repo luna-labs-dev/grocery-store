@@ -7,7 +7,7 @@ import {
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import type { useSession } from '@/infrastructure/auth/auth-client';
 
-interface RootRouteContext {
+export interface RootRouteContext {
   auth?: ReturnType<typeof useSession>;
 }
 const RootLayout = () => {

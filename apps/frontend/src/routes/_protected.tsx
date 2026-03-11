@@ -1,5 +1,7 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+import { motion } from 'motion/react';
 import { MainLayout } from '@/components';
+import { fadeIn, prefersReducedMotion } from '@/lib/animations';
 
 export const Route = createFileRoute('/_protected')({
   beforeLoad: async ({ context }) => {
@@ -14,9 +16,22 @@ export const Route = createFileRoute('/_protected')({
 });
 
 function RouteComponent() {
+  const shouldAnimate = !prefersReducedMotion();
+
   return (
     <MainLayout>
-      <Outlet />
+      {shouldAnimate ? (
+        <motion.div
+          initial="initial"
+          animate="animate"
+          variants={fadeIn}
+          className="h-full"
+        >
+          <Outlet />
+        </motion.div>
+      ) : (
+        <Outlet />
+      )}
     </MainLayout>
   );
 }
