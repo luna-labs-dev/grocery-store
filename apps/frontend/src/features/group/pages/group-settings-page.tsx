@@ -4,16 +4,8 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { InviteQRCode } from '../components/invite-qr-code';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Loading,
-} from '@/components';
+import { GroupInviteDrawer } from '../components/group-invite-drawer';
+import { Badge, Button, Loading } from '@/components';
 import { Page } from '@/components/layout/page-layout';
 import { ConfirmDialog } from '@/components/shared/confirm-dialog';
 import {
@@ -57,10 +49,7 @@ export const GroupSettingsPage = ({ groupId }: Props) => {
             to: `/manage-groups/${groupId}/settings` as any,
           },
         ],
-        {
-          title: 'Configurações do Grupo',
-          subTitle: 'Gerencie as informações e convites do seu grupo.',
-        },
+        { title: '' },
       );
     }
   }, [addBreadcrumbs, groupId, group]);
@@ -132,7 +121,9 @@ export const GroupSettingsPage = ({ groupId }: Props) => {
       <Page>
         <Page.Content className="flex items-center justify-center flex-col gap-4">
           <p className="text-muted-foreground">Grupo não encontrado.</p>
-          <Button onClick={() => window.history.back()}>Voltar</Button>
+          <Button size="sm" onClick={() => window.history.back()}>
+            Voltar
+          </Button>
         </Page.Content>
       </Page>
     );
@@ -140,211 +131,197 @@ export const GroupSettingsPage = ({ groupId }: Props) => {
 
   return (
     <Page>
-      <Page.Header>
-        <div className="flex items-center gap-4 w-full px-4 py-4 border-b">
+      <Page.Header className="mx-4 rounded-xl p-4 border bg-card">
+        <div className="flex items-center gap-2 w-full h-10">
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => window.history.back()}
-            className="h-8 w-8"
+            className="size-9"
+            onClick={() => {
+              haptics.light();
+              window.history.back();
+            }}
           >
-            <Icon icon="ph:arrow-left-bold" />
+            <Icon icon="ph:arrow-left-bold" className="size-5" />
           </Button>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight">
-              Gerenciar Grupo
+          <div className="flex items-center gap-2 min-w-0">
+            <h1 className="text-base font-bold tracking-tight truncate">
+              Ajustes do Grupo
             </h1>
-            <Badge variant="outline">{group.name}</Badge>
+            <Badge
+              variant="secondary"
+              className="hidden xs:inline-flex text-[10px] h-5 px-1.5 font-bold uppercase"
+            >
+              {group.name}
+            </Badge>
           </div>
         </div>
       </Page.Header>
 
-      <Page.Content className="p-4 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 w-full max-w-[1400px] mx-auto">
-          {/* Left Column: Form & Danger Zone */}
-          <div className="lg:col-span-5 space-y-4 order-2 lg:order-1">
-            <section className="space-y-4">
-              <div className="flex flex-col gap-1">
-                <h2 className="text-lg font-semibold">Informações Gerais</h2>
-                <p className="text-sm text-muted-foreground">
-                  Atualize o nome e a descrição do seu grupo.
-                </p>
-              </div>
-
-              <Card>
-                <CardContent className="pt-6">
-                  <form
-                    onSubmit={form.handleSubmit(onUpdateGroup)}
-                    className="space-y-4"
+      <Page.Content className="p-4 bg-muted/5">
+        <div className="lg:grid lg:grid-cols-2 gap-4 transition-all h-full">
+          {/* General Information */}
+          <section className="space-y-4">
+            <div className="rounded-xl border bg-card p-4 space-y-4 shadow-sm">
+              <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground/70">
+                Informações Gerais
+              </h2>
+              <form
+                onSubmit={form.handleSubmit(onUpdateGroup)}
+                className="space-y-4"
+              >
+                <div className="space-y-1">
+                  <label
+                    htmlFor="name"
+                    className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/80"
                   >
-                    <div className="space-y-1.5">
-                      <label htmlFor="name" className="text-sm font-medium">
-                        Nome do Grupo
-                      </label>
-                      <input
-                        {...form.register('name')}
-                        className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        placeholder="Ex: Minha Casa, República, etc"
-                      />
-                      {form.formState.errors.name && (
-                        <p className="text-xs text-destructive">
-                          {form.formState.errors.name.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label
-                        htmlFor="description"
-                        className="text-sm font-medium"
-                      >
-                        Descrição (Opcional)
-                      </label>
-                      <textarea
-                        {...form.register('description')}
-                        className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        placeholder="Uma breve descrição sobre o grupo"
-                      />
-                    </div>
-
-                    <Button
-                      type="submit"
-                      disabled={isUpdating}
-                      className="gap-2 w-full md:w-auto"
-                    >
-                      {isUpdating && (
-                        <Icon icon="line-md:loading-twotone-loop" />
-                      )}
-                      Salvar Alterações
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </section>
-
-            {/* Danger Zone */}
-            <section className="space-y-4 pt-2">
-              <div className="flex flex-col gap-1">
-                <h2 className="text-lg font-semibold text-destructive">
-                  Zona de Perigo
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Ações irreversíveis que afetam o grupo permanentemente.
-                </p>
-              </div>
-
-              <Card className="border-destructive/20 bg-destructive/5">
-                <CardContent className="pt-6 flex flex-col gap-4">
-                  <div>
-                    <p className="font-bold">Deletar Grupo</p>
-                    <p className="text-sm text-muted-foreground">
-                      Todos os dados e membros serão removidos permanentemente.
+                    Nome do Grupo
+                  </label>
+                  <input
+                    {...form.register('name')}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all font-medium"
+                    placeholder="Ex: Minha Casa"
+                  />
+                  {form.formState.errors.name && (
+                    <p className="text-[10px] text-destructive font-bold">
+                      {form.formState.errors.name.message}
                     </p>
-                  </div>
-                  <ConfirmDialog
-                    title="Deletar Grupo"
-                    description="VOCÊ TEM CERTEZA? Esta ação é irreversível e deletará todos os dados do grupo."
-                    confirmText="Deletar Permanentemente"
-                    variant="destructive"
-                    onConfirm={onDeleteGroup}
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <label
+                    htmlFor="description"
+                    className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/80"
                   >
-                    <Button
-                      variant="destructive"
-                      className="gap-2 w-full md:w-auto self-start"
-                      disabled={isDeleting}
-                    >
-                      {isDeleting ? (
-                        <Icon icon="line-md:loading-twotone-loop" />
-                      ) : (
-                        <Icon icon="ph:trash-bold" />
-                      )}
-                      Deletar Permanentemente
-                    </Button>
-                  </ConfirmDialog>
-                </CardContent>
-              </Card>
-            </section>
-          </div>
+                    Descrição (Opcional)
+                  </label>
+                  <textarea
+                    {...form.register('description')}
+                    className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all font-medium"
+                    placeholder="Uma breve descrição"
+                  />
+                </div>
 
-          {/* Right Column: Invite Settings */}
-          <div className="lg:col-span-7 order-1 lg:order-2">
-            <section className="space-y-4">
-              <div className="flex flex-col gap-1">
-                <h2 className="text-lg font-semibold">Convites</h2>
-                <p className="text-sm text-muted-foreground">
-                  Gerencie como novas pessoas podem entrar no grupo.
-                </p>
+                <Button
+                  type="submit"
+                  disabled={isUpdating}
+                  className="w-full h-11 font-bold shadow-sm"
+                >
+                  {isUpdating && (
+                    <Icon
+                      icon="line-md:loading-twotone-loop"
+                      className="mr-2"
+                    />
+                  )}
+                  Salvar Alterações
+                </Button>
+              </form>
+            </div>
+          </section>
+
+          {/* Access & Invitations */}
+          <section className="space-y-4">
+            <div className="rounded-xl border bg-card overflow-hidden shadow-sm divide-y">
+              <div className="p-4 pb-2">
+                <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground/70">
+                  Acesso e Convites
+                </h2>
               </div>
-
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle className="text-base uppercase tracking-wider text-muted-foreground">
-                    Código de Acesso
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {isLoadingInvite ? (
-                    <div className="flex justify-center p-8">
-                      <Loading />
-                    </div>
-                  ) : inviteInfo ? (
-                    <div className="flex flex-col xl:flex-row gap-8 items-center justify-center bg-accent/30 p-8 rounded-xl border border-dashed h-full min-h-[300px]">
-                      <div className="shrink-0 bg-white p-4 rounded-xl shadow-md border">
-                        <InviteQRCode
-                          inviteCode={inviteInfo.inviteCode}
-                          joinUrl={inviteInfo.joinUrl}
-                        />
-                      </div>
-                      <div className="space-y-6 text-center xl:text-left flex-1 max-w-sm">
-                        <div className="space-y-2">
-                          <span className="text-sm font-bold text-muted-foreground uppercase opacity-80">
-                            Código do Grupo
-                          </span>
-                          <p className="text-4xl md:text-5xl font-black tracking-widest text-primary drop-shadow-sm pb-2">
-                            {inviteInfo.inviteCode}
-                          </p>
-                        </div>
-                        <p className="text-sm text-muted-foreground/90">
-                          Mostre este código ou tela para que seus convidados
-                          possam escaneá-lo e entrar no grupo.
-                        </p>
-                        <ConfirmDialog
-                          title="Regenerar Convite"
-                          description="Ao regenerar o código, o link anterior parará de funcionar. Deseja continuar?"
-                          confirmText="Regenerar"
-                          onConfirm={onRegenerateInvite}
-                        >
-                          <Button
-                            variant="outline"
-                            disabled={isRegenerating}
-                            className="gap-2 w-full"
-                            size="lg"
-                          >
-                            <Icon
-                              icon="ph:arrows-clockwise-bold"
-                              className={cn(
-                                'size-5',
-                                isRegenerating && 'animate-spin',
-                              )}
-                            />
-                            Gerar Novo Código
-                          </Button>
-                        </ConfirmDialog>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="p-8 text-center border rounded-xl border-destructive/50 bg-destructive/5">
-                      <p className="text-destructive font-medium">
-                        Erro ao carregar informações de convite.
+              <div className="flex items-center justify-between p-4 bg-primary/5">
+                <div className="min-w-0 pr-4">
+                  <p className="text-sm font-bold truncate">
+                    Convite por Código/QR
+                  </p>
+                  <p className="text-[11px] text-muted-foreground font-medium leading-tight">
+                    Visualize ou gere novos códigos de acesso.
+                  </p>
+                </div>
+                <GroupInviteDrawer
+                  inviteInfo={inviteInfo}
+                  isLoading={isLoadingInvite}
+                  trigger={
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="font-bold h-9 shrink-0 shadow-xs"
+                    >
+                      Visualizar
+                    </Button>
+                  }
+                />
+              </div>
+              <div className="p-4 bg-accent/10">
+                <ConfirmDialog
+                  title="Regenerar Convite"
+                  description="O código anterior parará de funcionar imediatamente. Continuar?"
+                  confirmText="Regenerar"
+                  onConfirm={onRegenerateInvite}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0 pr-4">
+                      <p className="text-sm font-bold">Novo Código</p>
+                      <p className="text-[11px] text-muted-foreground font-medium leading-tight">
+                        Invalida convites antigos instantaneamente.
                       </p>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            </section>
-          </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="font-bold h-9 shrink-0 bg-background"
+                      disabled={isRegenerating}
+                    >
+                      <Icon
+                        icon="ph:arrows-clockwise-bold"
+                        className={cn(
+                          'size-4 mr-1.5',
+                          isRegenerating && 'animate-spin',
+                        )}
+                      />
+                      Regenerar
+                    </Button>
+                  </div>
+                </ConfirmDialog>
+              </div>
+            </div>
+          </section>
         </div>
       </Page.Content>
+
+      <Page.Footer className="pb-4 bg-muted/5">
+        <div className="mx-4 rounded-xl border border-destructive/20 bg-destructive/5 p-4 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="min-w-0">
+              <h2 className="text-sm font-black uppercase tracking-widest text-destructive/70 mb-1">
+                Zona de Perigo
+              </h2>
+              <p className="text-sm font-bold text-destructive">
+                Deletar Grupo
+              </p>
+              <p className="text-[11px] text-muted-foreground font-medium leading-tight">
+                Ação irreversível.
+              </p>
+            </div>
+            <ConfirmDialog
+              title="Deletar Grupo"
+              description="VOCÊ TEM CERTEZA? Esta ação é irreversível."
+              confirmText="Sim, Deletar Grupo"
+              variant="destructive"
+              onConfirm={onDeleteGroup}
+            >
+              <Button
+                variant="destructive"
+                size="xl"
+                className="font-bold w-full sm:w-auto px-8 shadow-sm"
+                disabled={isDeleting}
+              >
+                <Icon icon="ph:trash-bold" className="size-4 mr-2" />
+                Deletar Grupo
+              </Button>
+            </ConfirmDialog>
+          </div>
+        </div>
+      </Page.Footer>
     </Page>
   );
 };

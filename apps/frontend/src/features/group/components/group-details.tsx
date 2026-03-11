@@ -2,7 +2,7 @@ import { Icon } from '@iconify/react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useEffect } from 'react';
-import { InviteQRCode } from './invite-qr-code';
+import { GroupInviteDrawer } from './group-invite-drawer';
 import { RemoveGroupMemberAlertDialog } from './remove-group-member-alert-dialog';
 import {
   Avatar,
@@ -10,11 +10,6 @@ import {
   AvatarImage,
   Badge,
   Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -31,7 +26,9 @@ import {
   useUpdateMemberRoleMutation,
 } from '@/features/group/infrastructure';
 import { useBreadCrumbs } from '@/hooks';
+import { useHaptics } from '@/hooks/use-haptics';
 import { useSession } from '@/infrastructure/auth/auth-client';
+import { cn } from '@/lib/utils';
 import { router } from '@/providers';
 
 interface Props {
@@ -39,6 +36,7 @@ interface Props {
 }
 
 export const GroupDetails = ({ groupId }: Props) => {
+  const haptics = useHaptics();
   const { data: session } = useSession();
   const { data: groups, isLoading: isLoadingList } = useListGroupsQuery();
 
@@ -63,10 +61,7 @@ export const GroupDetails = ({ groupId }: Props) => {
             to: `/manage-groups/${groupId}` as any,
           },
         ],
-        {
-          title: 'Detalhes do Grupo',
-          subTitle: 'Visualize os membros e convites do seu grupo.',
-        },
+        { title: '' },
       );
     }
   }, [addBreadcrumbs, groupId, activeGroup]);
@@ -104,226 +99,272 @@ export const GroupDetails = ({ groupId }: Props) => {
   const canManage = isOwner || currentUser?.role === 'moderator';
 
   return (
-    <Page>
-      <Page.Header className="px-4 py-4 border-b">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-          <Button
-            variant="outline"
-            className="gap-2"
-            onClick={() =>
-              router.navigate({
-                to: '/manage-groups/$groupId/settings',
-                params: { groupId: activeGroup.id },
-              })
-            }
-          >
-            <Icon icon="ph:gear-six-bold" className="size-4" />
-            Configurações
-          </Button>
+    <Page className="w-full bg-background transition-all">
+      <Page.Header className="mx-4 rounded-xl p-4 border bg-card">
+        <div className="flex items-center justify-between gap-4 w-full">
+          <div className="flex items-center gap-2 min-w-0">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-9 shrink-0"
+              onClick={() => {
+                haptics.light();
+                router.navigate({ to: '/manage-groups' });
+              }}
+            >
+              <Icon icon="ph:arrow-left-bold" className="size-5" />
+            </Button>
+            <div className="flex flex-col min-w-0">
+              <h1 className="text-base font-bold leading-none truncate">
+                {activeGroup.name}
+              </h1>
+              <p className="text-[10px] text-muted-foreground uppercase font-black tracking-tight mt-1 truncate">
+                {activeGroup.members?.length} Membros • Criado em{' '}
+                {format(new Date(activeGroup.createdAt), 'dd/MM/yy', {
+                  locale: ptBR,
+                })}
+              </p>
+            </div>
+          </div>
 
-          <Button
-            variant="secondary"
-            className="gap-2"
-            onClick={() =>
-              router.navigate({
-                to: '/manage-groups',
-              })
-            }
-          >
-            Voltar
-          </Button>
+          <div className="flex items-center gap-1.5 shrink-0">
+            {canManage && (
+              <GroupInviteDrawer
+                inviteInfo={inviteInfo}
+                isLoading={isLoadingInvite}
+              />
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-9"
+              onClick={() => {
+                haptics.light();
+                router.navigate({
+                  to: '/manage-groups/$groupId/settings',
+                  params: { groupId: activeGroup.id },
+                });
+              }}
+            >
+              <Icon icon="ph:gear-six-bold" className="size-5" />
+            </Button>
+          </div>
         </div>
       </Page.Header>
+
       <Page.Content className="p-4">
-        <div className="w-full">
-          {/* Header with Switcher */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4"></div>
+        <div className="w-full flex flex-col md:flex-row gap-4">
+          {/* Main List - 70% width on desktop */}
+          <div className="flex-1 min-w-0">
+            <div className="rounded-xl border bg-card/30 overflow-hidden shadow-sm h-full flex flex-col">
+              {/* Table Header */}
+              <div className="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_140px_80px] items-center gap-4 px-4 py-2.5 bg-muted/50 border-b text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-foreground/80 lowercase first-letter:uppercase">
+                    Membros
+                  </span>
+                  <Badge
+                    variant="secondary"
+                    className="h-4 px-1.5 text-[9px] bg-foreground/10 text-muted-foreground border-none shadow-none font-bold"
+                  >
+                    {activeGroup.members?.length}
+                  </Badge>
+                </div>
+                <div className="hidden md:block text-center">Função</div>
+                <div className="md:text-right hidden sm:block">Ações</div>
+              </div>
 
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-            {/* Group Info Sidebar */}
-            <div className="lg:col-span-4 space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{activeGroup.name}</CardTitle>
-                  <CardDescription>{activeGroup.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xs font-bold text-muted-foreground uppercase">
-                      Criado em
-                    </span>
-                    <p className="text-sm">
-                      {format(
-                        new Date(activeGroup.createdAt),
-                        'dd/MM/yyyy HH:mm',
-                        { locale: ptBR },
-                      )}
-                    </p>
-                  </div>
-
-                  <div className="pt-4 border-t">
-                    <ConfirmDialog
-                      title="Sair do Grupo"
-                      description="Você tem certeza que deseja sair do grupo?"
-                      confirmText="Sair"
-                      onConfirm={() => leaveGroup({ groupId: activeGroup.id })}
-                    >
-                      <Button variant="destructive" className="w-full gap-2">
-                        <Icon icon="lucide:log-out" />
-                        Sair do Grupo
-                      </Button>
-                    </ConfirmDialog>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Invite Section */}
-              {canManage && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Convidar Membros</CardTitle>
-                    <CardDescription>
-                      Compartilhe o código ou QR code abaixo.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {isLoadingInvite ? (
-                      <Loading />
-                    ) : inviteInfo ? (
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="bg-white p-2 rounded-lg shadow-sm w-fit border">
-                          <InviteQRCode
-                            inviteCode={inviteInfo.inviteCode}
-                            joinUrl={inviteInfo.joinUrl}
-                          />
-                        </div>
-                        <div className="text-center w-full bg-accent/30 rounded-lg p-3 border border-dashed">
-                          <span className="text-[10px] font-bold text-muted-foreground uppercase">
-                            Código do Grupo
-                          </span>
-                          <p className="text-xl font-black tracking-widest text-primary font-mono mt-0.5">
-                            {inviteInfo.inviteCode}
-                          </p>
+              <div className="divide-y divide-muted/50 flex-1">
+                {activeGroup.members?.map((member: any) => (
+                  <div
+                    key={member.userId}
+                    className="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_140px_80px] items-center gap-4 px-4 py-3 hover:bg-muted/30 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="relative shrink-0">
+                        <Avatar className="size-9 border">
+                          <AvatarImage src={member.image} />
+                          <AvatarFallback className="text-xs bg-muted">
+                            {getInitials({
+                              fullName: member.name ?? 'Membro',
+                              initialsLength: 2,
+                              upperCase: true,
+                            })}
+                          </AvatarFallback>
+                        </Avatar>
+                        {member.role === 'owner' && (
+                          <div className="absolute -top-1 -right-1 bg-yellow-400 rounded-full p-0.5 border-2 border-background shadow-xs">
+                            <Icon
+                              icon="ph:crown-fill"
+                              className="text-white size-2"
+                            />
+                          </div>
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold leading-none truncate">
+                          {member.name}{' '}
+                          {member.userId === session?.user?.id && (
+                            <span className="text-primary/70 font-medium">
+                              (Você)
+                            </span>
+                          )}
+                        </p>
+                        {/* Mobile Role Badge */}
+                        <div className="md:hidden mt-1">
+                          <Badge
+                            variant="secondary"
+                            className={cn(
+                              'text-[8px] px-1 py-0 h-3.5 font-bold uppercase tracking-wider',
+                              member.role === 'owner' &&
+                                'bg-yellow-400/10 text-yellow-600 border-yellow-400/20',
+                              member.role === 'moderator' &&
+                                'bg-primary/10 text-primary border-primary/20',
+                            )}
+                          >
+                            {member.role === 'owner'
+                              ? 'Dono'
+                              : member.role === 'moderator'
+                                ? 'Mod'
+                                : 'Membro'}
+                          </Badge>
                         </div>
                       </div>
-                    ) : (
-                      <p className="text-sm text-red-500 text-center">
-                        Erro ao carregar convite
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
+                    </div>
+
+                    {/* Desktop Role Badge */}
+                    <div className="hidden md:flex justify-center">
+                      <Badge
+                        variant="secondary"
+                        className={cn(
+                          'text-[9px] px-2 py-0.5 h-5 font-bold uppercase tracking-wider',
+                          member.role === 'owner' &&
+                            'bg-yellow-400/10 text-yellow-600 border-yellow-400/20',
+                          member.role === 'moderator' &&
+                            'bg-primary/10 text-primary border-primary/20',
+                        )}
+                      >
+                        {member.role === 'owner'
+                          ? 'Dono'
+                          : member.role === 'moderator'
+                            ? 'Moderador'
+                            : 'Membro'}
+                      </Badge>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2">
+                      {canManage &&
+                        member.userId !== session?.user?.id &&
+                        member.role !== 'owner' && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                              >
+                                <Icon icon="ph:dots-three-vertical-bold" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56">
+                              <DropdownMenuItem
+                                className="font-medium px-4 py-3"
+                                onClick={() => {
+                                  haptics.selection();
+                                  updateRole({
+                                    groupId: activeGroup.id,
+                                    memberId: member.userId,
+                                    data: {
+                                      role:
+                                        member.role === 'moderator'
+                                          ? 'member'
+                                          : 'moderator',
+                                    },
+                                  });
+                                }}
+                              >
+                                <Icon
+                                  icon="ph:shield-bold"
+                                  className="size-4 mr-2"
+                                />
+                                {member.role === 'moderator'
+                                  ? 'Remover Moderador'
+                                  : 'Tornar Moderador'}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-destructive font-medium px-4 py-3"
+                                onSelect={(e) => e.preventDefault()}
+                              >
+                                <RemoveGroupMemberAlertDialog
+                                  groupId={activeGroup.id}
+                                  memberId={member.userId}
+                                  trigger={
+                                    <div className="flex items-center w-full">
+                                      <Icon
+                                        icon="ph:user-minus-bold"
+                                        className="size-4 mr-2"
+                                      />
+                                      Remover do Grupo
+                                    </div>
+                                  }
+                                />
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Secondary pane - 30% width on desktop, bottom on mobile */}
+          <div className="w-full md:w-80 flex-none space-y-4">
+            <div className="rounded-xl border bg-card p-4 space-y-4 shadow-sm">
+              <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground/70">
+                Resumo do Grupo
+              </h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">ID do Grupo</span>
+                  <span className="font-mono text-[10px] bg-muted px-2 py-0.5 rounded">
+                    {activeGroup.id.split('-')[0]}...
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">Privacidade</span>
+                  <Badge className="h-5 text-[10px] px-1.5">Privado</Badge>
+                </div>
+              </div>
             </div>
 
-            {/* Members List */}
-            <div className="lg:col-span-8">
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle>Membros ({activeGroup.members?.length})</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="divide-y">
-                    {activeGroup.members?.map((member: any) => (
-                      <div
-                        key={member.userId}
-                        className="flex items-center justify-between py-4 first:pt-0 last:pb-0"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="relative">
-                            <Avatar>
-                              <AvatarImage src={member.image} />
-                              <AvatarFallback>
-                                {getInitials({
-                                  fullName: member.name ?? 'Membro',
-                                  initialsLength: 2,
-                                  upperCase: true,
-                                })}
-                              </AvatarFallback>
-                            </Avatar>
-                            {member.role === 'owner' && (
-                              <div className="absolute -top-1 -right-1 bg-yellow-400 rounded-full p-0.5 border-2 border-background">
-                                <Icon
-                                  icon="ph:crown-fill"
-                                  className="text-white w-2 h-2"
-                                />
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold">
-                              {member.name}{' '}
-                              {member.userId === session?.user?.id && '(Você)'}
-                            </p>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              <Badge
-                                variant="secondary"
-                                className="text-[10px] px-1.5 py-0 h-4"
-                              >
-                                {member.role === 'owner'
-                                  ? 'Proprietário'
-                                  : member.role === 'moderator'
-                                    ? 'Moderador'
-                                    : 'Membro'}
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          {canManage &&
-                            member.userId !== session?.user?.id &&
-                            member.role !== 'owner' && (
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    className="h-8 w-8"
-                                  >
-                                    <Icon icon="lucide:more-vertical" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem
-                                    onClick={() =>
-                                      updateRole({
-                                        groupId: activeGroup.id,
-                                        memberId: member.userId,
-                                        data: {
-                                          role:
-                                            member.role === 'moderator'
-                                              ? 'member'
-                                              : 'moderator',
-                                        },
-                                      })
-                                    }
-                                  >
-                                    {member.role === 'moderator'
-                                      ? 'Remover Moderador'
-                                      : 'Tornar Moderador'}
-                                  </DropdownMenuItem>
-                                  <div className="border-t my-1" />
-                                  <DropdownMenuItem className="text-destructive">
-                                    <RemoveGroupMemberAlertDialog
-                                      groupId={activeGroup.id}
-                                      memberId={member.userId}
-                                      trigger={
-                                        <span className="w-full text-left">
-                                          Remover do Grupo
-                                        </span>
-                                      }
-                                    />
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 space-y-4 shadow-sm">
+              <h3 className="text-sm font-black uppercase tracking-widest text-destructive/70">
+                Zona de Risco
+              </h3>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Ao sair do grupo, você perderá acesso às compras compartilhadas
+                e listas ativas.
+              </p>
+              <ConfirmDialog
+                title="Sair do Grupo"
+                description="Você tem certeza que deseja sair deste grupo? Você precisará de um novo convite para retornar."
+                confirmText="Sair do Grupo"
+                onConfirm={() => {
+                  haptics.warning();
+                  leaveGroup({ groupId: activeGroup.id });
+                }}
+              >
+                <Button
+                  variant="destructive"
+                  size="xl"
+                  className="w-full gap-2 font-bold shadow-sm"
+                >
+                  <Icon icon="ph:door-open-bold" className="size-5" />
+                  Sair do Grupo
+                </Button>
+              </ConfirmDialog>
             </div>
           </div>
         </div>
