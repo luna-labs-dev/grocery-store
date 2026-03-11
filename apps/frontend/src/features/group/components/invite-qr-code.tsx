@@ -23,21 +23,26 @@ export const InviteQRCode = ({ joinUrl, inviteCode }: InviteQRCodeProps) => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4 border rounded-xl bg-card">
+    <div className="flex flex-col items-center gap-4 p-4">
       <div className="bg-white p-2 rounded-lg">
         <img src={qrUrl} alt="QR Code de Convite" className="w-40 h-40" />
       </div>
-      <div className="flex flex-col items-center gap-2 w-full">
-        <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-          Código: {inviteCode}
-        </span>
+      <div className="flex flex-col items-center gap-4 w-full">
+        <div className="text-center w-full">
+          <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+            Código do Grupo
+          </span>
+          <p className="text-xl font-black tracking-[0.2em] text-primary font-mono mt-0.5">
+            {inviteCode}
+          </p>
+        </div>
         <Button
           variant="outline"
-          className="w-full flex items-center gap-2"
+          className="w-full flex items-center gap-2 font-bold h-10 shadow-xs"
           onClick={copyToClipboard}
         >
-          <Icon icon="gravity-ui:copy" />
-          Copiar Link
+          <Icon icon="gravity-ui:copy" className="size-4" />
+          Copiar Link de Convite
         </Button>
       </div>
     </div>
