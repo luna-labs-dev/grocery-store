@@ -38,27 +38,27 @@ export const ManageGroupsPage = () => {
 
   return (
     <Page>
-      <Page.Header className="mx-4 rounded-xl p-4 border bg-card">
-        <div className="flex items-center justify-between w-full h-10">
-          <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold tracking-tight">Meus Grupos</h1>
+      <Page.Header className="px-4 pt-4 shrink-0">
+        <div className="flex items-center justify-between gap-4 w-full rounded-xl p-4 border bg-card shadow-sm h-14">
+          <div className="flex items-center gap-2 min-w-0">
+            <h1 className="text-base font-bold tracking-tight">Meus Grupos</h1>
             <Badge
               variant="secondary"
-              className="bg-primary/10 text-primary border-primary/20 hidden sm:inline-flex"
+              className="bg-primary/10 text-primary border-primary/20 hidden sm:inline-flex h-5 text-[10px] font-bold"
             >
               {groups?.length || 0}
             </Badge>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <GroupOnboardingSideForm.Sheet
               trigger={
                 <Button
                   variant="outline"
-                  size="icon-xl"
+                  size="icon"
                   type="button"
-                  className="sm:hidden"
+                  className="sm:hidden size-9"
                 >
-                  <Icon icon="ph:plus-bold" className="size-5" />
+                  <Icon icon="ph:plus-bold" className="size-4" />
                 </Button>
               }
               context={{
@@ -73,7 +73,7 @@ export const ManageGroupsPage = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-2 hidden sm:flex"
+                  className="gap-2 hidden sm:flex h-9 font-bold"
                   type="button"
                 >
                   <Icon icon="ph:plus-bold" className="size-4" />
@@ -170,7 +170,7 @@ export const ManageGroupsPage = () => {
                     <div className="pt-1">
                       <div className="grid grid-cols-2 gap-2 sm:gap-4">
                         <Button
-                          className="w-full gap-1.5 font-semibold text-[10px] sm:text-xs h-8 sm:h-9 px-0"
+                          className="w-full gap-1.5 font-semibold text-[10px] sm:text-xs h-9 px-0"
                           variant="outline"
                           size="sm"
                           onClick={() => {
@@ -189,7 +189,7 @@ export const ManageGroupsPage = () => {
                           Ver
                         </Button>
                         <Button
-                          className="w-full gap-1.5 font-semibold text-[10px] sm:text-xs h-8 sm:h-9 px-0"
+                          className="w-full gap-1.5 font-semibold text-[10px] sm:text-xs h-9 px-0"
                           variant="outline"
                           size="sm"
                           onClick={() => {

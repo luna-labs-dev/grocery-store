@@ -5,7 +5,13 @@ import { ResponsiveDrawer } from '@/components/shared/responsive-drawer';
 import { useHaptics } from '@/hooks/use-haptics';
 
 interface GroupInviteDrawerProps {
-  inviteInfo: any;
+  inviteInfo:
+    | {
+        inviteCode: string;
+        joinUrl: string;
+      }
+    | null
+    | undefined;
   isLoading: boolean;
   trigger?: React.ReactNode;
 }

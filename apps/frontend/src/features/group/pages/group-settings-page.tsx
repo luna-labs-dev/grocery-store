@@ -46,7 +46,7 @@ export const GroupSettingsPage = ({ groupId }: Props) => {
           },
           {
             label: 'Configurações',
-            to: `/manage-groups/${groupId}/settings` as any,
+            to: `/manage-groups/${groupId}/settings` as string as '/manage-groups/$groupId/settings',
           },
         ],
         { title: '' },

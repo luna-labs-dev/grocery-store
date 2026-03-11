@@ -40,7 +40,7 @@ export const GroupDetails = ({ groupId }: Props) => {
   const { data: session } = useSession();
   const { data: groups, isLoading: isLoadingList } = useListGroupsQuery();
 
-  const activeGroup = groups?.find((g: any) => g.id === groupId);
+  const activeGroup = groups?.find((g) => g.id === groupId);
 
   const { data: inviteInfo, isLoading: isLoadingInvite } =
     useGetInviteInfoQuery(activeGroup?.id);
@@ -58,7 +58,7 @@ export const GroupDetails = ({ groupId }: Props) => {
           },
           {
             label: 'Detalhes',
-            to: `/manage-groups/${groupId}` as any,
+            to: `/manage-groups/${groupId}` as string as '/manage-groups/$groupId',
           },
         ],
         { title: '' },
@@ -93,15 +93,15 @@ export const GroupDetails = ({ groupId }: Props) => {
 
   const currentUserId = session?.user?.id;
   const currentUser = activeGroup.members?.find(
-    (m: any) => m.userId === currentUserId,
+    (m) => m.userId === currentUserId,
   );
   const isOwner = currentUser?.role === 'owner';
   const canManage = isOwner || currentUser?.role === 'moderator';
 
   return (
     <Page className="w-full bg-background transition-all">
-      <Page.Header className="mx-4 rounded-xl p-4 border bg-card">
-        <div className="flex items-center justify-between gap-4 w-full">
+      <Page.Header className="px-4 pt-4 shrink-0">
+        <div className="flex items-center justify-between gap-4 w-full rounded-xl p-4 border bg-card shadow-sm">
           <div className="flex items-center gap-2 min-w-0">
             <Button
               variant="ghost"
@@ -153,7 +153,7 @@ export const GroupDetails = ({ groupId }: Props) => {
       </Page.Header>
 
       <Page.Content className="p-4">
-        <div className="w-full flex flex-col md:flex-row gap-4">
+        <div className="w-full flex flex-col md:flex-row gap-6">
           {/* Main List - 70% width on desktop */}
           <div className="flex-1 min-w-0">
             <div className="rounded-xl border bg-card/30 overflow-hidden shadow-sm h-full flex flex-col">
@@ -175,7 +175,7 @@ export const GroupDetails = ({ groupId }: Props) => {
               </div>
 
               <div className="divide-y divide-muted/50 flex-1">
-                {activeGroup.members?.map((member: any) => (
+                {activeGroup.members?.map((member) => (
                   <div
                     key={member.userId}
                     className="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_140px_80px] items-center gap-4 px-4 py-3 hover:bg-muted/30 transition-colors"
@@ -319,8 +319,8 @@ export const GroupDetails = ({ groupId }: Props) => {
             </div>
           </div>
 
-          {/* Secondary pane - 30% width on desktop, bottom on mobile */}
-          <div className="w-full md:w-80 flex-none space-y-4">
+          {/* Desktop-only Secondary pane */}
+          <div className="hidden md:flex md:w-80 flex-none flex-col gap-4 h-fit sticky top-0">
             <div className="rounded-xl border bg-card p-4 space-y-4 shadow-sm">
               <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground/70">
                 Resumo do Grupo
@@ -351,6 +351,7 @@ export const GroupDetails = ({ groupId }: Props) => {
                 title="Sair do Grupo"
                 description="Você tem certeza que deseja sair deste grupo? Você precisará de um novo convite para retornar."
                 confirmText="Sair do Grupo"
+                variant="destructive"
                 onConfirm={() => {
                   haptics.warning();
                   leaveGroup({ groupId: activeGroup.id });
@@ -369,6 +370,40 @@ export const GroupDetails = ({ groupId }: Props) => {
           </div>
         </div>
       </Page.Content>
+
+      <Page.Footer className="md:hidden p-4 pt-0">
+        <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 space-y-3 shadow-sm">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[10px] font-black uppercase tracking-widest text-destructive/70">
+              Zona de Risco
+            </h3>
+            <Badge
+              variant="outline"
+              className="h-4 text-[8px] border-destructive/20 text-destructive uppercase"
+            >
+              Acesso Crítico
+            </Badge>
+          </div>
+          <ConfirmDialog
+            title="Sair do Grupo"
+            description="Você tem certeza que deseja sair deste grupo? Você precisará de um novo convite para retornar."
+            confirmText="Sair do Grupo"
+            onConfirm={() => {
+              haptics.warning();
+              leaveGroup({ groupId: activeGroup.id });
+            }}
+          >
+            <Button
+              variant="destructive"
+              size="xl"
+              className="w-full gap-2 font-bold shadow-sm"
+            >
+              <Icon icon="ph:door-open-bold" className="size-5" />
+              Sair do Grupo
+            </Button>
+          </ConfirmDialog>
+        </div>
+      </Page.Footer>
     </Page>
   );
 };

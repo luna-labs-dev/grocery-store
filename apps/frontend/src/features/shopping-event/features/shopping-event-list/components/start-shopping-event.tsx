@@ -78,7 +78,8 @@ export const StartShoppingEvent = () => {
           <ButtonGroup>
             <Button
               variant="outline"
-              className="w-28"
+              size="sm"
+              className="w-28 h-9 font-bold"
               onClick={() =>
                 navigate({
                   to: '..',
@@ -89,7 +90,8 @@ export const StartShoppingEvent = () => {
             </Button>
             <Button
               disabled={!value || isPending}
-              className="w-28"
+              size="sm"
+              className="w-28 h-9 font-bold"
               onClick={async () => {
                 if (value) {
                   const shoppingEvent = await mutateAsync({
