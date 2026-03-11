@@ -66,7 +66,7 @@ As a shopper, I want the system to recognize variable-weight barcodes (e.g., fro
 
 **Acceptance Scenarios**:
 
-1. **Given** an EAN-13 starting with "2", **When** scanned, **Then** the system extracts the weight/price embedded in the barcode as per industry standards.
+1. **Given** an EAN-13 starting with "2", **When** scanned, **Then** the system extracts the weight/price embedded in the barcode; if price is embedded, it MUST auto-calculate weight using the established unit price for that `ProductIdentity`.
 
 ## Requirements *(mandatory)*
 
@@ -76,8 +76,9 @@ As a shopper, I want the system to recognize variable-weight barcodes (e.g., fro
 - **FR-002**: System MUST first query the local `physical_eans` table before external calls.
 - **FR-003**: System MUST implement `ExternalProductClient` with support for Open Food Facts and UPCitemdb.
 - **FR-004**: External API calls MUST have a circuit breaker/timeout of 2000ms.
-- **FR-005**: Successfully fetched external products MUST be persisted to the local database (Outbox pattern recommended for background hydration).
-- **FR-006**: System MUST provide a fuzzy search endpoint for manual product lookup.
+- **FR-005**: Successfully fetched external products MUST be persisted to the local database via an Outbox pattern mandate; raw responses MUST be stored in `ExternalFetchLog`. A background worker MUST process these events immediately for rapid catalog hydration.
+- **FR-006**: System MUST provide a fuzzy search endpoint for manual product lookup, matching across both `name` and `brand` fields.
+- **FR-007**: System MUST detect duplicate scans of items already in the cart and increment the existing quantity instead of creating a new line item.
 
 ### Key Entities
 
@@ -92,6 +93,16 @@ As a shopper, I want the system to recognize variable-weight barcodes (e.g., fro
 - **SC-001**: Local matches resolved in under 100ms.
 - **SC-002**: External fallbacks resolve (or fail to manual) in under 2500ms total.
 - **SC-003**: 100% of newly fetched products are correctly categorized under a `CanonicalProduct`.
+
+
+## Clarifications
+
+### Session 2026-03-11
+- Q: External Data Storage Strategy → A: Save full raw JSON in `ExternalFetchLog` + basic info in `ProductIdentity`. 
+- Q: Outbox Processing Strategy → A: Dedicated background worker processes events immediately (Continuous). 
+- Q: Manual Search Scope → A: Search fuzzy across both `Product name` and `Brand`. 
+- Q: Variable-Weight Price Extraction Fallback → A: Auto-calculate weight based on unit price if known. 
+- Q: Duplicate Scan Conflict Resolution → A: Increment quantity of existing item + show confirmation toast. 
 
 ## Assumptions
 
