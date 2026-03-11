@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { AddProductToCartDrawer } from '../../src/features/shopping-event/features/shopping-event-details/components/cart/add-product-to-cart-drawer';
@@ -29,44 +30,63 @@ vi.mock('@/hooks', () => ({
   }),
 }));
 
-// Mock ProductFormComposite
-vi.mock('./product-form-composite', () => ({
-  ProductFormComposite: {
-    Root: ({ children, onSuccess, onCancel }: any) => (
-      <div data-testid="product-form-root">
-        {children}
-        <button type="button" data-testid="mock-success" onClick={onSuccess}>
-          Success
-        </button>
-        <button type="button" data-testid="mock-cancel" onClick={onCancel}>
-          Cancel
-        </button>
-      </div>
-    ),
-    Fields: () => <div data-testid="product-form-fields" />,
-    Actions: () => <div data-testid="product-form-actions" />,
+// Mock ProductFormComposite USING ALIASED PATH
+vi.mock(
+  '@/features/shopping-event/features/shopping-event-details/components/cart/product-form-composite',
+  () => ({
+    ProductFormComposite: {
+      Root: ({ children, onSuccess, onCancel }: any) => (
+        <div data-testid="product-form-root">
+          {children}
+          <button type="button" data-testid="mock-success" onClick={onSuccess}>
+            Success
+          </button>
+          <button type="button" data-testid="mock-cancel" onClick={onCancel}>
+            Cancel
+          </button>
+        </div>
+      ),
+      Fields: () => <div data-testid="product-form-fields" />,
+      Actions: () => <div data-testid="product-form-actions" />,
+    },
+  }),
+);
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
   },
-}));
+});
 
 describe('AddProductToCartDrawer Behavior', () => {
   const shoppingEventId = 'test-event-id';
 
   it('should render the trigger children', () => {
     render(
-      <AddProductToCartDrawer shoppingEventId={shoppingEventId}>
-        <button type="button">Open Scanner</button>
-      </AddProductToCartDrawer>,
+      <QueryClientProvider client={queryClient}>
+        <AddProductToCartDrawer shoppingEventId={shoppingEventId}>
+          <button type="button">Open Scanner</button>
+        </AddProductToCartDrawer>
+      </QueryClientProvider>,
     );
+
+    fireEvent.click(screen.getByText('Open Scanner'));
 
     expect(screen.getByText('Open Scanner')).toBeInTheDocument();
   });
 
   it('should close the drawer when onSuccess is called in the form', () => {
     render(
-      <AddProductToCartDrawer shoppingEventId={shoppingEventId}>
-        <button type="button">Open Scanner</button>
-      </AddProductToCartDrawer>,
+      <QueryClientProvider client={queryClient}>
+        <AddProductToCartDrawer shoppingEventId={shoppingEventId}>
+          <button type="button">Open Scanner</button>
+        </AddProductToCartDrawer>
+      </QueryClientProvider>,
     );
+
+    fireEvent.click(screen.getByText('Open Scanner'));
 
     const successBtn = screen.getByTestId('mock-success');
     fireEvent.click(successBtn);
@@ -77,10 +97,14 @@ describe('AddProductToCartDrawer Behavior', () => {
 
   it('should close the drawer when onCancel is called in the form', () => {
     render(
-      <AddProductToCartDrawer shoppingEventId={shoppingEventId}>
-        <button type="button">Open Scanner</button>
-      </AddProductToCartDrawer>,
+      <QueryClientProvider client={queryClient}>
+        <AddProductToCartDrawer shoppingEventId={shoppingEventId}>
+          <button type="button">Open Scanner</button>
+        </AddProductToCartDrawer>
+      </QueryClientProvider>,
     );
+
+    fireEvent.click(screen.getByText('Open Scanner'));
 
     const cancelBtn = screen.getByTestId('mock-cancel');
     fireEvent.click(cancelBtn);

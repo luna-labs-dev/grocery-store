@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { describe, expect, it } from 'vitest';
 import { ReconciliationEngine } from '@/application/services/reconciliation-engine';
 import type { ShoppingEvent } from '@/domain';

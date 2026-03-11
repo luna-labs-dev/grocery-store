@@ -10,6 +10,7 @@
     "lint": "biome check --write --unsafe apps/**/src apps/**/tests",
     "test": "vitest run --silent --reporter verbose",
     "test:watch": "vitest --silent --reporter verbose",
+    "typecheck:root": "tsc --noEmit --esModuleInterop --skipLibCheck orval.config.ts playwright.config.ts",
     "infra:up": "bash ./scripts/dev-up.sh",
     "infra:down": "docker compose -f docker-compose.dev.yml down",
     "db:up": "docker compose -f docker-compose.dev.yml up -d",

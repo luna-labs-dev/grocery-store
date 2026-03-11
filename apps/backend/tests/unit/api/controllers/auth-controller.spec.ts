@@ -208,7 +208,7 @@ describe('AuthController', () => {
 
       const response = await app.inject({
         method: 'GET',
-        url: '/session',
+        url: '/get-session',
       });
 
       expect(response.statusCode).toBe(200);
@@ -227,7 +227,7 @@ describe('AuthController', () => {
 
       const response = await app.inject({
         method: 'GET',
-        url: '/session',
+        url: '/get-session',
       });
 
       expect(response.statusCode).toBe(500);
