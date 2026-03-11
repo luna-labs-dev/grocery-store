@@ -3,7 +3,7 @@ import type {
   GetMarketByIdRepository,
   ShoppingEventRepositories,
 } from '@/application/contracts';
-import { ShoppingEvent } from '@/domain';
+import { ShoppingEvent, type ShoppingEventStatus } from '@/domain';
 import type { RequesterContext } from '@/domain/core/requester-context';
 import { Products } from '@/domain/entities/products';
 import {
@@ -94,7 +94,7 @@ export class ShoppingEventService {
 
     const total = await this.shoppingEventRepository.count({
       groupId: ctx.group.id,
-      status: params.status as any,
+      status: params.status as ShoppingEventStatus,
       period: params.period,
     });
 
@@ -106,12 +106,13 @@ export class ShoppingEventService {
     if (total > 0) {
       response.shoppingEvents = await this.shoppingEventRepository.getAll({
         groupId: ctx.group.id,
-        status: params.status as any,
+        status: params.status as ShoppingEventStatus,
         period: params.period,
         pageIndex: params.pageIndex ?? 0,
         pageSize: params.pageSize ?? 10,
         orderBy: params.orderBy ?? 'createdAt',
-        orderDirection: (params.orderDirection?.toUpperCase() as any) ?? 'DESC',
+        orderDirection:
+          (params.orderDirection?.toUpperCase() as 'ASC' | 'DESC') ?? 'DESC',
       });
     }
 

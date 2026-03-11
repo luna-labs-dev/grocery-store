@@ -37,18 +37,26 @@
         "useFilenamingConvention": {
           "level": "error",
           "options": {
-            "strictCase": true,
+            "strictCase": false,
             "requireAscii": true,
             "filenameCases": ["kebab-case"]
+          }
+        },
+        "useNamingConvention": {
+          "level": "error",
+          "options": {
+            "strictCase": false,
+            "requireAscii": true
           }
         }
       },
       "correctness": {
         "noUnusedImports": "error",
+        "noUnusedVariables": "error",
         "useExhaustiveDependencies": "off"
       },
       "suspicious": {
-        "noExplicitAny": "off"
+        "noExplicitAny": "error"
       },
       "a11y": {
         "noSvgWithoutTitle": "off",

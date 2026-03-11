@@ -93,12 +93,8 @@
           "name": "account_userId_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -169,12 +165,8 @@
           "name": "group_member_groupId_group_id_fk",
           "tableFrom": "group_member",
           "tableTo": "group",
-          "columnsFrom": [
-            "groupId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["groupId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -182,12 +174,8 @@
           "name": "group_member_userId_user_id_fk",
           "tableFrom": "group_member",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -248,16 +236,12 @@
         "group_name_unique": {
           "name": "group_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         },
         "group_inviteCode_unique": {
           "name": "group_inviteCode_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "inviteCode"
-          ]
+          "columns": ["inviteCode"]
         }
       },
       "policies": {},
@@ -428,12 +412,8 @@
           "name": "product_shoppingEventId_shopping_event_id_fk",
           "tableFrom": "product",
           "tableTo": "shopping_event",
-          "columnsFrom": [
-            "shoppingEventId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["shoppingEventId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -503,12 +483,8 @@
           "name": "session_userId_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -518,9 +494,7 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       },
       "policies": {},
@@ -614,12 +588,8 @@
           "name": "shopping_event_groupId_group_id_fk",
           "tableFrom": "shopping_event",
           "tableTo": "group",
-          "columnsFrom": [
-            "groupId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["groupId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -627,12 +597,8 @@
           "name": "shopping_event_marketId_market_id_fk",
           "tableFrom": "shopping_event",
           "tableTo": "market",
-          "columnsFrom": [
-            "marketId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["marketId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -703,16 +669,12 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         },
         "user_externalId_unique": {
           "name": "user_externalId_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "externalId"
-          ]
+          "columns": ["externalId"]
         }
       },
       "policies": {},
@@ -773,20 +735,12 @@
     "public.groupRoleEnum": {
       "name": "groupRoleEnum",
       "schema": "public",
-      "values": [
-        "OWNER",
-        "ADMIN",
-        "MEMBER"
-      ]
+      "values": ["OWNER", "ADMIN", "MEMBER"]
     },
     "public.shoppingEventStatusEnum": {
       "name": "shoppingEventStatusEnum",
       "schema": "public",
-      "values": [
-        "ONGOING",
-        "CANCELED",
-        "FINISHED"
-      ]
+      "values": ["ONGOING", "CANCELED", "FINISHED"]
     }
   },
   "schemas": {},

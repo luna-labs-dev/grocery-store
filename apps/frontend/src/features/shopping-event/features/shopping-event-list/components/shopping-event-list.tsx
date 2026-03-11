@@ -126,7 +126,7 @@ function ShoppingEventListEmpty() {
 
 interface Props {
   paginationParams: GetShoppingEventListParams;
-  data?: any;
+  data?: { items: GetShoppingEventList200ItemsItem[] };
   isLoading?: boolean;
   isError?: boolean;
   className?: string;
@@ -138,7 +138,7 @@ export function ShoppingEventList({
   isError: propsIsError,
   className,
 }: Props) {
-  const STATUS_CONFIG: Record<
+  const statusConfig: Record<
     string,
     {
       label: string;
@@ -155,9 +155,9 @@ export function ShoppingEventList({
         | undefined;
     }
   > = {
-    CANCELLED: { label: 'Cancelado', variant: 'error' },
-    ONGOING: { label: 'Em andamento', variant: 'info' },
-    FINISHED: { label: 'Concluido', variant: 'success' },
+    cancelled: { label: 'Cancelado', variant: 'error' },
+    ongoing: { label: 'Em andamento', variant: 'info' },
+    finished: { label: 'Concluido', variant: 'success' },
   };
 
   const columns = useMemo<ColumnDef<GetShoppingEventList200ItemsItem>[]>(
@@ -170,7 +170,8 @@ export function ShoppingEventList({
         accessorKey: 'status',
         header: 'Status',
         cell: ({ row }) => {
-          const config = STATUS_CONFIG[row.original.status] ?? {
+          const status = row.original.status.toLowerCase();
+          const config = statusConfig[status] ?? {
             label: row.original.status,
             variant: 'outline',
           };

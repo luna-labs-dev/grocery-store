@@ -4,14 +4,14 @@ import { env } from '@/main/config/env';
 
 const { baseConfig } = env;
 
-export interface IBaseException<TErrorType = any> extends Error {
+export interface IBaseException<TErrorType = unknown> extends Error {
   statusCode: HttpStatusCode;
   code: string;
   extras?: TErrorType;
   schema: ZodObject;
 }
 
-interface IBaseExceptionProps<TErrorType = any> {
+interface IBaseExceptionProps<TErrorType = unknown> {
   extras?: TErrorType;
   schema?: ZodObject;
 }
@@ -37,7 +37,7 @@ export type ExceptionResult = z.infer<typeof exceptionSchema> & {
   stack?: string;
 };
 
-export abstract class BaseException<TErrorType = any>
+export abstract class BaseException<TErrorType = unknown>
   extends Error
   implements IBaseException<TErrorType>
 {
@@ -45,7 +45,7 @@ export abstract class BaseException<TErrorType = any>
   name: string;
   code: string;
   extras?: TErrorType;
-  schema: z.ZodObject<any, any>;
+  schema: z.ZodObject<z.ZodRawShape>;
 
   constructor(message: string, props?: IBaseExceptionProps<TErrorType>) {
     super(message);

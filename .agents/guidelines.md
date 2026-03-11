@@ -74,9 +74,10 @@ The backend follows a Clean Architecture approach with a strict separation of co
   - (Optional) Define `SomeFeatureResult` for complex returns.
 
 ### 4. Naming Conventions
-- **Files**: kebab-case (e.g., `group-service.ts`, `auth-middleware.ts`).
+- **Files**: MUST use **kebab-case** (e.g., `group-service.ts`) across all projects, excluding framework-reserved route files.
 - **Interfaces/Classes**: PascalCase (e.g., `CollaborationGroup`, `GroupRepository`).
 - **Constants/Tokens**: camelCase for tokens (`userRepositories`), UPPER_SNAKE_CASE for env.
+- **Database**: snake_case tables, camelCase columns, kebab-case enums.
 
 ### 5. Dependency Injection
 - **Pattern**: Use `tsyringe` for all registrations.

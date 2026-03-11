@@ -16,10 +16,10 @@ export const nameToCode = (name: string): string => {
   return code;
 };
 
-type generateReferalCode = {
+type GenerateReferalCode = {
   name: string;
 };
-export const generateReferalCode = ({ name }: generateReferalCode): string => {
+export const generateReferalCode = ({ name }: GenerateReferalCode): string => {
   const code = generate({
     length: 6,
     count: 1,

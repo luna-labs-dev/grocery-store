@@ -12,7 +12,7 @@ import {
   updateMemberRoleRequestSchema,
 } from '../helpers';
 import type { GroupService } from '@/application';
-import { getPossibleExceptionsSchemas } from '@/domain';
+import { type GroupRole, getPossibleExceptionsSchemas } from '@/domain';
 import { HttpStatusCode } from '@/domain/core/enums';
 import {
   InvalidGroupInvitationCodeException,
@@ -212,7 +212,7 @@ export class GroupController extends FastifyController {
 
         await this.groupService.updateMemberRole(requesterContext, {
           targetUserId: memberId,
-          role: role as any,
+          role: role as GroupRole,
         });
         reply.status(HttpStatusCode.NoContent).send();
       },

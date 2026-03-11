@@ -60,23 +60,17 @@
         "family_name_unique": {
           "name": "family_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         },
         "family_ownerId_unique": {
           "name": "family_ownerId_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "ownerId"
-          ]
+          "columns": ["ownerId"]
         },
         "family_inviteCode_unique": {
           "name": "family_inviteCode_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "inviteCode"
-          ]
+          "columns": ["inviteCode"]
         }
       },
       "policies": {},
@@ -139,9 +133,7 @@
         "market_name_unique": {
           "name": "market_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},
@@ -342,16 +334,12 @@
         "user_externalId_unique": {
           "name": "user_externalId_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "externalId"
-          ]
+          "columns": ["externalId"]
         },
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -363,11 +351,7 @@
     "public.shoppingEventStatusEnum": {
       "name": "shoppingEventStatusEnum",
       "schema": "public",
-      "values": [
-        "ONGOING",
-        "CANCELED",
-        "FINISHED"
-      ]
+      "values": ["ONGOING", "CANCELED", "FINISHED"]
     }
   },
   "schemas": {},
