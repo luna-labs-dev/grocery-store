@@ -133,3 +133,7 @@
   animation: none;
   mix-blend-mode: normal;
 }
+
+.glassmorphism {
+  @apply bg-background/70 backdrop-blur-lg border-b;
+}

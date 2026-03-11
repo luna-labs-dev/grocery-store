@@ -13,9 +13,11 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       <div className="hidden md:block">
         <AppSidebar />
       </div>
-      <SidebarInset className="h-svh overflow-hidden pb-16 md:pb-0">
+      <SidebarInset className="h-svh flex flex-col pb-16 md:pb-0">
         <MainHeader />
-        <main className="flex-1 overflow-hidden">{children}</main>
+        <main className="flex-1 min-h-0 flex flex-col overflow-hidden">
+          {children}
+        </main>
       </SidebarInset>
       <MobileTabBar />
     </SidebarProvider>
