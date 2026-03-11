@@ -35,8 +35,8 @@ export const GroupOnboarding = () => {
   return (
     <Page>
       <Page.Content>
-        <div className="flex flex-col items-center justify-center w-full gap-4 pt-8">
-          <div className="flex flex-col gap-8 w-[400px] border p-4 rounded-lg">
+        <div className="flex flex-col items-center justify-center w-full gap-4 pt-4">
+          <div className="flex flex-col gap-4 w-full max-w-[400px] border p-4 rounded-lg mx-auto">
             <h1 className="text-sm">
               Para interagir com o sistema, você precisa criar ou entrar em um
               grupo

@@ -236,7 +236,7 @@ export function ProfilePage() {
                     ? s.userAgent
                     : 'Dispositivo Desconhecido';
                   if (uaObj.length > 35) {
-                    uaObj = uaObj.substring(0, 35) + '...';
+                    uaObj = `${uaObj.substring(0, 35)}...`;
                   }
 
                   return (

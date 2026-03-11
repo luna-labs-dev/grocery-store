@@ -115,6 +115,7 @@ interface MarketListProps {
   isLoading?: boolean;
   isError?: boolean;
   pageSize?: number;
+  className?: string;
 }
 
 export const MarketList = ({
@@ -122,6 +123,7 @@ export const MarketList = ({
   isLoading: propsIsLoading,
   isError: propsIsError,
   pageSize: propsPageSize,
+  className,
 }: MarketListProps) => {
   const columns = useMemo<ColumnDef<ListMarkets200ItemsItem>[]>(
     () => [
@@ -203,6 +205,7 @@ export const MarketList = ({
       MobileCard={({ data: market }) => <MarketItem market={market} />}
       keyExtractor={(market) => market.id}
       emptyMessage="Nenhum mercado encontrado"
+      className={className}
     />
   );
 };
