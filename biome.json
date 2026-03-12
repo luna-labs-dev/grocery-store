@@ -14,7 +14,9 @@
       "!.vscode/",
       "!**/src/components/ui",
       "!**/src/components/animate-ui",
-      "!**/src/route-tree.gen.ts"
+      "!**/src/route-tree.gen.ts",
+      "!apps/frontend/src/infrastructure/api/types",
+      "!apps/frontend/src/infrastructure/api/*.ts"
     ]
   },
   "formatter": {
@@ -39,14 +41,9 @@
           "options": {
             "strictCase": false,
             "requireAscii": true,
-            "filenameCases": ["kebab-case"]
-          }
-        },
-        "useNamingConvention": {
-          "level": "error",
-          "options": {
-            "strictCase": false,
-            "requireAscii": true
+            "filenameCases": [
+              "kebab-case"
+            ]
           }
         }
       },
@@ -63,7 +60,10 @@
         "noStaticElementInteractions": "off"
       }
     },
-    "includes": ["**", "!**/src/routeTree.gen.ts"]
+    "includes": [
+      "**",
+      "!**/src/routeTree.gen.ts"
+    ]
   },
   "javascript": {
     "formatter": {
@@ -96,7 +96,9 @@
   },
   "overrides": [
     {
-      "includes": ["**/src/routes/**/*"],
+      "includes": [
+        "**/src/routes/**/*"
+      ],
       "linter": {
         "rules": {
           "style": {

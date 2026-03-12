@@ -21,35 +21,37 @@ import type {
   ErrorType,
 } from '../../config/clients/custom-http-client';
 import { customInstance } from '../../config/clients/custom-http-client';
-import type { PatchApiAdminGroupsGroupIdSettingsBody } from './types';
+import type { GetGroupSettings200, UpdateGroupSettingsBody } from './types';
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
-export const getApiAdminGroupsGroupIdSettings = (
+/**
+ * Retrieve all settings for a specific group
+ * @summary Get group settings
+ */
+export const getGroupSettings = (
   groupId: string,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<void>(
+  return customInstance<GetGroupSettings200>(
     { url: `/api/admin/groups/${groupId}/settings`, method: 'GET', signal },
     options,
   );
 };
 
-export const getGetApiAdminGroupsGroupIdSettingsQueryKey = (
-  groupId: string,
-) => {
+export const getGetGroupSettingsQueryKey = (groupId: string) => {
   return [`/api/admin/groups/${groupId}/settings`] as const;
 };
 
-export const getGetApiAdminGroupsGroupIdSettingsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getApiAdminGroupsGroupIdSettings>>,
+export const getGetGroupSettingsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getGroupSettings>>,
   TError = ErrorType<unknown>,
 >(
   groupId: string,
   options?: {
     query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApiAdminGroupsGroupIdSettings>>,
+      Awaited<ReturnType<typeof getGroupSettings>>,
       TError,
       TData
     >;
@@ -59,13 +61,11 @@ export const getGetApiAdminGroupsGroupIdSettingsQueryOptions = <
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ??
-    getGetApiAdminGroupsGroupIdSettingsQueryKey(groupId);
+    queryOptions?.queryKey ?? getGetGroupSettingsQueryKey(groupId);
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getApiAdminGroupsGroupIdSettings>>
-  > = ({ signal }) =>
-    getApiAdminGroupsGroupIdSettings(groupId, requestOptions, signal);
+    Awaited<ReturnType<typeof getGroupSettings>>
+  > = ({ signal }) => getGroupSettings(groupId, requestOptions, signal);
 
   return {
     queryKey,
@@ -73,35 +73,36 @@ export const getGetApiAdminGroupsGroupIdSettingsQueryOptions = <
     enabled: !!groupId,
     ...queryOptions,
   } as UseQueryOptions<
-    Awaited<ReturnType<typeof getApiAdminGroupsGroupIdSettings>>,
+    Awaited<ReturnType<typeof getGroupSettings>>,
     TError,
     TData
   > & { queryKey: QueryKey };
 };
 
-export type GetApiAdminGroupsGroupIdSettingsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getApiAdminGroupsGroupIdSettings>>
+export type GetGroupSettingsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getGroupSettings>>
 >;
-export type GetApiAdminGroupsGroupIdSettingsQueryError = ErrorType<unknown>;
+export type GetGroupSettingsQueryError = ErrorType<unknown>;
 
-export function useGetApiAdminGroupsGroupIdSettings<
-  TData = Awaited<ReturnType<typeof getApiAdminGroupsGroupIdSettings>>,
+/**
+ * @summary Get group settings
+ */
+
+export function useGetGroupSettings<
+  TData = Awaited<ReturnType<typeof getGroupSettings>>,
   TError = ErrorType<unknown>,
 >(
   groupId: string,
   options?: {
     query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApiAdminGroupsGroupIdSettings>>,
+      Awaited<ReturnType<typeof getGroupSettings>>,
       TError,
       TData
     >;
     request?: SecondParameter<typeof customInstance>;
   },
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getGetApiAdminGroupsGroupIdSettingsQueryOptions(
-    groupId,
-    options,
-  );
+  const queryOptions = getGetGroupSettingsQueryOptions(groupId, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
@@ -110,42 +111,46 @@ export function useGetApiAdminGroupsGroupIdSettings<
   return { ...query, queryKey: queryOptions.queryKey };
 }
 
-export const patchApiAdminGroupsGroupIdSettings = (
+/**
+ * Update multiple settings for a specific group
+ * @summary Update group settings
+ */
+export const updateGroupSettings = (
   groupId: string,
-  patchApiAdminGroupsGroupIdSettingsBody: BodyType<PatchApiAdminGroupsGroupIdSettingsBody>,
+  updateGroupSettingsBody: BodyType<UpdateGroupSettingsBody>,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<void>(
+  return customInstance<unknown>(
     {
       url: `/api/admin/groups/${groupId}/settings`,
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      data: patchApiAdminGroupsGroupIdSettingsBody,
+      data: updateGroupSettingsBody,
       signal,
     },
     options,
   );
 };
 
-export const getPatchApiAdminGroupsGroupIdSettingsMutationOptions = <
+export const getUpdateGroupSettingsMutationOptions = <
   TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof patchApiAdminGroupsGroupIdSettings>>,
+    Awaited<ReturnType<typeof updateGroupSettings>>,
     TError,
-    { groupId: string; data: BodyType<PatchApiAdminGroupsGroupIdSettingsBody> },
+    { groupId: string; data: BodyType<UpdateGroupSettingsBody> },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof patchApiAdminGroupsGroupIdSettings>>,
+  Awaited<ReturnType<typeof updateGroupSettings>>,
   TError,
-  { groupId: string; data: BodyType<PatchApiAdminGroupsGroupIdSettingsBody> },
+  { groupId: string; data: BodyType<UpdateGroupSettingsBody> },
   TContext
 > => {
-  const mutationKey = ['patchApiAdminGroupsGroupIdSettings'];
+  const mutationKey = ['updateGroupSettings'];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -155,43 +160,42 @@ export const getPatchApiAdminGroupsGroupIdSettingsMutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof patchApiAdminGroupsGroupIdSettings>>,
-    { groupId: string; data: BodyType<PatchApiAdminGroupsGroupIdSettingsBody> }
+    Awaited<ReturnType<typeof updateGroupSettings>>,
+    { groupId: string; data: BodyType<UpdateGroupSettingsBody> }
   > = (props) => {
     const { groupId, data } = props ?? {};
 
-    return patchApiAdminGroupsGroupIdSettings(groupId, data, requestOptions);
+    return updateGroupSettings(groupId, data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type PatchApiAdminGroupsGroupIdSettingsMutationResult = NonNullable<
-  Awaited<ReturnType<typeof patchApiAdminGroupsGroupIdSettings>>
+export type UpdateGroupSettingsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateGroupSettings>>
 >;
-export type PatchApiAdminGroupsGroupIdSettingsMutationBody =
-  BodyType<PatchApiAdminGroupsGroupIdSettingsBody>;
-export type PatchApiAdminGroupsGroupIdSettingsMutationError =
-  ErrorType<unknown>;
+export type UpdateGroupSettingsMutationBody = BodyType<UpdateGroupSettingsBody>;
+export type UpdateGroupSettingsMutationError = ErrorType<unknown>;
 
-export const usePatchApiAdminGroupsGroupIdSettings = <
+/**
+ * @summary Update group settings
+ */
+export const useUpdateGroupSettings = <
   TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof patchApiAdminGroupsGroupIdSettings>>,
+    Awaited<ReturnType<typeof updateGroupSettings>>,
     TError,
-    { groupId: string; data: BodyType<PatchApiAdminGroupsGroupIdSettingsBody> },
+    { groupId: string; data: BodyType<UpdateGroupSettingsBody> },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationResult<
-  Awaited<ReturnType<typeof patchApiAdminGroupsGroupIdSettings>>,
+  Awaited<ReturnType<typeof updateGroupSettings>>,
   TError,
-  { groupId: string; data: BodyType<PatchApiAdminGroupsGroupIdSettingsBody> },
+  { groupId: string; data: BodyType<UpdateGroupSettingsBody> },
   TContext
 > => {
-  return useMutation(
-    getPatchApiAdminGroupsGroupIdSettingsMutationOptions(options),
-  );
+  return useMutation(getUpdateGroupSettingsMutationOptions(options));
 };

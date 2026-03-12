@@ -6,4 +6,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type PatchApiAdminGroupsGroupIdSettingsBody = { [key: string]: unknown };
+export type ScanProduct200VariableWeight = {
+  productCode: string;
+  weight?: number;
+  price?: number;
+};
