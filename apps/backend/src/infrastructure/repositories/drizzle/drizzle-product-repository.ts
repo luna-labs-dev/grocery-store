@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import { injectable } from 'tsyringe';
-import { db } from './setup/connection';
+import { type DrizzleTransaction, db } from './setup/connection';
 import * as schema from './setup/schema';
 import type {
   ProductRepositories,
@@ -10,8 +10,9 @@ import type { Product } from '@/domain';
 
 @injectable()
 export class DrizzleProductRepository implements ProductRepositories {
-  add = async (product: Product, transaction?: any): Promise<void> => {
-    const client = transaction || db;
+  add = async (product: Product, transaction?: unknown): Promise<void> => {
+    const client = (transaction as DrizzleTransaction) || db;
+
     await client.insert(schema.productTable).values({
       id: product.id,
       shoppingEventId: product.shoppingEventId,
@@ -26,8 +27,9 @@ export class DrizzleProductRepository implements ProductRepositories {
     });
   };
 
-  update = async (product: Product, transaction?: any): Promise<void> => {
-    const client = transaction || db;
+  update = async (product: Product, transaction?: unknown): Promise<void> => {
+    const client = (transaction as DrizzleTransaction) || db;
+
     await client
       .update(schema.productTable)
       .set({
@@ -47,9 +49,10 @@ export class DrizzleProductRepository implements ProductRepositories {
 
   remove = async (
     { shoppingEventId, productId }: RemoveProductRepositoryParams,
-    transaction?: any,
+    transaction?: unknown,
   ): Promise<void> => {
-    const client = transaction || db;
+    const client = (transaction as DrizzleTransaction) || db;
+
     await client
       .delete(schema.productTable)
       .where(

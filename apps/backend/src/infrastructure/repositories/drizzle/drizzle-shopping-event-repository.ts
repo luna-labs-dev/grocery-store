@@ -1,4 +1,14 @@
-import { and, asc, count, desc, eq, gte, lte } from 'drizzle-orm';
+import {
+  type AnyColumn,
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  getTableColumns,
+  gte,
+  lte,
+} from 'drizzle-orm';
 import { inject, injectable } from 'tsyringe';
 import { db } from './setup/connection';
 import * as schema from './setup/schema';
@@ -11,11 +21,12 @@ import type {
 } from '@/application';
 import { CollaborationGroup, Market, Product, ShoppingEvent } from '@/domain';
 import { Products } from '@/domain/entities/products';
+import type { ShoppingEventStatus } from '@/domain/entities/shopping-event';
 import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
 
-type ShoppingEventModel = typeof schema.shopping_eventTable.$inferSelect & {
+type ShoppingEventModel = typeof schema.shoppingEventTable.$inferSelect & {
   group?: typeof schema.groupTable.$inferSelect & {
     members: (typeof schema.groupMemberTable.$inferSelect & {
       user: typeof schema.userTable.$inferSelect;
@@ -39,20 +50,25 @@ export class DrizzleShoppingEventRepository
     status,
     period,
   }: CountShoppingEventListRepositoryParams): Promise<number> => {
-    const conditions = [eq(schema.shopping_eventTable.groupId, groupId)];
+    const conditions = [eq(schema.shoppingEventTable.groupId, groupId)];
 
     if (status !== undefined) {
-      conditions.push(eq(schema.shopping_eventTable.status, status as any));
+      conditions.push(
+        eq(
+          schema.shoppingEventTable.status,
+          status as typeof schema.shoppingEventTable.$inferSelect.status,
+        ),
+      );
     }
 
     if (period) {
-      conditions.push(gte(schema.shopping_eventTable.createdAt, period.start));
-      conditions.push(lte(schema.shopping_eventTable.createdAt, period.end));
+      conditions.push(gte(schema.shoppingEventTable.createdAt, period.start));
+      conditions.push(lte(schema.shoppingEventTable.createdAt, period.end));
     }
 
     const queryResult = await db
       .select({ value: count() })
-      .from(schema.shopping_eventTable)
+      .from(schema.shoppingEventTable)
       .where(and(...conditions));
 
     return queryResult[0].value;
@@ -67,28 +83,35 @@ export class DrizzleShoppingEventRepository
     orderBy,
     orderDirection,
   }: GetShoppingEventListRepositoryParams): Promise<ShoppingEvent[]> => {
-    const conditions = [eq(schema.shopping_eventTable.groupId, groupId)];
+    const conditions = [eq(schema.shoppingEventTable.groupId, groupId)];
 
     if (status !== undefined) {
-      conditions.push(eq(schema.shopping_eventTable.status, status as any));
+      conditions.push(
+        eq(
+          schema.shoppingEventTable.status,
+          status as typeof schema.shoppingEventTable.$inferSelect.status,
+        ),
+      );
     }
 
     if (period) {
-      conditions.push(gte(schema.shopping_eventTable.createdAt, period.start));
-      conditions.push(lte(schema.shopping_eventTable.createdAt, period.end));
+      conditions.push(gte(schema.shoppingEventTable.createdAt, period.start));
+      conditions.push(lte(schema.shoppingEventTable.createdAt, period.end));
     }
 
     const orderFn = orderDirection === 'DESC' ? desc : asc;
-    let orderColumn = (schema.shopping_eventTable as any)[orderBy];
+    const columns = getTableColumns(schema.shoppingEventTable);
+    let orderColumn = (columns as Record<string, AnyColumn>)[orderBy as string];
+
     if (!orderColumn && (orderBy as string) === 'market') {
-      orderColumn = schema.shopping_eventTable.createdAt;
+      orderColumn = schema.shoppingEventTable.createdAt;
     }
 
-    const shoppingEvents = await db.query.shopping_eventTable.findMany({
+    const shoppingEvents = await db.query.shoppingEventTable.findMany({
       where: and(...conditions),
       limit: pageSize,
       offset: pageIndex * pageSize,
-      orderBy: [orderFn(orderColumn || schema.shopping_eventTable.createdAt)],
+      orderBy: [orderFn(orderColumn || schema.shoppingEventTable.createdAt)],
       with: {
         market: true,
         products: true,
@@ -103,7 +126,7 @@ export class DrizzleShoppingEventRepository
     });
 
     if (shoppingEvents.length === 0) return [];
-    return shoppingEvents.map((se) => this.toDomain(se as any));
+    return shoppingEvents.map((se) => this.toDomain(se as ShoppingEventModel));
   };
 
   getById = async ({
@@ -112,10 +135,10 @@ export class DrizzleShoppingEventRepository
   }: GetShoppingEventByIdRepositoryProps): Promise<
     ShoppingEvent | undefined
   > => {
-    const shoppingEvent = await db.query.shopping_eventTable.findFirst({
+    const shoppingEvent = await db.query.shoppingEventTable.findFirst({
       where: and(
-        eq(schema.shopping_eventTable.id, shoppingEventId),
-        eq(schema.shopping_eventTable.groupId, groupId),
+        eq(schema.shoppingEventTable.id, shoppingEventId),
+        eq(schema.shoppingEventTable.groupId, groupId),
       ),
       with: {
         market: true,
@@ -133,12 +156,12 @@ export class DrizzleShoppingEventRepository
     });
 
     if (!shoppingEvent) return undefined;
-    return this.toDomain(shoppingEvent as any);
+    return this.toDomain(shoppingEvent as unknown as ShoppingEventModel);
   };
 
   add = async (shoppingEvent: ShoppingEvent): Promise<void> => {
     await db.transaction(async (tx) => {
-      await tx.insert(schema.shopping_eventTable).values({
+      await tx.insert(schema.shoppingEventTable).values({
         id: shoppingEvent.id,
         groupId: shoppingEvent.groupId,
         marketId: shoppingEvent.marketId,
@@ -146,7 +169,9 @@ export class DrizzleShoppingEventRepository
         totalPaid: shoppingEvent.totalPaid ?? 0,
         wholesaleTotal: shoppingEvent.wholesaleTotal ?? 0,
         retailTotal: shoppingEvent.retailTotal ?? 0,
-        status: shoppingEvent.status as any,
+        status:
+          shoppingEvent.status as typeof schema.shoppingEventTable.$inferSelect.status,
+
         createdAt: shoppingEvent.createdAt,
         finishedAt: shoppingEvent.finishedAt ?? null,
         createdBy: shoppingEvent.createdBy,
@@ -164,21 +189,23 @@ export class DrizzleShoppingEventRepository
   update = async (shoppingEvent: ShoppingEvent): Promise<void> => {
     await db.transaction(async (tx) => {
       await tx
-        .update(schema.shopping_eventTable)
+        .update(schema.shoppingEventTable)
         .set({
           groupId: shoppingEvent.groupId,
           description: shoppingEvent.description ?? null,
           totalPaid: shoppingEvent.totalPaid ?? 0,
           wholesaleTotal: shoppingEvent.wholesaleTotal ?? 0,
           retailTotal: shoppingEvent.retailTotal ?? 0,
-          status: shoppingEvent.status as any,
+          status:
+            shoppingEvent.status as typeof schema.shoppingEventTable.$inferSelect.status,
+
           elapsedTime: shoppingEvent.elapsedTime ?? null,
           finishedAt: shoppingEvent.finishedAt ?? null,
         })
         .where(
           and(
-            eq(schema.shopping_eventTable.id, shoppingEvent.id),
-            eq(schema.shopping_eventTable.marketId, shoppingEvent.marketId),
+            eq(schema.shoppingEventTable.id, shoppingEvent.id),
+            eq(schema.shoppingEventTable.marketId, shoppingEvent.marketId),
           ),
         );
 
@@ -229,7 +256,7 @@ export class DrizzleShoppingEventRepository
 
     return ShoppingEvent.create(
       {
-        groupId: shoppingEventModel.groupId!,
+        groupId: shoppingEventModel.groupId ?? '',
         group,
         marketId: shoppingEventModel.marketId,
         market: Market.create(
@@ -250,10 +277,10 @@ export class DrizzleShoppingEventRepository
         totalPaid: Number(shoppingEventModel.totalPaid ?? 0),
         wholesaleTotal: Number(shoppingEventModel.wholesaleTotal ?? 0),
         retailTotal: Number(shoppingEventModel.retailTotal ?? 0),
-        status: shoppingEventModel.status as any,
+        status: shoppingEventModel.status as ShoppingEventStatus,
         products: Products.create(
           shoppingEventModel.products
-            ? shoppingEventModel.products.map((p: any) =>
+            ? shoppingEventModel.products.map((p) =>
                 Product.create(
                   {
                     shoppingEventId: shoppingEventModel.id,
@@ -273,6 +300,7 @@ export class DrizzleShoppingEventRepository
               )
             : [],
         ),
+
         elapsedTime: shoppingEventModel.elapsedTime
           ? Number(shoppingEventModel.elapsedTime)
           : undefined,

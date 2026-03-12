@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import { injectable } from 'tsyringe';
-import { db } from './setup/connection';
+import { type DrizzleTransaction, db } from './setup/connection';
 import * as schema from './setup/schema';
 import type {
   AddGroupRepository,
@@ -153,7 +153,10 @@ export class DrizzleGroupRepository
     });
   }
 
-  private async syncMembers(tx: any, group: CollaborationGroup): Promise<void> {
+  private async syncMembers(
+    tx: DrizzleTransaction,
+    group: CollaborationGroup,
+  ): Promise<void> {
     const currentMembers = (await tx.query.groupMemberTable.findMany({
       where: eq(schema.groupMemberTable.groupId, group.id),
     })) as (typeof schema.groupMemberTable.$inferSelect)[];
@@ -177,7 +180,7 @@ export class DrizzleGroupRepository
   }
 
   private async addMembers(
-    tx: any,
+    tx: DrizzleTransaction,
     groupId: string,
     members: GroupMember[],
   ): Promise<void> {
@@ -194,7 +197,7 @@ export class DrizzleGroupRepository
   }
 
   private async removeMembers(
-    tx: any,
+    tx: DrizzleTransaction,
     groupId: string,
     members: (typeof schema.groupMemberTable.$inferSelect)[],
   ): Promise<void> {
@@ -213,7 +216,7 @@ export class DrizzleGroupRepository
   }
 
   private async updateMembers(
-    tx: any,
+    tx: DrizzleTransaction,
     currentMembers: (typeof schema.groupMemberTable.$inferSelect)[],
     members: GroupMember[],
   ): Promise<void> {

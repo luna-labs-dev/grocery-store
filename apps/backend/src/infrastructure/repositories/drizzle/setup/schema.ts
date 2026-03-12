@@ -20,7 +20,7 @@ export const money = customType<{ data: number; driverData: string }>({
   dataType() {
     return 'money';
   },
-  fromDriver(value: any): number {
+  fromDriver(value: unknown): number {
     if (typeof value === 'number') return value;
     return Number(String(value).replace(/[^0-9.-]+/g, ''));
   },
@@ -147,7 +147,7 @@ export const marketTable = pgTable(
   ],
 );
 
-export const shopping_eventTable = pgTable('shopping_event', {
+export const shoppingEventTable = pgTable('shopping_event', {
   id: uuid('id').primaryKey().defaultRandom(),
   groupId: uuid('groupId').references(() => groupTable.id),
   marketId: varchar('marketId', { length: 320 })
@@ -178,8 +178,41 @@ export const productIdentityTable = pgTable('product_identity', {
   canonicalProductId: uuid('canonicalProductId')
     .notNull()
     .references(() => canonicalProductTable.id),
-  type: varchar('type', { length: 50 }).notNull(), // e.g., 'EAN'
+  type: varchar('type', { length: 50 }).notNull(), // e.g., 'EAN', 'PLU'
   value: varchar('value', { length: 256 }).notNull(),
+  name: varchar('name', { length: 256 }),
+  brand: varchar('brand', { length: 256 }),
+  imageUrl: text('imageUrl'),
+  createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
+});
+
+export const physicalEanTable = pgTable('physical_ean', {
+  barcode: varchar('barcode', { length: 256 }).primaryKey(),
+  productIdentityId: uuid('productIdentityId')
+    .notNull()
+    .references(() => productIdentityTable.id),
+  source: varchar('source', { length: 50 }).notNull().default('LOCAL'), // e.g., 'LOCAL', 'OFF', 'UPCITEMDB'
+  createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
+});
+
+export const externalFetchSourceEnum = pgEnum('externalFetchSourceEnum', [
+  'OFF',
+  'UPCITEMDB',
+]);
+
+export const externalFetchStatusEnum = pgEnum('externalFetchStatusEnum', [
+  'SUCCESS',
+  'MISS',
+  'ERROR',
+]);
+
+export const externalFetchLogTable = pgTable('external_fetch_log', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  barcode: varchar('barcode', { length: 256 }).notNull(),
+  source: externalFetchSourceEnum('source').notNull(),
+  status: externalFetchStatusEnum('status').notNull(),
+  durationMs: bigint('durationMs', { mode: 'number' }),
+  responsePayload: jsonb('responsePayload'),
   createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
 });
 
@@ -187,7 +220,7 @@ export const productTable = pgTable('product', {
   id: uuid('id').primaryKey().defaultRandom(),
   shoppingEventId: uuid('shoppingEventId')
     .notNull()
-    .references(() => shopping_eventTable.id),
+    .references(() => shoppingEventTable.id),
   canonicalProductId: uuid('canonicalProductId')
     .notNull()
     .references(() => canonicalProductTable.id),
@@ -215,7 +248,7 @@ export const settingsTable = pgTable(
 
 export const groupRelations = relations(groupTable, ({ many }) => ({
   members: many(groupMemberTable),
-  shopping_events: many(shopping_eventTable),
+  shoppingEvents: many(shoppingEventTable),
 }));
 
 export const groupMemberRelations = relations(groupMemberTable, ({ one }) => ({
@@ -234,18 +267,18 @@ export const userRelations = relations(userTable, ({ many }) => ({
 }));
 
 export const marketRelations = relations(marketTable, ({ many }) => ({
-  shopping_events: many(shopping_eventTable),
+  shoppingEvents: many(shoppingEventTable),
 }));
 
 export const shoppingEventRelations = relations(
-  shopping_eventTable,
+  shoppingEventTable,
   ({ one, many }) => ({
     market: one(marketTable, {
-      fields: [shopping_eventTable.marketId],
+      fields: [shoppingEventTable.marketId],
       references: [marketTable.id],
     }),
     group: one(groupTable, {
-      fields: [shopping_eventTable.groupId],
+      fields: [shoppingEventTable.groupId],
       references: [groupTable.id],
     }),
     products: many(productTable),
@@ -253,9 +286,9 @@ export const shoppingEventRelations = relations(
 );
 
 export const productRelations = relations(productTable, ({ one }) => ({
-  shoppingEvent: one(shopping_eventTable, {
+  shoppingEvent: one(shoppingEventTable, {
     fields: [productTable.shoppingEventId],
-    references: [shopping_eventTable.id],
+    references: [shoppingEventTable.id],
   }),
   canonicalProduct: one(canonicalProductTable, {
     fields: [productTable.canonicalProductId],
@@ -273,13 +306,21 @@ export const canonicalProductRelations = relations(
 
 export const productIdentityRelations = relations(
   productIdentityTable,
-  ({ one }) => ({
+  ({ one, many }) => ({
     canonicalProduct: one(canonicalProductTable, {
       fields: [productIdentityTable.canonicalProductId],
       references: [canonicalProductTable.id],
     }),
+    physicalEans: many(physicalEanTable),
   }),
 );
+
+export const physicalEanRelations = relations(physicalEanTable, ({ one }) => ({
+  productIdentity: one(productIdentityTable, {
+    fields: [physicalEanTable.productIdentityId],
+    references: [productIdentityTable.id],
+  }),
+}));
 
 export const outboxEventStatusEnum = pgEnum('outboxEventStatusEnum', [
   'pending',

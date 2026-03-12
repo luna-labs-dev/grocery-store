@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { injectable } from 'tsyringe';
-import { db } from './setup/connection';
+import { type DrizzleTransaction, db } from './setup/connection';
 import * as schema from './setup/schema';
 import type {
   AddCanonicalProductRepository,
@@ -18,9 +18,10 @@ export class DrizzleCanonicalProductRepository
 {
   add = async (
     canonicalProduct: CanonicalProduct,
-    transaction?: any,
+    transaction?: unknown,
   ): Promise<void> => {
-    const client = transaction || db;
+    const client = (transaction as DrizzleTransaction) || db;
+
     await client.insert(schema.canonicalProductTable).values({
       id: canonicalProduct.id,
       name: canonicalProduct.name,
@@ -57,9 +58,10 @@ export class DrizzleCanonicalProductRepository
 
   update = async (
     canonicalProduct: CanonicalProduct,
-    transaction?: any,
+    transaction?: unknown,
   ): Promise<void> => {
-    const client = transaction || db;
+    const client = (transaction as DrizzleTransaction) || db;
+
     await client
       .update(schema.canonicalProductTable)
       .set({

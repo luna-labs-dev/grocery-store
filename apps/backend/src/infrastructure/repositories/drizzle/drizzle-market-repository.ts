@@ -1,4 +1,5 @@
 import {
+  type AnyColumn,
   and,
   asc,
   desc,
@@ -84,7 +85,8 @@ export class DrizzleMarketRepository implements MarketRepositories {
       }
 
       // If ordering by a column on the table
-      const column = (marketTable as any)[orderBy];
+      const columns = getTableColumns(marketTable);
+      const column = (columns as Record<string, AnyColumn>)[orderBy];
 
       return orderDirection === 'asc' ? asc(column) : desc(column);
     };

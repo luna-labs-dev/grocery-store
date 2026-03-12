@@ -22,7 +22,7 @@ const ensureDatabaseExists = async (baseClient: postgres.Sql) => {
 const createDatabase = async (baseClient: postgres.Sql) => {
   try {
     await baseClient.unsafe(`CREATE DATABASE "${env.database.dbName}"`);
-  } catch (createErr: any) {
+  } catch (createErr: unknown) {
     if (isCollationError(createErr)) {
       await fixCollationAndRetry(baseClient);
     } else {
@@ -31,8 +31,14 @@ const createDatabase = async (baseClient: postgres.Sql) => {
   }
 };
 
-const isCollationError = (err: any) =>
-  err.code === 'XX000' && err.message?.includes('collation');
+const isCollationError = (err: unknown) =>
+  typeof err === 'object' &&
+  err !== null &&
+  'code' in err &&
+  err.code === 'XX000' &&
+  'message' in err &&
+  typeof err.message === 'string' &&
+  err.message.includes('collation');
 
 const fixCollationAndRetry = async (baseClient: postgres.Sql) => {
   console.warn('Caught collation version mismatch error. Attempting to fix...');

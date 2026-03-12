@@ -11,7 +11,8 @@ export class DrizzleOutboxEventRepository implements OutboxEventRepositories {
     await db.insert(outboxEventTable).values({
       id: event.id,
       type: event.type,
-      payload: event.payload as any,
+      payload: event.payload as Record<string, unknown>,
+
       status: event.status,
       lastError: event.lastError,
       retryCount: event.retryCount,
