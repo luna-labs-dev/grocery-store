@@ -5,19 +5,43 @@ import { AddProductToCartDrawer } from '../../src/features/shopping-event/featur
 
 // Mock components from @/components
 vi.mock('@/components', () => ({
-  Drawer: ({ children, open, onOpenChange: _ }: any) => (
+  // biome-ignore lint/style/useNamingConvention: components
+  Drawer: ({
+    children,
+    open,
+    onOpenChange: _,
+  }: {
+    children: React.ReactNode;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+  }) => (
     <div data-testid="drawer" data-open={open}>
       {children}
     </div>
   ),
-  DrawerContent: ({ children }: any) => (
+
+  // biome-ignore lint/style/useNamingConvention: components
+  DrawerContent: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="drawer-content">{children}</div>
   ),
-  DrawerHeader: ({ children }: any) => <div>{children}</div>,
-  DrawerTitle: ({ children }: any) => <div>{children}</div>,
-  DrawerDescription: ({ children }: any) => <div>{children}</div>,
-  DrawerFooter: ({ children }: any) => <div>{children}</div>,
-  DrawerTrigger: ({ children }: any) => (
+  // biome-ignore lint/style/useNamingConvention: components
+  DrawerHeader: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  // biome-ignore lint/style/useNamingConvention: components
+  DrawerTitle: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  // biome-ignore lint/style/useNamingConvention: components
+  DrawerDescription: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  // biome-ignore lint/style/useNamingConvention: components
+  DrawerFooter: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  // biome-ignore lint/style/useNamingConvention: components
+  DrawerTrigger: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="drawer-trigger">{children}</div>
   ),
 }));
@@ -34,8 +58,17 @@ vi.mock('@/hooks', () => ({
 vi.mock(
   '@/features/shopping-event/features/shopping-event-details/components/cart/product-form-composite',
   () => ({
+    // biome-ignore lint/style/useNamingConvention: components
     ProductFormComposite: {
-      Root: ({ children, onSuccess, onCancel }: any) => (
+      root: ({
+        children,
+        onSuccess,
+        onCancel,
+      }: {
+        children: React.ReactNode;
+        onSuccess: () => void;
+        onCancel: () => void;
+      }) => (
         <div data-testid="product-form-root">
           {children}
           <button type="button" data-testid="mock-success" onClick={onSuccess}>
@@ -46,8 +79,9 @@ vi.mock(
           </button>
         </div>
       ),
-      Fields: () => <div data-testid="product-form-fields" />,
-      Actions: () => <div data-testid="product-form-actions" />,
+
+      fields: () => <div data-testid="product-form-fields" />,
+      actions: () => <div data-testid="product-form-actions" />,
     },
   }),
 );
