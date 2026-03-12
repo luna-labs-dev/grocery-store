@@ -1,7 +1,7 @@
-# Tasks: Cart Workflow Completion (003)
+# Tasks: Cart Workflow Completion
 
 **Input**: Design documents from `/.specify/specs/003-cart-workflow-completion/`
-**Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/
+**Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
 **Tests**: Mandatory per Constitution Principle III. Write Red tests FIRST. 100% coverage required for all new logic.
 
@@ -10,15 +10,17 @@
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Can run in parallel (different files, no dependencies)
-- **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)
+- **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3, US4)
 - Include exact file paths in descriptions
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-**Purpose**: Project initialization and base requirements
+**Purpose**: Project initialization and basic structure
 
-- [ ] T001 Configure environment variables for OFF (Open Food Facts) and UPCitemdb in `apps/backend/.env`
-- [ ] T002 Update `orval.config.ts` if needed to include new product-related endpoints
+- [ ] T001 [P] Define `ExternalFetchLog` and `OutboxEvent` schemas in `apps/backend/src/infrastructure/database/schema/`
+- [ ] T002 [P] Register `OFF` and `UPCitemdb` environment variables in `apps/backend/src/main/config/env.ts`
+- [ ] T003 Configure `Buidler` circuit breaker factory in `apps/backend/src/infrastructure/services/resilience/`
+- [ ] T004 [P] Install `react-zxing` in `apps/frontend/` using `pnpm add react-zxing`
 
 ---
 
@@ -26,132 +28,130 @@
 
 **Purpose**: Core infrastructure that MUST be complete before ANY user story can be implemented
 
-- [ ] T003 Create database migrations for `physical_ean` and `external_fetch_log` in `apps/backend/drizzle`
-- [ ] T004 Implement `PhysicalEAN` and `ExternalFetchLog` entities in `apps/backend/src/infrastructure/repositories/drizzle/setup/schema.ts`
-- [ ] T005 [P] Create `ExternalProductClient` interface and base Axios/HttpService configuration with 2000ms timeout in `apps/backend/src/infrastructure/external`
-- [ ] T006 [P] Implement Circuit Breaker wrapper for external HTTP calls
+- [ ] T005 Create database migration for `physical_eans`, `external_fetch_logs`, and `outbox_events` in `apps/backend/drizzle/`
+- [ ] T006 [P] Implement `VariableWeightParser` utility in `apps/backend/src/application/utils/`
+- [ ] T007 [P] Define `ExternalProductClient` interface in `apps/backend/src/application/contracts/services/`
+- [ ] T008 [P] Implement base `OutboxRepository` in `apps/backend/src/infrastructure/database/repositories/`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
 ---
 
-## Phase 3: User Story 1 - Product Scanning with Internal Match (Priority: P1) 🎯 MVP
+## Phase 3: User Story 1 - Product Scanning Interior Match (Priority: P1) 🎯 MVP
 
-**Goal**: Identify products quickly using local database mapping.
+**Goal**: Instant recognition of products existing in the local database with mandatory price confirmation.
 
-**Independent Test**: Scan an EAN-13 barcode that exists in the local `physical_eans` table. Verify it maps correctly to a `ProductIdentity`.
+**Independent Test**: Scan an EAN-13 from `physical_eans`. Verify app prompts for price confirmation instead of auto-adding.
 
 ### Tests for User Story 1
-- [ ] T007 [P] [US1] Unit test for `ScanProductUseCase` (Local Match) in `apps/backend/tests/unit/application/usecases/scan-product-usecase.spec.ts`
-- [ ] T008 [P] [US1] Integration test for `PhysicalEanRepository` in `apps/backend/tests/integration/infrastructure/repositories/drizzle-physical-ean-repository.spec.ts`
+- [ ] T009 [P] [US1] Unit test for `ScanProductUseCase` (Internal Match + FR-008 Confirmation) in `apps/backend/tests/unit/application/usecases/products/`
+- [ ] T010 [P] [US1] Contract test for `GET /api/products/scan/:barcode` (ensure `requiresPriceConfirmation` in response) in `apps/backend/tests/contract/`
+- [ ] T011 [P] [US1] Unit test for `ScannerOverlay` component in `apps/frontend/src/features/shopping-event/components/`
 
 ### Implementation for User Story 1
-- [ ] T009 [P] [US1] Implement `DrizzlePhysicalEanRepository` in `apps/backend/src/infrastructure/repositories/drizzle/drizzle-physical-ean-repository.ts`
-- [ ] T010 [US1] Implement `ScanProductUseCase` (Local Match logic) in `apps/backend/src/application/usecases/scan-product-usecase.ts`
-- [ ] T011 [US1] Create `/api/products/scan/:barcode` endpoint in `apps/backend/src/infrastructure/api/controllers/product-controller.ts`
-- [ ] T012 [US1] Frontend: Basic Scanner UI with barcode capture in `apps/frontend/src/features/scanner/components/scanner-view.tsx`
+- [ ] T012 [P] [US1] Implement `DrizzlePhysicalEanRepository` in `apps/backend/src/infrastructure/database/repositories/`
+- [ ] T013 [US1] Implement `ScanProductUseCase` with mandatory confirmation logic in `apps/backend/src/application/usecases/products/`
+- [ ] T014 [US1] Create `ProductController.scanProduct` endpoint in `apps/backend/src/api/controllers/`
+- [ ] T015 [US1] Implement `ScannerOverlay` using `react-zxing` in `apps/frontend/src/features/shopping-event/components/`
+- [ ] T016 [US1] Implement `PriceConfirmationDrawer` using `vaul` in `apps/frontend/src/features/shopping-event/components/`
 
-**Checkpoint**: User Story 1 (Internal Scan) is functional.
+**Checkpoint**: User Story 1 (MVP) functional for local matches with full-stack confirmation flow.
 
 ---
 
 ## Phase 4: User Story 2 - External API Fallback (Priority: P1)
 
-**Goal**: Fetch product details from OFF/UPCitemdb when not found locally.
+**Goal**: Search external databases (OFF/UPCitemdb) when local lookup fails.
 
-**Independent Test**: Scan a barcode not in the local DB. Verify `ExternalProductClient` triggers and hydrates the local database.
+**Independent Test**: Scan barcode not in DB. Verify backend fetches data and frontend prompts for price.
 
 ### Tests for User Story 2
-- [ ] T013 [P] [US2] Unit test for `OpenFoodFactsClient` (mocked) in `apps/backend/tests/unit/infrastructure/external/off-client.spec.ts`
-- [ ] T014 [P] [US2] Integration test for background hydration (Outbox) in `apps/backend/tests/integration/application/workers/hydration-worker.spec.ts`
+- [ ] T017 [P] [US2] Unit tests for `OpenFoodFactsClient` and `UpcItemDbClient` in `apps/backend/tests/unit/infrastructure/services/`
+- [ ] T018 [US2] Unit test for `ScanProductUseCase` (External Fallback + Hydration Logic) in `apps/backend/tests/unit/application/usecases/products/`
 
 ### Implementation for User Story 2
-- [ ] T015 [P] [US2] Implement `OpenFoodFactsClient` in `apps/backend/src/infrastructure/external/off-client.ts`
-- [ ] T016 [US2] Update `ScanProductUseCase` to include external fallback logic (depends on T010, T015)
-- [ ] T017 [US2] Implement `ExternalFetchLog` persistence in `ScanProductUseCase`
-- [ ] T018 [US2] Setup Outbox event for product hydration in `apps/backend/src/domain/products/events/product-fetched-event.ts`
-- [ ] T019 [US2] Implement `BackgroundHydrationWorker` in `apps/backend/src/application/workers/hydration-worker.ts`
+- [ ] T019 [P] [US2] Implement `OpenFoodFactsClient` with circuit breaker in `apps/backend/src/infrastructure/services/`
+- [ ] T020 [P] [US2] Implement `UpcItemDbClient` with circuit breaker in `apps/backend/src/infrastructure/services/`
+- [ ] T021 [US2] Update backend `ScanProductUseCase` to include external fallback and outbox event emission
+- [ ] T022 [US2] Create `HydrateProductJob` worker in `apps/backend/src/application/jobs/`
+- [ ] T023 [US2] Handle external product loading states in frontend scan flow
 
-**Checkpoint**: User Story 2 (External Fallback) is functional.
+**Checkpoint**: External fallbacks successfully hydrate the catalog.
 
 ---
 
-## Phase 5: User Story 3 - Manual Search & Selection (Priority: P2)
+## Phase 5: User Story 3 - Manual Search (Priority: P2)
 
-**Goal**: Support broken labels/loose items via fuzzy search.
+**Goal**: Search for products by name/brand when barcodes are unavailable.
 
-**Independent Test**: Perform fuzzy search for "Coca" and verify results include "Coca-Cola".
+**Independent Test**: Search for "Apples". Verify result list supports infinite scroll and price confirmation on selection.
 
 ### Tests for User Story 3
-- [ ] T020 [P] [US3] Unit test for `ManualSearchUseCase` in `apps/backend/tests/unit/application/usecases/manual-search-usecase.spec.ts`
+- [ ] T024 [P] [US3] Unit test for `ManualSearchUseCase` in `apps/backend/tests/unit/application/usecases/products/`
+- [ ] T025 [P] [US3] Unit test for `ProductSearch` component with infinite scroll in `apps/frontend/src/features/market/components/`
 
 ### Implementation for User Story 3
-- [ ] T021 [US3] Implement fuzzy search logic in `apps/backend/src/infrastructure/repositories/drizzle/drizzle-product-identity-repository.ts`
-- [ ] T022 [US3] Implement `ManualSearchUseCase` in `apps/backend/src/application/usecases/manual-search-usecase.ts`
-- [ ] T023 [US3] Add `/api/products/search` endpoint to `product-controller.ts`
-- [ ] T024 [US3] Frontend: Search bar and results list in `apps/frontend/src/features/scanner/components/product-search-drawer.tsx`
-
-**Checkpoint**: User Story 3 (Manual Search) is functional.
+- [ ] T026 [P] [US3] Implement fuzzy search + pagination in `DrizzleProductIdentityRepository` in `apps/backend/src/infrastructure/database/repositories/`
+- [ ] T027 [US3] Implement `ManualSearchUseCase` in `apps/backend/src/application/usecases/products/`
+- [ ] T028 [US3] Implement search UI in `apps/frontend/src/features/market/components/` using `useInfiniteQuery`
 
 ---
 
-## Phase 6: User Story 4 - Variable-Weight Barcode Support (Priority: P3)
+## Phase 6: User Story 4 - Variable-Weight Support (Priority: P3)
 
-**Goal**: Recognition of price/weight embedded barcodes starting with '2'.
+**Goal**: Extract weight/price from EAN-13 barcodes starting with "2".
 
-**Independent Test**: Scan a barcode starting with '2' and verify weight/price is correctly parsed in the cart.
+**Independent Test**: Scan barcode "2012345005007". Verify parsed weight is displayed in confirmation drawer.
 
 ### Tests for User Story 4
-- [ ] T025 [P] [US4] Unit test for `VariableWeightParser` in `apps/backend/tests/unit/domain/products/services/variable-weight-parser.spec.ts`
+- [ ] T029 [P] [US4] Unit tests for `VariableWeightParser` in `apps/backend/tests/unit/application/utils/`
+- [ ] T030 [US4] Integration test for full resolution of variable weight barcodes
 
 ### Implementation for User Story 4
-- [ ] T026 [US4] Implement `VariableWeightParser` domain service in `apps/backend/src/domain/products/services/variable-weight-parser.ts`
-- [ ] T027 [US4] Integrate `VariableWeightParser` into `ScanProductUseCase` logic
-- [ ] T028 [US4] Implement price-to-weight auto-calculation logic (per FR-004 clarification)
-
-**Checkpoint**: User Story 4 (Variable Weight) is functional.
+- [ ] T031 [US4] Integrate `VariableWeightParser` into `ScanProductUseCase` logic
+- [ ] T032 [US4] Update `PriceConfirmationDrawer` in frontend to display weight for price-embedded barcodes
 
 ---
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-**Purpose**: Improvements and final validation
+**Purpose**: Cleanup and final verification
 
-- [ ] T029 [US1] Implement Duplicate Scan detection and quantity increment (FR-007) in `ScanProductUseCase`
-- [ ] T030 [P] Frontend: Add Haptic Feedback on successful scan in `apps/frontend/src/hooks/use-haptics.ts` (if missing or update existing)
-- [ ] T031 Frontend: Add visual feedback (toast/confetti) on product add
-- [ ] T032 Run `quickstart.md` validation to ensure dev environment setup is valid
-- [ ] T033 [P] Final architectural audit to ensure UseCases remain pure (Domain Layer check)
+- [ ] T033 [P] Implement duplicate scan detection (quantity increment) in `CartService` in `apps/backend/src/application/services/`
+- [ ] T034 [P] Add `sonner` toast confirmation for successful items additions in `apps/frontend/`
+- [ ] T035 [P] Performance audit (Local speed SC-001, External total SC-002)
+- [ ] T036 Complete quality gates: `pnpm vitest run`, `pnpm tsc`, and `pnpm biome check` across all workspaces
 
 ---
 
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
-- **Setup & Foundational**: Must complete T001-T006 before user stories.
-- **US1 & US2**: US1 is the base; US2 extends it with external calls.
-- **US4**: Depends on US1/US2 being able to identify the `ProductIdentity` to get unit price.
+- **Setup (Phase 1)**: Must complete T001-T004 first.
+- **Foundational (Phase 2)**: T005-T008 block all user story logic.
+- **User Stories**:
+  - **US1 (P1)**: Baseline for all scanning UI and confirmation UX.
+  - **US2 (P1)**: Extends US1 with backend-driven hydration.
+  - **US3 (P2)**: Independent search feature.
+  - **US4 (P3)**: Specialized parsing extension for deli/bakery items.
 
 ### Parallel Opportunities
-- T005, T006 are parallel foundational tasks.
-- Tests (T007, T008, T013, T014, T020, T025) are all parallelizable.
-- Once Foundation is ready, US1, US2, and US3 can be worked on in parallel across different files.
+- Backend and Frontend Setup tasks (Phase 1).
+- US3 (Manual Search) implementation can run in parallel with US1/US2 after Foundational is complete.
+- Most unit tests [P] can run in parallel.
 
 ---
 
-## Parallel Example: User Story 1
-```bash
-# Developer A: Backend Core
-Task T009: Implement PhysicalEanRepository
-Task T010: Implement ScanProductUseCase
-
-# Developer B: Frontend UI
-Task T012: Create ScannerView component
-```
-
 ## Implementation Strategy
-### MVP First (User Story 1 & 2)
-1. Complete Setup and Foundational database migrations.
-2. Implement US1 for local database matches.
-3. Implement US2 for external fallback (OFF).
-4. **Validation**: Demonstrate a scan working for both local and external items.
+
+### MVP First (User Story 1 Only)
+1. Complete Setup and Foundation.
+2. Implement US1: Local match logic + Scanner UI + Price Confirmation.
+3. **STOP and VALIDATE**: Perfect the "local recognize & pay" loop before adding internet fallbacks.
+
+### Incremental Delivery
+1. Foundation -> Readiness.
+2. US1 -> Reliable local scanner (MVP).
+3. US2 -> Intelligent catalog expansion.
+4. US3 -> Manual fallback search.
+5. US4 -> Variable weight support.

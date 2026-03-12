@@ -25,7 +25,7 @@ As a shopper, I want to scan a product's barcode and have it instantly recognize
 
 **Acceptance Scenarios**:
 
-1. **Given** a barcode "7891234567890" exists in the DB, **When** I scan it, **Then** the app shows the matching "Coca-Cola 350ml" and its last known price.
+1. **Given** a barcode "7891234567890" exists in the DB, **When** I scan it, **Then** the app shows the matching "Coca-Cola 350ml" and prompts for price confirmation.
 
 ---
 
@@ -72,13 +72,16 @@ As a shopper, I want the system to recognize variable-weight barcodes (e.g., fro
 
 ### Functional Requirements
 
-- **FR-001**: System MUST provide a scanner interface that captures EAN-13/UPC barcodes.
+- **FR-001**: System MUST provide a scanner interface using `react-zxing` that captures EAN-13/UPC barcodes.
 - **FR-002**: System MUST first query the local `physical_eans` table before external calls.
-- **FR-003**: System MUST implement `ExternalProductClient` with support for Open Food Facts and UPCitemdb.
+- **FR-003**: System MUST implement `ExternalProductClient` with support for Open Food Facts and UPCitemdb; UPCitemdb MUST use a `Backend Secret` for authentication.
 - **FR-004**: External API calls MUST have a circuit breaker/timeout of 2000ms.
 - **FR-005**: Successfully fetched external products MUST be persisted to the local database via an Outbox pattern mandate; raw responses MUST be stored in `ExternalFetchLog`. A background worker MUST process these events immediately for rapid catalog hydration.
-- **FR-006**: System MUST provide a fuzzy search endpoint for manual product lookup, matching across both `name` and `brand` fields.
+- **FR-006**: System MUST provide a fuzzy search endpoint for manual product lookup, matching across both `name` and `brand` fields; the UI MUST implement `Infinite Scroll` for paginated results.
 - **FR-007**: System MUST detect duplicate scans of items already in the cart and increment the existing quantity instead of creating a new line item.
+- FR-008: System MUST prompt for price confirmation for every scanned item before adding it to the cart, even for local matches. The confirmation drawer MUST display Name (H1), Brand (Sub), and Image (Side), with metadata being read-only.
+- FR-009: When scanner lookups fail (timeout or not found), the system MUST display a "Product Not Found" drawer with a clear "Enter Manually" path.
+- FR-010: Manual search MUST be restricted to the local catalog to ensure result relevance and speed.
 
 ### Key Entities
 
@@ -98,11 +101,21 @@ As a shopper, I want the system to recognize variable-weight barcodes (e.g., fro
 ## Clarifications
 
 ### Session 2026-03-11
+- Q: Price Confirmation Workflow → A: Every item requires price confirmation to ensure fiscal accuracy.
 - Q: External Data Storage Strategy → A: Save full raw JSON in `ExternalFetchLog` + basic info in `ProductIdentity`. 
 - Q: Outbox Processing Strategy → A: Dedicated background worker processes events immediately (Continuous). 
 - Q: Manual Search Scope → A: Search fuzzy across both `Product name` and `Brand`. 
 - Q: Variable-Weight Price Extraction Fallback → A: Auto-calculate weight based on unit price if known. 
 - Q: Duplicate Scan Conflict Resolution → A: Increment quantity of existing item + show confirmation toast. 
+- Q: Barcode Scanning Library → A: Use `react-zxing` for WASM-powered EAN-13/UPC detection.
+- Q: UPCitemdb Authentication → A: Secure API keys via Backend Secrets.
+- Q: Manual Search Pagination → A: Use `Infinite Scroll` for fluid result loading.
+- Q: Scanner Error Handling → A: Show "Product Not Found" drawer with "Enter Manually" button.
+- Q: Confirmation Drawer Data Priority → A: Name (H1), Brand (Sub), Image (Side), No Description.
+- Q: Manual Search Fallback Strategy → A: Local Only: Strictly search the existing local catalog.
+- Q: Offline Product Recognition → A: No: Online-only for scanner logic; handle elegantly via UI.
+- Q: Post-Scan Data Editing → A: No: Drawer is for PRICE only; Metadata is read-only.
+
 
 ## Assumptions
 

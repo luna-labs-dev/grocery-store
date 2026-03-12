@@ -1,18 +1,22 @@
-# Quickstart: Cart Workflow Completion
+# Quickstart: Cart Workflow
 
-## Setup
-1. Ensure the PostgreSQL database is up and running (`pnpm db:up`).
-2. Run migrations to include `PhysicalEAN` and `ExternalFetchLog` tables.
-3. Configure environment variables for external APIs:
-   - `OFF_API_URL=https://world.openfoodfacts.org`
-   - `UPCITEMDB_API_KEY=your_key` (if applicable)
+## Scanning Workflow
+1. Shopper opens scanning interface (`ScannerOverlay`).
+2. `react-zxing` captures barcode and sends to backend: `GET /api/products/scan/:barcode`.
+3. Backend checks local `PhysicalEAN`.
+4. If miss, backend triggers `CompositeExternalProductClient` (OFF/UPCitemdb).
+5. If match found externally, `OutboxEvent` (ProductScanned) is emitted for background hydration.
+6. `PriceConfirmationDrawer` opens in Frontend with Name, Brand, and Image.
+7. Shopper confirms price and item is added to cart.
 
-## Running Tests
-- Unit tests: `pnpm test apps/backend/src/domain/products`
-- Integration tests: `pnpm test apps/backend/tests/integration/products`
-- Scanner flow E2E: `pnpm playwright test tests/e2e/scanner.spec.ts`
+## Manual Search Workflow
+1. Shopper enters query in search bar.
+2. Backend receives `GET /api/products/search?q=...&page=...`.
+3. Fuzzy match across `ProductIdentity` (Name/Brand) within local catalog only.
+4. `Infinite Scroll` loads more results in the UI.
 
-## Key UseCases
-- `ScanProductUseCase`: Orchestrates the lookup and fallback.
-- `FetchExternalProductUseCase`: Handles API calls and circuit breaking.
-- `ManualSearchUseCase`: Handles fuzzy search logic.
+## Environment Setup
+Ensure the following variables are in `.env`:
+- `OFF_BASE_URL`
+- `UPCITEMDB_BASE_URL`
+- `UPCITEMDB_API_KEY` (Backend Secret)

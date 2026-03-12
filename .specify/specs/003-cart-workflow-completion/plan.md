@@ -7,29 +7,35 @@
 
 ## Summary
 
-Implement a robust cart workflow for the Grocery Store app, enabling product identification through EAN-13/UPC scanning. The system will prioritize local database matches, falling back to external APIs (Open Food Facts and UPCitemdb) with a 2000ms timeout and circuit breaker protection. It will also support manual fuzzy search and variable-weight barcode parsing (industry standards for barcodes starting with '2').
+Complete the cart workflow by implementing a robust product scanning system with external fallbacks (Open Food Facts & UPCitemdb) and manual fuzzy search. This implementation spans the full stack, integrating `react-zxing` for high-performance scanning in the browser and a resilient backend pipeline. Mandatory price confirmation (FR-008) is enforced for every item.
 
 ## Technical Context
 
-**Language/Version**: TypeScript ~5.9.3, Node.js (via pnpm@10.29.3)
-**Primary Dependencies**: NestJS, Drizzle ORM, Vite, Vitest
-**Storage**: PostgreSQL
-**Testing**: Vitest (`npm run test`), Playwright (E2E)
-**Target Platform**: Linux (Docker-ready)
-**Project Type**: Web Application (Monorepo: Frontend + Backend)
-**Performance Goals**: Local matches < 100ms; External fallbacks < 2500ms
-**Constraints**: 2000ms API timeout, circuit breaker required, Outbox pattern for background hydration
-**Scale/Scope**: Hypermarket-scale product catalog support
+**Package Manager**: `pnpm` (exclusive) via `pnpm workspaces` (Principle VIII)
+
+### [Backend (apps/backend)]
+- **Primary Dependencies**: Fastify (API), Zod (Validation), tsyringe (DI), Axios (HTTP), Buidler (Circuit Breaker), Drizzle ORM (DB)  
+- **Storage**: PostgreSQL (via Drizzle)  
+- **Performance**: Local matches < 100ms, External fallbacks < 2500ms total.  
+- **Constraints**: 2000ms circuit breaker timeout, ABAC mandatory via RequesterContext.
+
+### [Frontend (apps/frontend)]
+- **Primary Dependencies**: React 19, Vite, TanStack (Query, Router), Tailwind CSS 4, Radix UI, `react-zxing` (WASM scanner), `lucide-react`, `sonner` (toasts), `motion` (animations), `vaul` (drawers).
+- **Patterns**: Feature-slicing architecture, Infinite Scroll for search, state managed via TanStack Query and Zustand.
+
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 Verify alignment with [Grocery Store Constitution](file:///home/tiago/01-dev-env/personal-repos/grocery-store/.specify/memory/constitution.md):
-- [x] **Clean Architecture**: Are layers (Domain, App, Infra, API) strictly separated? (Confirmed: Domain logic preserved in `apps/backend/src/domain`)
-- [x] **Golden Product Logic**: Does data flow follow the Canonical -> Identity hierarchy? (Confirmed: `EAN` -> `ProductIdentity` -> `CanonicalProduct` mentioned in Spec)
-- [x] **ABAC Compliance**: Are permissions evaluated via `RequesterContext`? (Requirement for all UseCases)
-- [x] **OSS Resilience**: Avoiding non-OSS tech? Circuit breakers for external APIs? (Using OFF, circuit breaker mandated)
+- [x] **Clean Architecture**: Backend layers (Domain, App, Infra, API) are strictly separated.
+- [x] **Golden Product Logic**: Data flow follows Canonical -> Identity -> EAN.
+- [x] **ABAC Compliance**: Permissions evaluated via `RequesterContext` in UseCases.
+- [x] **OSS Resilience**: Open Food Facts prioritized; Circuit breakers implemented.
+- [x] **Fiscal Ground Truth**: Mandatory price confirmation (FR-008).
+- [x] **Monorepo & pnpm**: Managed exclusively via pnpm workspaces (Principle VIII).
+
 
 ## Project Structure
 
@@ -46,63 +52,33 @@ Verify alignment with [Grocery Store Constitution](file:///home/tiago/01-dev-env
 ```
 
 ### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
-
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+apps/
+├── backend/
+│   ├── src/
+│   │   ├── api/             # Controllers, helpers, routes
+│   │   ├── application/     # UseCase implementations, repository contracts
+│   │   ├── domain/          # Entities, UseCase definitions
+│   │   ├── infrastructure/  # Repositories, external clients
+│   │   └── main/            # DI, server config, auth
+│   └── tests/
+├── frontend/
+│   └── src/
+│       ├── features/        # Scanning and Search UI features
+│       ├── components/      # Shared UI units
+│       ├── infrastructure/  # API clients
+│       └── hooks/           # custom hooks for scanning/search logic
 ```
 
-**Structure Decision**: Option 2: Web Application. The project is already structured as a monorepo with `apps/backend` (NestJS) and `apps/frontend` (Vite/React).
+**Structure Decision**: Using active monorepo structure with apps/backend (Clean Architecture) and apps/frontend (Feature-sliced).
 
-## Verification Plan
 
-### Automated Tests
-- **Unit Tests**:
-  - `pnpm test apps/backend/src/domain/products`: Verify scanning logic and barcode parsing.
-  - `pnpm test apps/backend/src/infrastructure/external`: Verify API clients and circuit breaker.
-- **Integration Tests**:
-  - `pnpm test apps/backend/tests/integration/products`: Verify EAN -> Identity -> Canonical mapping and persistence.
-- **E2E Tests**:
-  - `pnpm playwright test tests/e2e/scanner.spec.ts`: Verify full UI flow from scan to item addition.
+## Complexity Tracking
 
-### Manual Verification
-1. **Device Testing**: Scan real EAN-13 barcodes using a mobile device or emulator with camera support.
-2. **Offline/Failure Simulation**: Block external API domains (OFF/UPCitemdb) and verify manual entry fallback.
-3. **Variable Weight**: Use a test barcode starting with '2' and verify correct weight extraction in the cart.
+> **Fill ONLY if Constitution Check has violations that must be justified**
+
+| Violation                  | Why Needed         | Simpler Alternative Rejected Because |
+| -------------------------- | ------------------ | ------------------------------------ |
+| [e.g., 4th project]        | [current need]     | [why 3 projects insufficient]        |
+| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient]  |
