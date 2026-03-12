@@ -35,7 +35,7 @@ export const AddProductToCartDrawer = ({
       <DrawerTrigger asChild>{children}</DrawerTrigger>
 
       <DrawerContent className="w-full">
-        <ProductFormComposite.Root
+        <ProductFormComposite.root
           shoppingEventId={shoppingEventId}
           onSuccess={() => {
             success();
@@ -50,12 +50,12 @@ export const AddProductToCartDrawer = ({
             </DrawerDescription>
           </DrawerHeader>
           <div className="flex-1 overflow-y-auto p-4 gap-4 flex flex-col ">
-            <ProductFormComposite.Fields />
+            <ProductFormComposite.fields />
           </div>
           <DrawerFooter className="p-4 border-t">
-            <ProductFormComposite.Actions />
+            <ProductFormComposite.actions />
           </DrawerFooter>
-        </ProductFormComposite.Root>
+        </ProductFormComposite.root>
       </DrawerContent>
     </Drawer>
   );

@@ -1,4 +1,9 @@
 import { Icon } from '@iconify/react';
+import { useState } from 'react';
+import { ProductSearch } from '../manual-search/components/product-search';
+import { PriceConfirmationDrawer } from '../product-scan/components/price-confirmation-drawer';
+import { ScannerOverlay } from '../product-scan/components/scanner-overlay';
+import { useScanProduct } from '../product-scan/hooks/use-scan-product';
 import {
   ShoppingEventDetailsHeader,
   ShoppingEventDetailsProducts,
@@ -18,6 +23,12 @@ import { CheckCheck } from '@/components/animate-ui/icons/check-check';
 import { Cherry } from '@/components/animate-ui/icons/cherry';
 import { Page } from '@/components/layout/page-layout';
 import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
+import {
   useGetShoppingEventByIdQuery,
   useShoppingSync,
 } from '@/features/shopping-event/infrastructure';
@@ -35,6 +46,18 @@ export const ShoppingEventDetailsPage = ({
   const { data, refetch, isFetching } = useGetShoppingEventByIdQuery({
     shoppingEventId,
   });
+
+  const [isScannerVisible, setIsScannerVisible] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const {
+    scan,
+    isScanning,
+    scannedProduct,
+    isDrawerOpen,
+    setIsDrawerOpen,
+    setScannedProduct,
+    closeDrawer,
+  } = useScanProduct();
 
   if (!data && isFetching) {
     return (
@@ -89,6 +112,23 @@ export const ShoppingEventDetailsPage = ({
                     className={cn(isFetching && 'animate-spin')}
                   />
                 </Button>
+                <Button
+                  variant={'outline'}
+                  onClick={() => setIsScannerVisible(!isScannerVisible)}
+                  className={cn(
+                    isScannerVisible && 'bg-primary text-primary-foreground',
+                  )}
+                >
+                  <Icon icon="material-symbols:barcode-scanner" fontSize={20} />
+                  {isScannerVisible ? 'Fechar Scanner' : 'Escanear'}
+                </Button>
+                <Button
+                  variant={'outline'}
+                  onClick={() => setIsSearchOpen(true)}
+                >
+                  <Icon icon="material-symbols:search" fontSize={20} />
+                  Digitar
+                </Button>
                 <AddProductToCartDrawer shoppingEventId={shoppingEventId}>
                   <Button variant={'outline'}>
                     <Cherry
@@ -97,7 +137,7 @@ export const ShoppingEventDetailsPage = ({
                       loop
                       loopDelay={1000 * 5}
                     />
-                    Adicionar Produto
+                    Manual
                   </Button>
                 </AddProductToCartDrawer>
               </div>
@@ -108,6 +148,15 @@ export const ShoppingEventDetailsPage = ({
             <TabsTrigger value="totals">Totais</TabsTrigger>
             <TabsTrigger value="products">Produtos</TabsTrigger>
           </TabsList>
+
+          {isScannerVisible && (
+            <div className="mt-4">
+              <ScannerOverlay
+                onScan={scan}
+                isPaused={isScanning || isDrawerOpen}
+              />
+            </div>
+          )}
         </Page.Header>
 
         <TabsContents
@@ -125,6 +174,44 @@ export const ShoppingEventDetailsPage = ({
           ))}
         </TabsContents>
       </Tabs>
+
+      <PriceConfirmationDrawer
+        isOpen={isDrawerOpen}
+        onClose={closeDrawer}
+        shoppingEventId={shoppingEventId}
+        productData={
+          scannedProduct as unknown as {
+            name: string;
+            brand?: string;
+            imageUrl?: string;
+            price?: number;
+            weightInGrams?: number;
+          }
+        }
+        onSuccess={() => {
+          refetch();
+          setIsScannerVisible(false);
+          setIsSearchOpen(false);
+        }}
+      />
+
+      <Drawer open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+        <DrawerContent className="h-[80vh]">
+          <DrawerHeader>
+            <DrawerTitle>Buscar Produto</DrawerTitle>
+          </DrawerHeader>
+          <div className="p-4 flex-1 overflow-hidden">
+            <ProductSearch
+              onSelect={(product) => {
+                setScannedProduct(product);
+                setIsDrawerOpen(true);
+              }}
+              onCancel={() => setIsSearchOpen(false)}
+            />
+          </div>
+        </DrawerContent>
+      </Drawer>
+
       {data.status === 'ongoing' ? (
         <Page.Footer className="flex justify-end p-4 border-t">
           <EndShoppingEventDrawer shoppingEventId={shoppingEventId}>

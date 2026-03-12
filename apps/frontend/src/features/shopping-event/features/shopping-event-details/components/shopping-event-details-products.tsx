@@ -16,6 +16,7 @@ import {
 import { ResponsiveDataView } from '@/components/ui/responsive-data-view';
 import { fCurrency } from '@/domain';
 import type {
+  GetShoppingEventById200,
   GetShoppingEventById200ProductsItem,
   GetShoppingEventById200Status,
 } from '@/infrastructure/api/types';
@@ -24,7 +25,9 @@ interface ShoppingEventDetailsProductsProps {
   products: GetShoppingEventById200ProductsItem[];
   shoppingEventId: string;
   shoppingEventStatus: GetShoppingEventById200Status;
-  refetch: (options?: RefetchOptions) => Promise<QueryObserverResult<any, any>>;
+  refetch: (
+    options?: RefetchOptions,
+  ) => Promise<QueryObserverResult<GetShoppingEventById200, unknown>>;
   isFetching: boolean;
   className?: string;
 }

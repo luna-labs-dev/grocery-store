@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
   motion,
+  type PanInfo,
   useAnimation,
   useMotionValue,
   useTransform,
@@ -116,7 +117,10 @@ export function ProductItem({
   const deleteOpacity = useTransform(x, [20, 100], [0, 1]);
   const deleteScale = useTransform(x, [20, 100], [0.8, 1]);
 
-  const handleDragEnd = (_: any, info: any) => {
+  const handleDragEnd = (
+    _: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo,
+  ) => {
     const threshold = 40;
     if (info.offset.x < -threshold) {
       controls.start({ x: -100 });

@@ -230,7 +230,15 @@ export function ProfilePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {activeSessions?.map((s: any) => {
+                {(
+                  activeSessions as {
+                    id: string;
+                    userAgent: string;
+                    token: string;
+                    ipAddress?: string;
+                    createdAt?: string;
+                  }[]
+                )?.map((s) => {
                   const isCurrentSession = s.id === session?.session?.id;
                   let uaObj = s.userAgent
                     ? s.userAgent

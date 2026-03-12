@@ -110,8 +110,10 @@ export function MarketListEmpty() {
   );
 }
 
+import type { FetchListResponse } from '@/domain';
+
 interface MarketListProps {
-  data?: any;
+  data?: FetchListResponse<ListMarkets200ItemsItem>;
   isLoading?: boolean;
   isError?: boolean;
   pageSize?: number;

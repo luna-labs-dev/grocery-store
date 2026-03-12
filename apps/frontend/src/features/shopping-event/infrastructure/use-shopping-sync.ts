@@ -46,11 +46,15 @@ export const useShoppingSync = (shoppingEventId?: string) => {
 
     const onConnect = () => {
       console.log('Socket connected:', socket.id);
-      socket.emit('join-room', { shoppingEventId }, (response: any) => {
-        if (response?.status === 'error') {
-          console.error('Error joining room:', response.message);
-        }
-      });
+      socket.emit(
+        'join-room',
+        { shoppingEventId },
+        (response: { status: string; message?: string }) => {
+          if (response?.status === 'error') {
+            console.error('Error joining room:', response.message);
+          }
+        },
+      );
     };
 
     const onProductAdded = ({ product }: { product: SocketProductDto }) => {

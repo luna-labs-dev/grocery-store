@@ -61,7 +61,7 @@ export const useGetActiveGroupQuery = () => {
   }, []);
 
   const activeGroup =
-    groups?.find((g: any) => g.id === storedGroupId) ??
+    groups?.find((g) => g.id === storedGroupId) ??
     (groups && groups.length > 0 ? groups[0] : undefined);
 
   useEffect(() => {
@@ -82,14 +82,16 @@ export const useCreateGroupMutation = () => {
 
   const mutation = useCreateGroup({
     mutation: {
-      onError: (error: any, params: any) => {
-        const { title, description } = errorMapper(error.code ?? '')(params);
+      onError: (error: unknown, params: unknown) => {
+        const { title, description } = errorMapper(
+          (error as { code?: string }).code ?? '',
+        )(params);
 
         toast.error(title, {
           description,
         });
       },
-      onSuccess: (_: any, params: any) => {
+      onSuccess: (_: unknown, params: { data: { name: string } }) => {
         toast.success('Grupo criado', {
           description: `o grupo "${params.data.name}" foi criado com sucesso`,
         });
@@ -110,8 +112,10 @@ export const useJoinGroupMutation = () => {
 
   const mutation = useJoinGroup({
     mutation: {
-      onError: (error: any, params: any) => {
-        const { title, description } = errorMapper(error.code ?? '')(params);
+      onError: (error: unknown, params: unknown) => {
+        const { title, description } = errorMapper(
+          (error as { code?: string }).code ?? '',
+        )(params);
 
         toast.error(title, {
           description,
@@ -140,8 +144,10 @@ export const useRemoveGroupMemberMutation = () => {
 
   const mutation = useRemoveGroupMember({
     mutation: {
-      onError: (error: any, params: any) => {
-        const { title, description } = errorMapper(error.code ?? '')(params);
+      onError: (error: unknown, params: unknown) => {
+        const { title, description } = errorMapper(
+          (error as { code?: string }).code ?? '',
+        )(params);
 
         toast.error(title, {
           description,
@@ -168,8 +174,10 @@ export const useLeaveGroupMutation = () => {
 
   const mutation = useLeaveGroup({
     mutation: {
-      onError: (error: any, params: any) => {
-        const { title, description } = errorMapper(error.code ?? '')(params);
+      onError: (error: unknown, params: unknown) => {
+        const { title, description } = errorMapper(
+          (error as { code?: string }).code ?? '',
+        )(params);
 
         toast.error(title, {
           description,
@@ -197,8 +205,10 @@ export const useUpdateMemberRoleMutation = () => {
 
   const mutation = useUpdateMemberRole({
     mutation: {
-      onError: (error: any, params: any) => {
-        const { title, description } = errorMapper(error.code ?? '')(params);
+      onError: (error: unknown, params: unknown) => {
+        const { title, description } = errorMapper(
+          (error as { code?: string }).code ?? '',
+        )(params);
 
         toast.error(title, {
           description,
@@ -235,8 +245,10 @@ export const useUpdateGroupMutation = () => {
 
   const mutation = useUpdateGroup({
     mutation: {
-      onError: (error: any, params: any) => {
-        const { title, description } = errorMapper(error.code ?? '')(params);
+      onError: (error: unknown, params: unknown) => {
+        const { title, description } = errorMapper(
+          (error as { code?: string }).code ?? '',
+        )(params);
 
         toast.error(title, {
           description,
@@ -263,8 +275,10 @@ export const useRegenerateInviteCodeMutation = () => {
 
   const mutation = useRegenerateInviteCode({
     mutation: {
-      onError: (error: any, params: any) => {
-        const { title, description } = errorMapper(error.code ?? '')(params);
+      onError: (error: unknown, params: unknown) => {
+        const { title, description } = errorMapper(
+          (error as { code?: string }).code ?? '',
+        )(params);
 
         toast.error(title, {
           description,
@@ -275,7 +289,11 @@ export const useRegenerateInviteCodeMutation = () => {
         toast.success('Convite regenerado com sucesso');
       },
 
-      onSettled: (_: any, params: any) => {
+      onSettled: (
+        _data: unknown,
+        _error: unknown,
+        params: { groupId: string },
+      ) => {
         queryClient.invalidateQueries({
           queryKey: ['group-invite', params.groupId],
         });
@@ -291,8 +309,10 @@ export const useDeleteGroupMutation = () => {
 
   const mutation = useDeleteGroup({
     mutation: {
-      onError: (error: any, params: any) => {
-        const { title, description } = errorMapper(error.code ?? '')(params);
+      onError: (error: unknown, params: unknown) => {
+        const { title, description } = errorMapper(
+          (error as { code?: string }).code ?? '',
+        )(params);
 
         toast.error(title, {
           description,

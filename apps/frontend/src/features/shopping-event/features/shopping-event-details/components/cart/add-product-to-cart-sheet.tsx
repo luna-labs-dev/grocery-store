@@ -24,7 +24,7 @@ export const AddProductToCartSheet = ({
       <SheetTrigger asChild>{children}</SheetTrigger>
 
       <SheetContent className="w-full">
-        <ProductFormComposite.Root
+        <ProductFormComposite.root
           shoppingEventId={shoppingEventId}
           onSuccess={() => setOpen(false)}
           onCancel={() => setOpen(false)}
@@ -36,12 +36,12 @@ export const AddProductToCartSheet = ({
             </SheetDescription>
           </SheetHeader>
           <div className="flex-1 overflow-y-auto p-4 gap-4 flex flex-col ">
-            <ProductFormComposite.Fields />
+            <ProductFormComposite.fields />
           </div>
           <SheetFooter className="p-4 border-t">
-            <ProductFormComposite.Actions />
+            <ProductFormComposite.actions />
           </SheetFooter>
-        </ProductFormComposite.Root>
+        </ProductFormComposite.root>
       </SheetContent>
     </Sheet>
   );
