@@ -3,7 +3,7 @@ export interface MappedError {
   description?: string;
 }
 
-type MakeMappedError = (params?: any) => MappedError;
+type MakeMappedError = (params?: unknown) => MappedError;
 
 const mappedErrors: Record<string, MakeMappedError> = {
   SHOPPING_EVENT_NOT_FOUND_ERROR: () => ({

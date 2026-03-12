@@ -20,7 +20,8 @@ function getRouter() {
   const newRouter = createRouter(routerConfig);
 
   if (typeof window !== 'undefined' && import.meta.hot) {
-    const hot = import.meta.hot as any;
+    const hot = import.meta.hot;
+
     if (hot.data?.router) {
       const existing = hot.data.router as typeof newRouter;
       existing.update({ ...routerConfig, routeTree });

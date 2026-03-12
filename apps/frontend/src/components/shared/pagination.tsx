@@ -40,7 +40,7 @@ export const CustomPagination = <TFetchParams,>({
 
   const { range, active, previous, next, setPage } = usePagination({
     total: total,
-    initialPage: (paginationParams as any).pageIndex + 1,
+    initialPage: (paginationParams as unknown as FetchListParams).pageIndex + 1,
     boundaries: 1,
     siblings: 1,
     onChange: (page) => {
@@ -52,7 +52,8 @@ export const CustomPagination = <TFetchParams,>({
   });
 
   // Sync internal state with external prop changes
-  const externalPage = (paginationParams as any).pageIndex + 1;
+  const externalPage =
+    (paginationParams as unknown as FetchListParams).pageIndex + 1;
   useEffect(() => {
     if (externalPage !== active) {
       setPage(externalPage);

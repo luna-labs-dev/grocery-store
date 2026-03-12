@@ -1,5 +1,10 @@
 import { useReducer } from 'react';
-import { Controller, type UseFormReturn } from 'react-hook-form';
+import {
+  Controller,
+  type FieldValues,
+  type Path,
+  type UseFormReturn,
+} from 'react-hook-form';
 import {
   Field,
   FieldDescription,
@@ -8,9 +13,9 @@ import {
   Input,
 } from '@/components';
 
-type TextInputProps = {
-  form: UseFormReturn<any>;
-  name: string;
+type TextInputProps<T extends FieldValues> = {
+  form: UseFormReturn<T>;
+  name: Path<T>;
   label: string;
   description?: string;
   placeholder: string;
@@ -41,12 +46,12 @@ const addDecimal = (number: number) => {
   return Number(`${wholePart}.${decimalPart}`);
 };
 
-export const MoneyInput = (props: TextInputProps) => {
+export const MoneyInput = <T extends FieldValues>(props: TextInputProps<T>) => {
   const initialValue = props.form.getValues()[props.name]
-    ? moneyFormatter.format(props.form.getValues()[props.name])
+    ? moneyFormatter.format(props.form.getValues()[props.name] as number)
     : '';
 
-  const [value, setValue] = useReducer((_: any, next: number) => {
+  const [value, setValue] = useReducer((_: string, next: number) => {
     if (next === 0) {
       return '';
     }

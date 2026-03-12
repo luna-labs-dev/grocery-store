@@ -196,7 +196,7 @@ export const AppSidebar = () => {
                       <Icon icon="lucide:chevron-right" className="size-3" />
                     </Link>
                   </div>
-                  {groups.map((group: any) => (
+                  {groups.map((group) => (
                     <DropdownMenuItem
                       key={group.id}
                       className={cn(
