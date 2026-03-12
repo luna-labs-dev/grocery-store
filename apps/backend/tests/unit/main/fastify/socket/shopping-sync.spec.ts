@@ -48,7 +48,7 @@ describe('Real-Time Sync (Socket.io) Integration', () => {
 
     // Seed shopping event
     seededShoppingEventId = uuid();
-    await db.insert(schema.shopping_eventTable).values({
+    await db.insert(schema.shoppingEventTable).values({
       id: seededShoppingEventId,
       groupId,
       marketId,
@@ -101,7 +101,7 @@ describe('Real-Time Sync (Socket.io) Integration', () => {
         client.emit(
           'join-room',
           { shoppingEventId: seededShoppingEventId },
-          (response: any) => {
+          (response: { status: string }) => {
             try {
               expect(response.status).toBe('ok');
               client.disconnect();
@@ -152,7 +152,7 @@ describe('Real-Time Sync (Socket.io) Integration', () => {
       clientA.on('connect', onConnect);
       clientB.on('connect', onConnect);
 
-      clientB.on('product_added', (data: any) => {
+      clientB.on('product_added', (data: { product: { name: string } }) => {
         try {
           expect(data.product.name).toBe('Milk');
           clientA.disconnect();
@@ -176,7 +176,7 @@ describe('Real-Time Sync (Socket.io) Integration', () => {
         client.emit(
           'join-room',
           { shoppingEventId: unauthorizedEventId },
-          (response: any) => {
+          (response: { status: string; message?: string }) => {
             try {
               expect(response.status).toBe('error');
               expect(response.message).toMatch(/Unauthorized/);

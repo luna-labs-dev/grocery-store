@@ -1,30 +1,42 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import 'reflect-metadata';
+import type { ExternalProductClient } from '@/application/contracts/external-product-client';
+import type { OutboxEventRepositories } from '@/application/contracts/repositories/outbox-event-repository';
+import type {
+  GetCanonicalProductByIdRepository,
+  UpdateCanonicalProductRepository,
+} from '@/application/contracts/repositories/product-hierarchy';
 import { HydrateProductJob } from '@/application/usecases/product-hierarchy/hydrate-product-job';
 import { CanonicalProduct, OutboxEvent } from '@/domain';
 
 describe('HydrateProductJob', () => {
-  let mockOutboxRepository: any;
-  let mockCanonicalProductRepository: any;
-  let mockExternalClient: any;
+  let mockOutboxRepository: Mocked<OutboxEventRepositories>;
+  let mockCanonicalProductRepository: Mocked<
+    UpdateCanonicalProductRepository & GetCanonicalProductByIdRepository
+  >;
+  let mockExternalClient: Mocked<ExternalProductClient>;
   let job: HydrateProductJob;
 
   beforeEach(() => {
     mockOutboxRepository = {
       getPending: vi.fn(),
       update: vi.fn(),
-    };
+      add: vi.fn(),
+    } as unknown as Mocked<OutboxEventRepositories>;
     mockCanonicalProductRepository = {
       getById: vi.fn(),
       update: vi.fn(),
-    };
+    } as unknown as Mocked<
+      UpdateCanonicalProductRepository & GetCanonicalProductByIdRepository
+    >;
     mockExternalClient = {
       fetchByBarcode: vi.fn(),
-    };
+    } as unknown as Mocked<ExternalProductClient>;
     job = new HydrateProductJob(
       mockOutboxRepository,
       mockCanonicalProductRepository,
       mockExternalClient,
+      null as unknown as never, // productIdentityRepository (not used in current tests, but required by constructor)
     );
   });
 
@@ -41,13 +53,15 @@ describe('HydrateProductJob', () => {
       'event-1',
     );
 
-    mockOutboxRepository.getPending.mockResolvedValue([event]);
-    mockExternalClient.fetchByBarcode.mockResolvedValue({
+    vi.mocked(mockOutboxRepository.getPending).mockResolvedValue([event]);
+    vi.mocked(mockExternalClient.fetchByBarcode).mockResolvedValue({
       name: 'Enriched Product',
       brand: 'Enriched Brand',
       description: 'Enriched Description',
     });
-    mockCanonicalProductRepository.getById.mockResolvedValue(cp);
+    vi.mocked(mockCanonicalProductRepository.getById).mockResolvedValue(
+      cp as never,
+    );
 
     await job.execute();
 
@@ -59,7 +73,8 @@ describe('HydrateProductJob', () => {
     );
 
     expect(mockCanonicalProductRepository.update).toHaveBeenCalled();
-    const updatedCpArg = mockCanonicalProductRepository.update.mock.calls[0][0];
+    const updatedCpArg = vi.mocked(mockCanonicalProductRepository.update).mock
+      .calls[0][0];
     expect(updatedCpArg.props.name).toBe('Enriched Product');
     expect(updatedCpArg.props.brand).toBe('Enriched Brand');
 
@@ -75,8 +90,8 @@ describe('HydrateProductJob', () => {
       'event-1',
     );
 
-    mockOutboxRepository.getPending.mockResolvedValue([event]);
-    mockExternalClient.fetchByBarcode.mockRejectedValue(
+    vi.mocked(mockOutboxRepository.getPending).mockResolvedValue([event]);
+    vi.mocked(mockExternalClient.fetchByBarcode).mockRejectedValue(
       new Error('Network failure'),
     );
 
@@ -98,8 +113,8 @@ describe('HydrateProductJob', () => {
       'event-1',
     );
 
-    mockOutboxRepository.getPending.mockResolvedValue([event]);
-    mockExternalClient.fetchByBarcode.mockResolvedValue(null);
+    vi.mocked(mockOutboxRepository.getPending).mockResolvedValue([event]);
+    vi.mocked(mockExternalClient.fetchByBarcode).mockResolvedValue(null);
 
     await job.execute();
 
@@ -118,13 +133,15 @@ describe('HydrateProductJob', () => {
       'event-1',
     );
 
-    mockOutboxRepository.getPending.mockResolvedValue([event]);
-    mockExternalClient.fetchByBarcode.mockResolvedValue({
+    vi.mocked(mockOutboxRepository.getPending).mockResolvedValue([event]);
+    vi.mocked(mockExternalClient.fetchByBarcode).mockResolvedValue({
       name: 'Enriched',
       brand: 'Enriched',
       description: 'Enriched',
     });
-    mockCanonicalProductRepository.getById.mockResolvedValue(null);
+    vi.mocked(mockCanonicalProductRepository.getById).mockResolvedValue(
+      undefined as never,
+    );
 
     await job.execute();
 
@@ -145,7 +162,7 @@ describe('HydrateProductJob', () => {
       'event-1',
     );
 
-    mockOutboxRepository.getPending.mockResolvedValue([event]);
+    vi.mocked(mockOutboxRepository.getPending).mockResolvedValue([event]);
 
     await job.execute();
 
@@ -170,15 +187,18 @@ describe('HydrateProductJob', () => {
       'event-2',
     );
 
-    mockOutboxRepository.getPending.mockResolvedValue([event1, event2]);
+    vi.mocked(mockOutboxRepository.getPending).mockResolvedValue([
+      event1,
+      event2,
+    ]);
 
     // Event 1 fails (missing data)
-    mockExternalClient.fetchByBarcode.mockResolvedValueOnce(null);
+    vi.mocked(mockExternalClient.fetchByBarcode).mockResolvedValueOnce(null);
     // Event 2 succeeds
-    mockExternalClient.fetchByBarcode.mockResolvedValueOnce({
+    vi.mocked(mockExternalClient.fetchByBarcode).mockResolvedValueOnce({
       name: 'Success',
     });
-    mockCanonicalProductRepository.getById.mockResolvedValue(
+    vi.mocked(mockCanonicalProductRepository.getById).mockResolvedValue(
       CanonicalProduct.create({ name: 'Old' }, 'cp-2'),
     );
 
@@ -193,12 +213,12 @@ describe('HydrateProductJob', () => {
     const event = OutboxEvent.create(
       {
         type: 'ProductScanned',
-        payload: { somethingElse: 'wrong' } as any,
+        payload: { somethingElse: 'wrong' } as unknown as never,
       },
       'event-1',
     );
 
-    mockOutboxRepository.getPending.mockResolvedValue([event]);
+    vi.mocked(mockOutboxRepository.getPending).mockResolvedValue([event]);
 
     await job.execute();
 

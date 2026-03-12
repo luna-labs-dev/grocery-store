@@ -18,7 +18,7 @@ describe('GroupService - Magic Link', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     userRepository = {
       getById: vi.fn(),
-    } as any;
+    } as unknown as Mocked<UserRepositories>;
 
     groupRepository = {
       getById: vi.fn(),
@@ -26,7 +26,7 @@ describe('GroupService - Magic Link', () => {
       getByInviteCode: vi.fn(),
       addMember: vi.fn(),
       updateInviteCode: vi.fn(),
-    } as any;
+    } as unknown as Mocked<GroupRepositories>;
 
     sut = new GroupService(userRepository, groupRepository);
   });
@@ -34,21 +34,21 @@ describe('GroupService - Magic Link', () => {
   const createMockUser = (
     id: string,
     roles: string[] = [],
-    groupRole?: { groupId: string; role: any },
+    groupRole?: { groupId: string; role: string },
   ) => {
     return User.create(
       {
         name: 'Test User',
         email: 'test@example.com',
         emailVerified: true,
-        roles: roles as any,
+        roles: roles as unknown as never,
         reputationScore: 0,
         groups: groupRole
           ? [
               GroupMember.create({
                 groupId: groupRole.groupId,
                 userId: id,
-                role: groupRole.role,
+                role: groupRole.role as unknown as never,
                 joinedAt: new Date(),
               }),
             ]
@@ -79,7 +79,7 @@ describe('GroupService - Magic Link', () => {
       vi.mocked(groupRepository.getById).mockResolvedValue(mockGroup);
       const ctx = new RequesterContext(mockUser, mockGroup, {
         isAllowed: vi.fn().mockResolvedValue(true),
-      } as any);
+      } as unknown as never);
 
       const result = await sut.getInviteInfo(ctx);
 
@@ -97,16 +97,18 @@ describe('GroupService - Magic Link', () => {
         id: 'group-1',
         name: 'Test Group',
         inviteCode: undefined as string | undefined,
-        generateInviteCode: vi.fn().mockImplementation(function (this: any) {
+        generateInviteCode: vi.fn().mockImplementation(function (this: {
+          inviteCode: string | undefined;
+        }) {
           this.inviteCode = 'NEW-CODE';
         }),
-      } as any;
+      } as unknown as CollaborationGroup;
 
       vi.mocked(groupRepository.getById).mockResolvedValue(mockGroup);
       vi.mocked(groupRepository.updateInviteCode).mockResolvedValue(undefined);
       const ctx = new RequesterContext(mockUser, mockGroup, {
         isAllowed: vi.fn().mockResolvedValue(true),
-      } as any);
+      } as unknown as never);
 
       const result = await sut.getInviteInfo(ctx);
 
@@ -133,7 +135,7 @@ describe('GroupService - Magic Link', () => {
       vi.mocked(groupRepository.getById).mockResolvedValue(mockGroup);
       const ctx = new RequesterContext(mockUser, mockGroup, {
         isAllowed: vi.fn(),
-      } as any);
+      } as unknown as never);
 
       await expect(sut.getInviteInfo(ctx)).rejects.toThrow(
         UserNotInGroupException,
@@ -155,13 +157,11 @@ describe('GroupService - Magic Link', () => {
       vi.mocked(groupRepository.getById).mockResolvedValue(mockGroup);
       const ctx = new RequesterContext(mockAdmin, mockGroup, {
         isAllowed: vi.fn().mockResolvedValue(true),
-      } as any);
+      } as unknown as never);
 
       await expect(sut.getInviteInfo(ctx)).rejects.toThrow(
         UserNotInGroupException,
       );
     });
   });
-
-  // joinGroup tests are unaffected as they don't use permission checks
 });

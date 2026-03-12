@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { describe, expect, it } from 'vitest';
+import type { DecodedNfcE } from '@/application/services/nfc-e-decoder-service';
 import { ReconciliationEngine } from '@/application/services/reconciliation-engine';
 import type { ShoppingEvent } from '@/domain';
 
@@ -23,7 +24,7 @@ describe('ReconciliationEngine', () => {
           totalPrice: 11.0,
         },
       ],
-    } as any;
+    } as unknown as DecodedNfcE;
 
     const deltas = engine.reconcile(shoppingEvent, ticket);
 

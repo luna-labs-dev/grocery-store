@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import type { FastifyInstance } from 'fastify';
 import fastify from 'fastify';
 import {
   serializerCompiler,
@@ -30,7 +31,8 @@ import { AuthController } from '@/api/controllers/auth-controller';
 import { auth } from '@/main/auth/auth';
 
 describe('AuthController', () => {
-  let app: any;
+  let app: FastifyInstance;
+
   const mockAuthHandler = vi.mocked(auth.handler);
 
   beforeEach(async () => {

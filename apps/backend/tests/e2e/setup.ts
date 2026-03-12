@@ -29,7 +29,7 @@ export const cleanupDatabase = async () => {
   await db.delete(schema.productTable);
   await db.delete(schema.productIdentityTable);
   await db.delete(schema.canonicalProductTable);
-  await db.delete(schema.shopping_eventTable);
+  await db.delete(schema.shoppingEventTable);
 
   await db.delete(schema.groupMemberTable);
   await db.delete(schema.groupTable);
@@ -40,6 +40,7 @@ export const cleanupDatabase = async () => {
   await db.delete(schema.userTable);
 };
 
+// biome-ignore lint/suspicious/noExplicitAny: Fastify app injection
 export const authenticate = async (app: any, email = 'test@example.com') => {
   const signupData = {
     email,

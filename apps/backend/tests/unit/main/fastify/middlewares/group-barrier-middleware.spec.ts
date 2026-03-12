@@ -2,8 +2,9 @@ import 'reflect-metadata';
 import type { FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
 import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
+import type { GroupRepositories } from '@/application/contracts/repositories/group';
 import { UserService } from '@/application/usecases/user-service';
-import { GroupMember, User } from '@/domain/entities';
+import { type CollaborationGroup, GroupMember, User } from '@/domain/entities';
 import {
   UnauthorizedException,
   UserNotMemberOfAnyGroupBarrierException,
@@ -17,16 +18,16 @@ const { usecases, infra } = injection;
 
 describe('groupBarrierMiddleware', () => {
   let userService: Mocked<UserService>;
-  let groupRepository: any;
+  let groupRepository: Mocked<GroupRepositories>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    userService = vi.mocked(new UserService(null as any));
+    userService = vi.mocked(new UserService(null as unknown as never));
     groupRepository = {
       getById: vi.fn(),
-    };
+    } as unknown as Mocked<GroupRepositories>;
 
-    vi.spyOn(container, 'resolve').mockImplementation((token: any) => {
+    vi.spyOn(container, 'resolve').mockImplementation((token: unknown) => {
       if (token === usecases.userService) return userService;
       if (token === infra.groupRepositories) return groupRepository;
       return null;
@@ -51,7 +52,7 @@ describe('groupBarrierMiddleware', () => {
           joinedAt: new Date(),
         }),
       ],
-      roles: [],
+      roles: [] as unknown as never,
       reputationScore: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -60,7 +61,7 @@ describe('groupBarrierMiddleware', () => {
   );
 
   it('should throw UnauthorizedException if user is not in request', async () => {
-    const request = { auth: {} } as any as FastifyRequest;
+    const request = { auth: {} } as unknown as FastifyRequest;
     await expect(groupBarrierMiddleware(request)).rejects.toThrow(
       UnauthorizedException,
     );
@@ -73,7 +74,7 @@ describe('groupBarrierMiddleware', () => {
         emailVerified: true,
         name: 'Test User',
         groups: [],
-        roles: [],
+        roles: [] as unknown as never,
         reputationScore: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -83,7 +84,7 @@ describe('groupBarrierMiddleware', () => {
 
     userService.getUser.mockResolvedValue(userWithNoGroups);
 
-    const request = { auth: { user: mockUser } } as any as FastifyRequest;
+    const request = { auth: { user: mockUser } } as unknown as FastifyRequest;
     await expect(groupBarrierMiddleware(request)).rejects.toThrow(
       UserNotMemberOfAnyGroupBarrierException,
     );
@@ -91,12 +92,14 @@ describe('groupBarrierMiddleware', () => {
 
   it('should set the first group as active by default', async () => {
     userService.getUser.mockResolvedValue(mockDbUser);
-    groupRepository.getById.mockResolvedValue({ id: 'group-1' });
+    groupRepository.getById.mockResolvedValue({
+      id: 'group-1',
+    } as unknown as CollaborationGroup);
 
     const request = {
       auth: { user: mockUser },
       headers: {},
-    } as any as FastifyRequest;
+    } as unknown as FastifyRequest;
 
     await groupBarrierMiddleware(request);
 
@@ -105,12 +108,14 @@ describe('groupBarrierMiddleware', () => {
 
   it('should set the group from x-group-id header if valid', async () => {
     userService.getUser.mockResolvedValue(mockDbUser);
-    groupRepository.getById.mockResolvedValue({ id: 'group-2' });
+    groupRepository.getById.mockResolvedValue({
+      id: 'group-2',
+    } as unknown as CollaborationGroup);
 
     const request = {
       auth: { user: mockUser },
       headers: { 'x-group-id': 'group-2' },
-    } as any as FastifyRequest;
+    } as unknown as FastifyRequest;
 
     await groupBarrierMiddleware(request);
 
@@ -119,12 +124,14 @@ describe('groupBarrierMiddleware', () => {
 
   it('should fallback to first group if x-group-id is invalid for the user', async () => {
     userService.getUser.mockResolvedValue(mockDbUser);
-    groupRepository.getById.mockResolvedValue({ id: 'group-1' });
+    groupRepository.getById.mockResolvedValue({
+      id: 'group-1',
+    } as unknown as CollaborationGroup);
 
     const request = {
       auth: { user: mockUser },
       headers: { 'x-group-id': 'not-my-group' },
-    } as any as FastifyRequest;
+    } as unknown as FastifyRequest;
 
     await groupBarrierMiddleware(request);
 

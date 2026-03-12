@@ -13,12 +13,12 @@ describe('RequesterContext', () => {
   beforeEach(() => {
     permissionService = {
       isAllowed: vi.fn(),
-    } as any;
+    } as unknown as Mocked<PermissionService>;
     mockUser = {
       id: 'user-1',
       groups: [{ groupId: 'group-1' }],
-    } as any;
-    mockGroup = { id: 'group-1' } as any;
+    } as unknown as Mocked<User>;
+    mockGroup = { id: 'group-1' } as unknown as Mocked<CollaborationGroup>;
   });
 
   it('should allow checkPermission if service returns true', async () => {

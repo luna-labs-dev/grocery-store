@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import type { FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
 import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import { MarketController } from '@/api/controllers/market-controller';
@@ -13,7 +13,10 @@ describe('MarketController Integration', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    marketService = new MarketService(null as any, null as any) as any;
+    marketService = new MarketService(
+      null as unknown as never,
+      null as unknown as never,
+    ) as Mocked<MarketService>;
     container.registerInstance('MarketService', marketService);
     marketController = new MarketController(marketService);
   });
@@ -35,27 +38,33 @@ describe('MarketController Integration', () => {
     it('should return market list from service', async () => {
       marketService.getMarketList.mockResolvedValue({
         total: 1,
-        markets: [mockMarket as any],
+        markets: [mockMarket as unknown as never],
       });
 
       const request = {
         query: { pageIndex: 0, pageSize: 10 },
         auth: { user: { id: 'user-1' } },
         groupId: 'group-1',
-      } as any as FastifyRequest;
+      } as unknown as FastifyRequest;
 
       const reply = {
         status: vi.fn().mockReturnThis(),
         send: vi.fn(),
-      } as any as FastifyReply;
+      } as unknown as FastifyReply;
 
-      let capturedHandler: any;
-      await (marketController as any).registerRoutes({
+      let capturedHandler: (
+        req: FastifyRequest,
+        res: FastifyReply,
+      ) => Promise<void> = async () => {};
+
+      await marketController.registerRoutes({
         addHook: vi.fn(),
-        get: async (path: string, _opts: any, handler: any) => {
-          if (path === '') capturedHandler = handler;
+        get: async (path: string, _opts: unknown, handler: unknown) => {
+          if (path === '') {
+            capturedHandler = handler as typeof capturedHandler;
+          }
         },
-      } as any);
+      } as unknown as FastifyInstance);
 
       await capturedHandler(request, reply);
 
@@ -73,27 +82,35 @@ describe('MarketController Integration', () => {
 
   describe('getMarketById', () => {
     it('should return single market', async () => {
-      marketService.getMarketById.mockResolvedValue(mockMarket as any);
+      marketService.getMarketById.mockResolvedValue(
+        mockMarket as unknown as never,
+      );
 
       const request = {
         params: { marketId: 'market-1' },
         query: {},
         auth: { user: { id: 'user-1' } },
         groupId: 'group-1',
-      } as any as FastifyRequest;
+      } as unknown as FastifyRequest;
 
       const reply = {
         status: vi.fn().mockReturnThis(),
         send: vi.fn(),
-      } as any as FastifyReply;
+      } as unknown as FastifyReply;
 
-      let capturedHandler: any;
-      await (marketController as any).registerRoutes({
+      let capturedHandler: (
+        req: FastifyRequest,
+        res: FastifyReply,
+      ) => Promise<void> = async () => {};
+
+      await marketController.registerRoutes({
         addHook: vi.fn(),
-        get: async (path: string, _opts: any, handler: any) => {
-          if (path === '/:marketId') capturedHandler = handler;
+        get: async (path: string, _opts: unknown, handler: unknown) => {
+          if (path === '/:marketId') {
+            capturedHandler = handler as typeof capturedHandler;
+          }
         },
-      } as any);
+      } as unknown as FastifyInstance);
 
       await capturedHandler(request, reply);
 

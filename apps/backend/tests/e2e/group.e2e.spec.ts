@@ -139,8 +139,13 @@ describe('Group E2E', () => {
     const groupsA = JSON.parse(fetchA.payload);
     const groupsB = JSON.parse(fetchB.payload);
 
-    expect(groupsA.some((g: any) => g.name === groupName)).toBe(true);
-    expect(groupsB.some((g: any) => g.name === groupName)).toBe(true);
+    expect(groupsA.some((g: { name: string }) => g.name === groupName)).toBe(
+      true,
+    );
+    expect(groupsB.some((g: { name: string }) => g.name === groupName)).toBe(
+      true,
+    );
+
     expect(groupsA[0].id).not.toBe(groupsB[0].id);
   });
 });

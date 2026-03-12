@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import type { IConfigService } from '@/application/contracts/services/config-service';
-import { GroupMember, User } from '@/domain/entities';
+import { type CollaborationGroup, GroupMember, User } from '@/domain/entities';
 import { SecurityPermissionService } from '@/infrastructure/services/security-permission-service';
 
 describe('SecurityPermissionService', () => {
@@ -11,7 +11,7 @@ describe('SecurityPermissionService', () => {
   beforeEach(() => {
     configService = {
       get: vi.fn(),
-    } as any;
+    } as unknown as Mocked<IConfigService>;
     service = new SecurityPermissionService(configService);
   });
 
@@ -20,7 +20,7 @@ describe('SecurityPermissionService', () => {
       name: 'Test',
       email: 'test@test.com',
       emailVerified: true,
-      roles: ['user'],
+      roles: ['user'] as unknown as never,
       reputationScore: 10,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -28,7 +28,7 @@ describe('SecurityPermissionService', () => {
         GroupMember.create({
           groupId: 'group-1',
           userId: 'user-1',
-          role: 'member',
+          role: 'member' as unknown as never,
           joinedAt: new Date(),
         }),
       ],
@@ -40,7 +40,7 @@ describe('SecurityPermissionService', () => {
     // Member can update shoppingList
     const result = await service.isAllowed(mockUser, 'update', 'shoppingList', {
       id: 'group-1',
-    } as any);
+    } as unknown as CollaborationGroup);
 
     expect(result).toBe(true);
   });
@@ -49,7 +49,7 @@ describe('SecurityPermissionService', () => {
     // User is not in group-2
     const result = await service.isAllowed(mockUser, 'update', 'shoppingList', {
       id: 'group-2',
-    } as any);
+    } as unknown as CollaborationGroup);
 
     expect(result).toBe(false);
   });
@@ -58,7 +58,7 @@ describe('SecurityPermissionService', () => {
     // Member cannot delete group
     const result = await service.isAllowed(mockUser, 'delete', 'group', {
       id: 'group-1',
-    } as any);
+    } as unknown as CollaborationGroup);
 
     expect(result).toBe(false);
   });

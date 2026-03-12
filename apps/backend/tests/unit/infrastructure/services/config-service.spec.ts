@@ -12,17 +12,17 @@ describe('ConfigService', () => {
       getSetting: vi.fn(),
       setSetting: vi.fn(),
       getAllSettings: vi.fn(),
-    } as any;
+    } as unknown as Mocked<SettingsRepository>;
     configService = new ConfigService(settingsRepository);
   });
 
   const groupId = 'group-1';
 
   it('should return value from repository when available', async () => {
-    settingsRepository.getSetting.mockResolvedValue(100);
+    vi.mocked(settingsRepository.getSetting).mockResolvedValue(100);
     const result = await configService.getThreshold(
       groupId,
-      'MIN_REPUTATION_FOR_VERIFICATION',
+      'MIN_REPUTATION_FOR_VERIFICATION' as unknown as never,
     );
     expect(result).toBe(100);
     expect(settingsRepository.getSetting).toHaveBeenCalledWith(
@@ -32,17 +32,20 @@ describe('ConfigService', () => {
   });
 
   it('should return fallback value when repository returns undefined', async () => {
-    settingsRepository.getSetting.mockResolvedValue(undefined);
+    vi.mocked(settingsRepository.getSetting).mockResolvedValue(undefined);
     const result = await configService.getThreshold(
       groupId,
-      'MIN_REPUTATION_FOR_VERIFICATION',
+      'MIN_REPUTATION_FOR_VERIFICATION' as unknown as never,
     );
     expect(result).toBe(50);
   });
 
   it('should return 0 for unknown threshold key', async () => {
-    settingsRepository.getSetting.mockResolvedValue(undefined);
-    const result = await configService.getThreshold(groupId, 'UNKNOWN_KEY');
+    vi.mocked(settingsRepository.getSetting).mockResolvedValue(undefined);
+    const result = await configService.getThreshold(
+      groupId,
+      'UNKNOWN_KEY' as unknown as never,
+    );
     expect(result).toBe(0);
   });
 });

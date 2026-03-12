@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import type {
   GroupRepositories,
   UserRepositories,
@@ -14,15 +14,15 @@ import {
 
 describe('GroupService', () => {
   let sut: GroupService;
-  let userRepository: UserRepositories;
-  let groupRepository: GroupRepositories;
+  let userRepository: Mocked<UserRepositories>;
+  let groupRepository: Mocked<GroupRepositories>;
 
   beforeEach(() => {
     userRepository = {
       getById: vi.fn(),
       add: vi.fn(),
       update: vi.fn(),
-    } as any;
+    } as unknown as Mocked<UserRepositories>;
 
     groupRepository = {
       add: vi.fn(),
@@ -32,7 +32,7 @@ describe('GroupService', () => {
       getGroups: vi.fn(),
       updateInviteCode: vi.fn(),
       update: vi.fn(),
-    } as any;
+    } as unknown as Mocked<GroupRepositories>;
 
     sut = new GroupService(userRepository, groupRepository);
   });
@@ -40,21 +40,21 @@ describe('GroupService', () => {
   const createMockUser = (
     id: string,
     roles: string[] = [],
-    groupRole?: { groupId: string; role: any },
+    groupRole?: { groupId: string; role: string },
   ) => {
     return User.create(
       {
         name: 'Test User',
         email: 'test@example.com',
         emailVerified: true,
-        roles: roles as any,
+        roles: roles as unknown as never,
         reputationScore: 0,
         groups: groupRole
           ? [
               GroupMember.create({
                 groupId: groupRole.groupId,
                 userId: id,
-                role: groupRole.role,
+                role: groupRole.role as unknown as never,
                 joinedAt: new Date(),
               }),
             ]
@@ -106,7 +106,7 @@ describe('GroupService', () => {
       );
       const ctx = new RequesterContext(mockUser, mockGroup, {
         isAllowed: vi.fn().mockResolvedValue(true),
-      } as any);
+      } as unknown as never);
 
       await sut.removeMember(ctx, {
         targetUserId: 'user-member',
@@ -127,7 +127,7 @@ describe('GroupService', () => {
       );
       const ctx = new RequesterContext(mockAdmin, mockGroup, {
         isAllowed: vi.fn().mockResolvedValue(true),
-      } as any);
+      } as unknown as never);
 
       await expect(
         sut.removeMember(ctx, {
@@ -147,7 +147,7 @@ describe('GroupService', () => {
       );
       const ctx = new RequesterContext(mockUser, mockGroup, {
         isAllowed: vi.fn().mockResolvedValue(false),
-      } as any);
+      } as unknown as never);
 
       await expect(
         sut.removeMember(ctx, {
@@ -177,11 +177,11 @@ describe('GroupService', () => {
       );
       const ctx = new RequesterContext(mockUser, mockGroup, {
         isAllowed: vi.fn().mockResolvedValue(true),
-      } as any);
+      } as unknown as never);
 
       await sut.updateMemberRole(ctx, {
         targetUserId: 'user-member',
-        role: 'moderator',
+        role: 'moderator' as unknown as never,
       });
 
       expect(groupRepository.update).toHaveBeenCalled();
@@ -192,6 +192,4 @@ describe('GroupService', () => {
       expect(member?.role).toBe('moderator');
     });
   });
-
-  // Keep other tests largely similar but remove permissionService mocks
 });

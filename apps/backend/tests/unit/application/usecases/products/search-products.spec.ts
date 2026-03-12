@@ -1,5 +1,11 @@
 import 'reflect-metadata';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
+import type { ExternalProductClient } from '@/application/contracts';
+import type {
+  AddCanonicalProductRepository,
+  AddProductIdentityRepository,
+  GetProductIdentityByValueRepository,
+} from '@/application/contracts/repositories/product-hierarchy';
 import { SearchProductsService } from '@/application/usecases/products/search-products-service';
 
 describe('SearchProducts UseCase', () => {
@@ -7,28 +13,30 @@ describe('SearchProducts UseCase', () => {
   const mockIdentityRepo = {
     getByValue: vi.fn(),
     add: vi.fn(),
-  };
+  } as unknown as Mocked<
+    GetProductIdentityByValueRepository & AddProductIdentityRepository
+  >;
   const mockCanonicalRepo = {
     add: vi.fn(),
-  };
+  } as unknown as Mocked<AddCanonicalProductRepository>;
   const mockExternalClient = {
     fetchByBarcode: vi.fn(),
-  };
+  } as unknown as Mocked<ExternalProductClient>;
 
   beforeEach(() => {
     vi.clearAllMocks();
     service = new SearchProductsService(
-      mockIdentityRepo as any,
-      mockCanonicalRepo as any,
-      mockExternalClient as any,
+      mockIdentityRepo,
+      mockCanonicalRepo,
+      mockExternalClient,
     );
   });
 
   it('should search local GlobalProduct database first', async () => {
-    mockIdentityRepo.getByValue.mockResolvedValue({
+    vi.mocked(mockIdentityRepo.getByValue).mockResolvedValue({
       id: 'pi1',
       canonicalProductId: 'cp1',
-    });
+    } as unknown as never);
 
     await service.search('12345678');
 
@@ -37,11 +45,14 @@ describe('SearchProducts UseCase', () => {
   });
 
   it('should call ExternalProductClient if not found locally', async () => {
-    mockIdentityRepo.getByValue.mockResolvedValue(null);
-    mockExternalClient.fetchByBarcode.mockResolvedValue({
+    vi.mocked(mockIdentityRepo.getByValue).mockResolvedValue(
+      undefined as never,
+    );
+    vi.mocked(mockExternalClient.fetchByBarcode).mockResolvedValue({
       name: 'External Product',
       brand: 'Brand X',
       description: 'Desc',
+      imageUrl: 'http://image.url',
     });
 
     const result = await service.search('12345678');
@@ -53,8 +64,12 @@ describe('SearchProducts UseCase', () => {
   });
 
   it('should handle external API failures gracefully (fallback to local only)', async () => {
-    mockIdentityRepo.getByValue.mockResolvedValue(null);
-    mockExternalClient.fetchByBarcode.mockRejectedValue(new Error('API Down'));
+    vi.mocked(mockIdentityRepo.getByValue).mockResolvedValue(
+      undefined as never,
+    );
+    vi.mocked(mockExternalClient.fetchByBarcode).mockRejectedValue(
+      new Error('API Down'),
+    );
 
     const result = await service.search('12345678');
 

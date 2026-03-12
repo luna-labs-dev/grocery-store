@@ -1,5 +1,6 @@
 import 'reflect-metadata';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
+import type { PriceReportRepository } from '@/application/contracts/repositories/product-hierarchy/price-report-repository';
 import { PricingConsensusService } from '@/application/usecases/products/pricing-consensus-service';
 import { PriceReport } from '@/domain';
 
@@ -9,11 +10,11 @@ describe('PricingConsensus UseCase', () => {
     add: vi.fn(),
     getByProductIdentity: vi.fn(),
     getRegionalAverage: vi.fn(),
-  };
+  } as unknown as Mocked<PriceReportRepository>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    service = new PricingConsensusService(mockRepo as any);
+    service = new PricingConsensusService(mockRepo);
   });
 
   const baseParams = {

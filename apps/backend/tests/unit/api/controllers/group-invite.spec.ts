@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import type { FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
 import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import { GroupController } from '@/api/controllers/group-controller';
@@ -18,7 +18,11 @@ describe('GroupController - Invite Link Integration', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    groupService = new GroupService(null as any, null as any) as any;
+    groupService = new GroupService(
+      null as unknown as never,
+      null as unknown as never,
+    ) as Mocked<GroupService>;
+
     container.registerInstance('GroupService', groupService);
     groupController = new GroupController(groupService);
   });
@@ -33,23 +37,27 @@ describe('GroupController - Invite Link Integration', () => {
       const request = {
         auth: { user: { id: 'user-1' } },
         params: { groupId: 'group-1' },
-      } as any as FastifyRequest;
+      } as unknown as FastifyRequest;
 
       const reply = {
         status: vi.fn().mockReturnThis(),
         send: vi.fn(),
-      } as any as FastifyReply;
+      } as unknown as FastifyReply;
 
-      let capturedHandler: any;
-      await (groupController as any).registerRoutes({
+      let capturedHandler: (
+        req: FastifyRequest,
+        res: FastifyReply,
+      ) => Promise<void> = async () => {};
+      await groupController.registerRoutes({
         addHook: vi.fn(),
-        get: async (path: string, _opts: any, handler: any) => {
-          if (path === '/:groupId/invite') capturedHandler = handler;
+        get: async (path: string, _opts: unknown, handler: unknown) => {
+          if (path === '/:groupId/invite')
+            capturedHandler = handler as typeof capturedHandler;
         },
         post: vi.fn(),
         delete: vi.fn(),
         patch: vi.fn(),
-      } as any);
+      } as unknown as FastifyInstance);
 
       await capturedHandler(request, reply);
 
@@ -70,23 +78,27 @@ describe('GroupController - Invite Link Integration', () => {
       const request = {
         auth: { user: { id: 'user-1' } },
         params: { groupId: 'group-1' },
-      } as any as FastifyRequest;
+      } as unknown as FastifyRequest;
 
       const reply = {
         status: vi.fn().mockReturnThis(),
         send: vi.fn(),
-      } as any as FastifyReply;
+      } as unknown as FastifyReply;
 
-      let capturedHandler: any;
-      await (groupController as any).registerRoutes({
+      let capturedHandler: (
+        req: FastifyRequest,
+        res: FastifyReply,
+      ) => Promise<void> = async () => {};
+      await groupController.registerRoutes({
         addHook: vi.fn(),
-        get: async (path: string, _opts: any, handler: any) => {
-          if (path === '/:groupId/invite') capturedHandler = handler;
+        get: async (path: string, _opts: unknown, handler: unknown) => {
+          if (path === '/:groupId/invite')
+            capturedHandler = handler as typeof capturedHandler;
         },
         post: vi.fn(),
         delete: vi.fn(),
         patch: vi.fn(),
-      } as any);
+      } as unknown as FastifyInstance);
 
       await expect(capturedHandler(request, reply)).rejects.toThrow(
         UserNotInGroupException,
@@ -99,23 +111,27 @@ describe('GroupController - Invite Link Integration', () => {
       const request = {
         auth: { user: { id: 'user-1' } },
         params: { groupId: 'group-1' },
-      } as any as FastifyRequest;
+      } as unknown as FastifyRequest;
 
       const reply = {
         status: vi.fn().mockReturnThis(),
         send: vi.fn(),
-      } as any as FastifyReply;
+      } as unknown as FastifyReply;
 
-      let capturedHandler: any;
-      await (groupController as any).registerRoutes({
+      let capturedHandler: (
+        req: FastifyRequest,
+        res: FastifyReply,
+      ) => Promise<void> = async () => {};
+      await groupController.registerRoutes({
         addHook: vi.fn(),
-        get: async (path: string, _opts: any, handler: any) => {
-          if (path === '/:groupId/invite') capturedHandler = handler;
+        get: async (path: string, _opts: unknown, handler: unknown) => {
+          if (path === '/:groupId/invite')
+            capturedHandler = handler as typeof capturedHandler;
         },
         post: vi.fn(),
         delete: vi.fn(),
         patch: vi.fn(),
-      } as any);
+      } as unknown as FastifyInstance);
 
       await expect(capturedHandler(request, reply)).rejects.toThrow(
         UnexpectedException,

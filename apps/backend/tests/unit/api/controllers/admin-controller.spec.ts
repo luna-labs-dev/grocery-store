@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import type { FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
 import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import { AdminController } from '@/api/controllers/admin-controller';
@@ -16,7 +16,8 @@ describe('AdminController', () => {
       getSetting: vi.fn(),
       setSetting: vi.fn(),
       getAllSettings: vi.fn(),
-    } as any;
+    } as unknown as Mocked<SettingsRepository>;
+
     container.registerInstance('SettingsRepository', settingsRepository);
     adminController = new AdminController(settingsRepository);
   });
@@ -31,20 +32,29 @@ describe('AdminController', () => {
         requesterContext: {
           checkPermission: vi.fn().mockResolvedValue(undefined),
         },
-      } as any as FastifyRequest;
+      } as unknown as FastifyRequest;
 
       const reply = {
+        status: vi.fn().mockReturnThis(),
         send: vi.fn(),
-      } as any as FastifyReply;
+      } as unknown as FastifyReply;
 
-      let capturedHandler: any;
-      await (adminController as any).registerRoutes({
+      let capturedHandler: (
+        req: FastifyRequest,
+        res: FastifyReply,
+      ) => Promise<void> = async () => {};
+
+      await adminController.registerRoutes({
         addHook: vi.fn(),
-        get: async (path: string, _opts: any, handler: any) => {
-          if (path === '/groups/:groupId/settings') capturedHandler = handler;
+        get: async (path: string, _opts: unknown, handler: unknown) => {
+          if (path === '/groups/:groupId/settings') {
+            capturedHandler = handler as typeof capturedHandler;
+          }
         },
         patch: vi.fn(),
-      } as any);
+        post: vi.fn(),
+        delete: vi.fn(),
+      } as unknown as FastifyInstance);
 
       await capturedHandler(request, reply);
 
@@ -64,20 +74,29 @@ describe('AdminController', () => {
             .fn()
             .mockRejectedValue(new UnauthorizedGroupOperationException()),
         },
-      } as any as FastifyRequest;
+      } as unknown as FastifyRequest;
 
       const reply = {
+        status: vi.fn().mockReturnThis(),
         send: vi.fn(),
-      } as any as FastifyReply;
+      } as unknown as FastifyReply;
 
-      let capturedHandler: any;
-      await (adminController as any).registerRoutes({
+      let capturedHandler: (
+        req: FastifyRequest,
+        res: FastifyReply,
+      ) => Promise<void> = async () => {};
+
+      await adminController.registerRoutes({
         addHook: vi.fn(),
-        get: async (path: string, _opts: any, handler: any) => {
-          if (path === '/groups/:groupId/settings') capturedHandler = handler;
+        get: async (path: string, _opts: unknown, handler: unknown) => {
+          if (path === '/groups/:groupId/settings') {
+            capturedHandler = handler as typeof capturedHandler;
+          }
         },
         patch: vi.fn(),
-      } as any);
+        post: vi.fn(),
+        delete: vi.fn(),
+      } as unknown as FastifyInstance);
 
       await expect(capturedHandler(request, reply)).rejects.toThrow(
         UnauthorizedGroupOperationException,
@@ -93,21 +112,29 @@ describe('AdminController', () => {
         requesterContext: {
           checkPermission: vi.fn().mockResolvedValue(undefined),
         },
-      } as any as FastifyRequest;
+      } as unknown as FastifyRequest;
 
       const reply = {
         status: vi.fn().mockReturnThis(),
         send: vi.fn(),
-      } as any as FastifyReply;
+      } as unknown as FastifyReply;
 
-      let capturedHandler: any;
-      await (adminController as any).registerRoutes({
+      let capturedHandler: (
+        req: FastifyRequest,
+        res: FastifyReply,
+      ) => Promise<void> = async () => {};
+
+      await adminController.registerRoutes({
         addHook: vi.fn(),
         get: vi.fn(),
-        patch: async (path: string, _opts: any, handler: any) => {
-          if (path === '/groups/:groupId/settings') capturedHandler = handler;
+        patch: async (path: string, _opts: unknown, handler: unknown) => {
+          if (path === '/groups/:groupId/settings') {
+            capturedHandler = handler as typeof capturedHandler;
+          }
         },
-      } as any);
+        post: vi.fn(),
+        delete: vi.fn(),
+      } as unknown as FastifyInstance);
 
       await capturedHandler(request, reply);
 
