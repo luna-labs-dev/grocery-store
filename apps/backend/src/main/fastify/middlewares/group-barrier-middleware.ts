@@ -40,15 +40,19 @@ export const groupBarrierMiddleware = async (request: FastifyRequest) => {
 
   // Determine the active group.
   const headerGroupId = request.headers['x-group-id'] as string | undefined;
-  const paramGroupId = (request.params as any)?.groupId;
+  const paramGroupId = (request.params as Record<string, string | undefined>)
+    ?.groupId;
 
   let activeGroupId = groups[0].groupId;
 
-  if (paramGroupId && groups.some((g: any) => g.groupId === paramGroupId)) {
+  if (
+    paramGroupId &&
+    groups.some((g) => (g as { groupId: string }).groupId === paramGroupId)
+  ) {
     activeGroupId = paramGroupId;
   } else if (
     headerGroupId &&
-    groups.some((g: any) => g.groupId === headerGroupId)
+    groups.some((g) => (g as { groupId: string }).groupId === headerGroupId)
   ) {
     activeGroupId = headerGroupId;
   }

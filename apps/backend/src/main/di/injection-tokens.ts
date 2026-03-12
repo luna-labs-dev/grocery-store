@@ -11,6 +11,8 @@ export const injection = {
     canonicalProductRepositories: 'canonical-product-repositories',
     productIdentityRepositories: 'product-identity-repositories',
     outboxEventRepositories: 'outbox-event-repositories',
+    physicalEanRepository: 'physical-ean-repository',
+    externalFetchLogRepository: 'external-fetch-log-repository',
     openFoodFactsClient: 'open-food-facts-client',
     upcItemDbClient: 'upc-item-db-client',
     compositeProductClient: 'composite-product-client',
@@ -30,10 +32,18 @@ export const injection = {
     userService: 'user-service',
     pricingConsensusService: 'pricing-consensus-service',
     searchProductsService: 'search-products-service',
+    scanProductUseCase: 'scan-product-use-case',
+    manualSearchUseCase: 'manual-search-use-case',
+    hydrateProductUseCase: 'hydrate-product-use-case',
+    hydrateProductJob: 'hydrate-product-job',
+
     nfcEDecoder: 'nfc-e-decoder',
     reconciliationEngine: 'reconciliation-engine',
   },
   controllers: {
     fastify: 'fastify-controllers',
+    product: 'product-controller',
+    shoppingEvent: 'shopping-event-controller',
+    cart: 'cart-controller',
   },
 };

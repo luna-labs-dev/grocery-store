@@ -24,7 +24,7 @@ export function hasGroupPermission<Resource extends keyof GroupPermissions>(
   if (!resourcePermissions) return false;
 
   const permission = (
-    resourcePermissions as Record<string, PermissionCheck<any>>
+    resourcePermissions as Record<string, PermissionCheck<unknown>>
   )[action];
 
   if (permission == null) return false;

@@ -1,38 +1,77 @@
-import { injectable } from 'tsyringe';
+import axios, { type AxiosInstance } from 'axios';
+import axiosRetry from 'axios-retry';
+import { inject, injectable } from 'tsyringe';
+import { Buidler } from './resilience/buidler';
 import type {
   ExternalProductClient,
   ExternalProductData,
 } from '@/application/contracts/external-product-client';
+import type { CircuitBreaker } from '@/domain/core/circuit-breaker';
+import { env } from '@/main/config/env';
 
 @injectable()
 export class UpcItemDbClient implements ExternalProductClient {
-  private readonly baseUrl = 'https://api.upcitemdb.com/prod/trial/lookup';
+  private readonly httpClient: AxiosInstance;
+  private readonly circuitBreaker: CircuitBreaker;
+
+  constructor(
+    @inject(Buidler)
+    private readonly buidler: Buidler,
+  ) {
+    const config = env.externalProducts.upcItemDb;
+    this.httpClient = axios.create({
+      baseURL: config.baseURL,
+      timeout: 2500,
+      headers: config.apiKey ? { user_key: config.apiKey } : undefined,
+    });
+
+    axiosRetry(this.httpClient, {
+      retries: 1,
+      retryDelay: axiosRetry.exponentialDelay,
+      retryCondition: (error) => {
+        return axiosRetry.isNetworkOrIdempotentRequestError(error);
+      },
+    });
+
+    this.circuitBreaker = this.buidler.createCircuitBreaker({
+      name: 'UPCItemDB',
+      failureThreshold: 2,
+      resetTimeoutMs: 60000,
+    });
+  }
 
   async fetchByBarcode(barcode: string): Promise<ExternalProductData | null> {
     try {
-      const response = await fetch(`${this.baseUrl}?upc=${barcode}`);
+      return await this.circuitBreaker.execute(async () => {
+        try {
+          const response = await this.httpClient.get('/', {
+            params: { upc: barcode },
+          });
 
-      if (!response.ok) {
-        return null;
-      }
+          const { items } = response.data;
 
-      const data = await response.json();
+          if (!items || items.length === 0) {
+            return null;
+          }
 
-      if (data.code !== 'OK' || !data.items || data.items.length === 0) {
-        return null;
-      }
+          const item = items[0];
 
-      const item = data.items[0];
+          if (!item.title) {
+            return null;
+          }
 
-      if (!item.title) {
-        return null;
-      }
-
-      return {
-        name: item.title,
-        brand: item.brand || undefined,
-        description: item.description || undefined,
-      };
+          return {
+            name: item.title,
+            brand: item.brand || undefined,
+            description: item.description || undefined,
+          };
+        } catch (error) {
+          if (axios.isAxiosError(error) && error.response?.status === 404) {
+            return null;
+          }
+          throw error;
+        }
+      });
     } catch (_error) {
       return null;
     }

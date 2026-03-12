@@ -17,7 +17,7 @@ export function hasPermission<Resource extends keyof GlobalPermissions>(
     if (!resourcePermissions) return false;
 
     const permission = (
-      resourcePermissions as Record<string, PermissionCheck<any>>
+      resourcePermissions as Record<string, PermissionCheck<unknown>>
     )[action];
 
     if (permission == null) return false;

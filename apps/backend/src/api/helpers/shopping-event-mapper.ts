@@ -9,7 +9,8 @@ export const shoppingEventMapper = {
       status: shoppingEvent.status,
       market: shoppingEvent.market
         ? marketMapper.toResponse(shoppingEvent.market)
-        : (undefined as any), // Fallback should be handled by the schema/controller if possible
+        : undefined,
+
       totals: shoppingEvent.getCalculatedTotals(),
       products: shoppingEvent.products.getItems().map((prod) => {
         const { totalsRetailOnly, totalsWithWhosale, totalsDifference } =

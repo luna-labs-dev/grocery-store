@@ -40,6 +40,14 @@ const envVariables = z.object({
   // Social Auth
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
+
+  // External Products
+  OFF_BASE_URL: z.string().url().default('https://world.openfoodfacts.org'),
+  UPCITEMDB_BASE_URL: z
+    .string()
+    .url()
+    .default('https://api.upcitemdb.com/prod/trial/lookup'),
+  UPCITEMDB_API_KEY: z.string().optional(),
 });
 
 const parsedVariables = envVariables.safeParse(process.env);
@@ -87,6 +95,11 @@ const {
   // Social Auth
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
+
+  // External Products
+  OFF_BASE_URL,
+  UPCITEMDB_BASE_URL,
+  UPCITEMDB_API_KEY,
 } = parsedVariables.data;
 
 const actualDbName =
@@ -126,6 +139,15 @@ export const env = {
     google: {
       clientId: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
+    },
+  },
+  externalProducts: {
+    off: {
+      baseURL: OFF_BASE_URL,
+    },
+    upcItemDb: {
+      baseURL: UPCITEMDB_BASE_URL,
+      apiKey: UPCITEMDB_API_KEY,
     },
   },
 } as const;

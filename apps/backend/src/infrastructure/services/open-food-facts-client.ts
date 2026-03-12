@@ -1,40 +1,79 @@
-import { injectable } from 'tsyringe';
+import axios, { type AxiosInstance } from 'axios';
+import axiosRetry from 'axios-retry';
+import { inject, injectable } from 'tsyringe';
+import { Buidler } from './resilience/buidler';
 import type {
   ExternalProductClient,
   ExternalProductData,
 } from '@/application/contracts/external-product-client';
+import type { CircuitBreaker } from '@/domain/core/circuit-breaker';
+import { env } from '@/main/config/env';
 
 @injectable()
 export class OpenFoodFactsClient implements ExternalProductClient {
-  private readonly baseUrl = 'https://world.openfoodfacts.org/api/v0/product';
+  private readonly httpClient: AxiosInstance;
+  private readonly circuitBreaker: CircuitBreaker;
+
+  constructor(
+    @inject(Buidler)
+    private readonly buidler: Buidler,
+  ) {
+    this.httpClient = axios.create({
+      baseURL: env.externalProducts.off.baseURL,
+      timeout: 2000,
+    });
+
+    axiosRetry(this.httpClient, {
+      retries: 2,
+      retryDelay: axiosRetry.exponentialDelay,
+      retryCondition: (error) => {
+        return (
+          axiosRetry.isNetworkOrIdempotentRequestError(error) ||
+          error.code === 'ECONNABORTED'
+        );
+      },
+    });
+
+    this.circuitBreaker = this.buidler.createCircuitBreaker({
+      name: 'OpenFoodFacts',
+      failureThreshold: 3,
+      resetTimeoutMs: 30000,
+    });
+  }
 
   async fetchByBarcode(barcode: string): Promise<ExternalProductData | null> {
     try {
-      const response = await fetch(`${this.baseUrl}/${barcode}.json`);
+      return await this.circuitBreaker.execute(async () => {
+        try {
+          const response = await this.httpClient.get(
+            `/api/v0/product/${barcode}.json`,
+          );
 
-      if (!response.ok) {
-        return null;
-      }
+          const { product, status } = response.data;
 
-      const data = await response.json();
+          if (status !== 1 || !product) {
+            return null; // Product not found
+          }
 
-      if (data.status !== 1 || !data.product) {
-        return null; // Product not found
-      }
+          const { product_name, brands, generic_name } = product;
 
-      const { product_name, brands, generic_name } = data.product;
+          if (!product_name) {
+            return null; // Not enough useful data
+          }
 
-      if (!product_name) {
-        return null; // Not enough useful data
-      }
-
-      return {
-        name: product_name,
-        brand: brands ? brands.split(',')[0].trim() : undefined,
-        description: generic_name,
-      };
+          return {
+            name: product_name,
+            brand: brands ? brands.split(',')[0].trim() : undefined,
+            description: generic_name,
+          };
+        } catch (error) {
+          if (axios.isAxiosError(error) && error.response?.status === 404) {
+            return null;
+          }
+          throw error;
+        }
+      });
     } catch (_error) {
-      // Return null on network or parsing error out of caution (resilience)
       return null;
     }
   }

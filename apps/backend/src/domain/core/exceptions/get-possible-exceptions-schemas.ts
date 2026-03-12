@@ -30,13 +30,25 @@ export const getPossibleExceptionsSchemas = (
             acc[exception.statusCode] = z.union([
               ...existingException.options,
               exception.schema,
-            ] as any);
+            ] as unknown as [
+              z.ZodTypeAny,
+              z.ZodTypeAny,
+              ...z.ZodTypeAny[],
+            ]) as unknown as z.ZodType<
+              ExceptionResult | z.infer<typeof exception.schema>
+            >;
           } else {
             // Join the existing zod schema with the new one with a z.union
             acc[exception.statusCode] = z.union([
               existingException,
               exception.schema,
-            ] as any);
+            ] as unknown as [
+              z.ZodTypeAny,
+              z.ZodTypeAny,
+              ...z.ZodTypeAny[],
+            ]) as unknown as z.ZodType<
+              ExceptionResult | z.infer<typeof exception.schema>
+            >;
           }
 
           return acc;

@@ -1,5 +1,8 @@
 import type { CanonicalProduct } from '@/domain';
 
 export interface AddCanonicalProductRepository {
-  add: (canonicalProduct: CanonicalProduct, transaction?: any) => Promise<void>;
+  add: (
+    canonicalProduct: CanonicalProduct,
+    transaction?: unknown,
+  ) => Promise<void>;
 }

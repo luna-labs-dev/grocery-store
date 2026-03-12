@@ -16,7 +16,8 @@ export class RequesterContext {
   public async checkPermission<Resource extends keyof GroupPermissions>(
     action: GroupPermissions[Resource]['action'],
     resource: Resource,
-    data: GroupPermissions[Resource]['dataType'] = this.group as any,
+    data: GroupPermissions[Resource]['dataType'] = this
+      .group as unknown as GroupPermissions[Resource]['dataType'],
   ): Promise<void> {
     const isMember = this.user.groups?.some((g) => g.groupId === this.group.id);
 

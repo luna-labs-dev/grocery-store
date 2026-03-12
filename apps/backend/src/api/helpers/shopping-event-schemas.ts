@@ -61,7 +61,8 @@ export const getShoppingEventListResponseSchema = z.object({
 export const shoppingEventSummaryDtoSchema = z.object({
   id: z.uuid(),
   status: z.enum(validShoppingEventStatus),
-  market: marketItemResponseSchema,
+  market: marketItemResponseSchema.optional(),
+
   totals: z.object({
     retailTotal: z.number(),
     wholesaleTotal: z.number(),

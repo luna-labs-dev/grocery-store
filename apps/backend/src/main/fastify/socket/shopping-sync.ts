@@ -8,14 +8,14 @@ import type {
 import { db } from '@/infrastructure/repositories/drizzle/setup/connection';
 import {
   groupMemberTable,
-  shopping_eventTable,
+  shoppingEventTable,
 } from '@/infrastructure/repositories/drizzle/setup/schema';
 
 export const onConnection = (
   socket: Socket<ClientToServerEvents, ServerToClientEvents>,
   app: FastifyInstance,
 ) => {
-  const user = (socket as any).user;
+  const user = (socket as unknown as { user: { id: string } }).user;
   app.log.info(`Socket connected: ${socket.id} (User: ${user?.id})`);
 
   socket.on('join-room', async ({ shoppingEventId }, callback) => {
@@ -28,9 +28,9 @@ export const onConnection = (
     try {
       // 1. Fetch the event to find the groupId
       const [event] = await db
-        .select({ groupId: shopping_eventTable.groupId })
-        .from(shopping_eventTable)
-        .where(eq(shopping_eventTable.id, shoppingEventId));
+        .select({ groupId: shoppingEventTable.groupId })
+        .from(shoppingEventTable)
+        .where(eq(shoppingEventTable.id, shoppingEventId));
 
       if (!event || !event.groupId) {
         if (callback)

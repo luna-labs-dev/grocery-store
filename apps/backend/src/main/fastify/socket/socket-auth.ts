@@ -19,9 +19,10 @@ export const socketAuthMiddleware = async (socket: Socket) => {
     }
 
     // Attach user to socket for downstream use
+    // biome-ignore lint/suspicious/noExplicitAny: Socket object extension
     (socket as any).user = session.user;
     return true;
-  } catch (_error: any) {
+  } catch (_error: unknown) {
     return false;
   }
 };

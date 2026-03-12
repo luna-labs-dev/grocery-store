@@ -1,7 +1,13 @@
 import { inject, injectable } from 'tsyringe';
 import { z } from 'zod';
 import { FastifyController } from '../contracts/fastify-controller';
+import {
+  adminSettingsParamsSchema,
+  adminSettingsResponseSchema,
+  adminUpdateSettingsRequestSchema,
+} from '../helpers';
 import type { SettingsRepository } from '@/application/contracts/repositories/settings-repository';
+import { HttpStatusCode } from '@/domain/core/enums';
 import type { RequesterContext } from '@/domain/core/requester-context';
 import { injection } from '@/main/di/injection-tokens';
 import {
@@ -30,9 +36,13 @@ export class AdminController extends FastifyController {
       {
         schema: {
           tags: ['admin'],
-          params: z.object({
-            groupId: z.string().uuid(),
-          }),
+          summary: 'Get group settings',
+          description: 'Retrieve all settings for a specific group',
+          operationId: 'getGroupSettings',
+          params: adminSettingsParamsSchema,
+          response: {
+            [HttpStatusCode.Ok]: adminSettingsResponseSchema,
+          },
         },
       },
       async (request, reply) => {
@@ -43,7 +53,7 @@ export class AdminController extends FastifyController {
 
         const settings = await this.settingsRepository.getAllSettings(groupId);
 
-        return reply.send(settings);
+        return reply.status(HttpStatusCode.Ok).send(settings);
       },
     );
 
@@ -52,10 +62,14 @@ export class AdminController extends FastifyController {
       {
         schema: {
           tags: ['admin'],
-          params: z.object({
-            groupId: z.string().uuid(),
-          }),
-          body: z.record(z.string(), z.any()),
+          summary: 'Update group settings',
+          description: 'Update multiple settings for a specific group',
+          operationId: 'updateGroupSettings',
+          params: adminSettingsParamsSchema,
+          body: adminUpdateSettingsRequestSchema,
+          response: {
+            [HttpStatusCode.NoContent]: z.void(),
+          },
         },
       },
       async (request, reply) => {
@@ -64,12 +78,12 @@ export class AdminController extends FastifyController {
 
         await ctx.checkPermission('update', 'settings', { groupId });
 
-        const settings = request.body as Record<string, any>;
+        const settings = request.body;
         for (const [key, value] of Object.entries(settings)) {
           await this.settingsRepository.setSetting(groupId, key, value);
         }
 
-        return reply.status(204).send();
+        return reply.status(HttpStatusCode.NoContent).send();
       },
     );
   }
