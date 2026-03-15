@@ -82,7 +82,7 @@ describe('Real-Time Sync (Socket.io) Integration', () => {
         reject(new Error('Connection should have been rejected'));
       });
 
-      client.on('connect_error', (err) => {
+      client.on('connect_error', (err: Error) => {
         try {
           expect(err.message).toBe('Authentication failed');
           resolve();
@@ -113,7 +113,7 @@ describe('Real-Time Sync (Socket.io) Integration', () => {
         );
       });
 
-      client.on('connect_error', (err) => reject(err));
+      client.on('connect_error', (err: Error) => reject(err));
       setTimeout(() => reject(new Error('Timeout')), 2000);
     });
   });

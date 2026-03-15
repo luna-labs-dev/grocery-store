@@ -5,10 +5,19 @@ import {
   addProductToCartRequestSchema,
   addProductToCartResponseSchema,
   cartCommonRequestParamsSchema,
+  manualSearchQuerySchema,
+  manualSearchResponseSchema,
   mutateProductInCartRequestParamsSchema,
+  productMapper,
+  scanProductParamsSchema,
+  scanProductResponseSchema,
   updateProductInCartRequestSchema,
 } from '../helpers';
-import type { CartService } from '@/application';
+import type {
+  CartService,
+  ManualSearchUseCase,
+  ScanProductUseCase,
+} from '@/application';
 import { getPossibleExceptionsSchemas } from '@/domain';
 import {
   ProductNotFoundException,
@@ -29,6 +38,10 @@ export class CartController extends FastifyController {
   constructor(
     @inject(usecases.cartService)
     private readonly cartService: CartService,
+    @inject(injection.usecases.scanProductUseCase)
+    private scanProductUseCase: ScanProductUseCase,
+    @inject(injection.usecases.manualSearchUseCase)
+    private manualSearchUseCase: ManualSearchUseCase,
   ) {
     super();
   }
@@ -36,6 +49,72 @@ export class CartController extends FastifyController {
   registerRoutes(app: FastifyTypedInstance) {
     app.addHook('preHandler', authMiddleware);
     app.addHook('preHandler', groupBarrierMiddleware);
+
+    app.get(
+      '/scan/:barcode',
+      {
+        schema: {
+          tags: [this.prefix],
+          summary: 'Escanear produto',
+          description: 'Escanear um produto pelo código de barras',
+          operationId: 'scanProduct',
+          params: scanProductParamsSchema,
+          response: {
+            200: scanProductResponseSchema,
+          },
+        },
+      },
+      async (request, reply) => {
+        const { barcode } = request.params;
+        const result = await this.scanProductUseCase.execute(barcode);
+        return reply.send(
+          productMapper.toScanResponse({
+            barcode,
+            ...result,
+          }),
+        );
+      },
+    );
+
+    app.get(
+      '/search',
+      {
+        schema: {
+          tags: [this.prefix],
+          summary: 'Pesquisar produtos',
+          description: 'Pesquisar produtos pelo nome ou marca',
+          operationId: 'searchProduct',
+          querystring: manualSearchQuerySchema,
+          response: {
+            200: manualSearchResponseSchema,
+          },
+        },
+      },
+      async (request, reply) => {
+        const { searchQuery } = request.query;
+
+        const result = await this.manualSearchUseCase.execute(
+          searchQuery,
+          0,
+          10,
+        );
+        const hasNextPage = result.items.length === 10;
+
+        return reply.send(
+          productMapper.toSearchResponse({
+            products: result.items.map((item) => ({
+              id: item.id,
+              name: item.name ?? 'Unknown',
+              brand: item.brand,
+              imageUrl: item.imageUrl,
+              canonicalProductId: item.canonicalProductId,
+            })),
+            total: result.total,
+            nextPageIndex: hasNextPage ? 1 : undefined,
+          }),
+        );
+      },
+    );
 
     app.post(
       '/add-product/:shoppingEventId',

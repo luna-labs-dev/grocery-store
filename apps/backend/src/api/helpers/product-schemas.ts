@@ -42,11 +42,13 @@ export const scanProductResponseSchema = z.object({
  * Manual Search
  */
 export const manualSearchQuerySchema = z.object({
-  q: z.string().min(2).describe('Search query (name or brand)'),
+  searchQuery: z.string().min(2).describe('Search query (name or brand)'),
+  pageIndex: z.coerce.number().int().min(0).optional().default(0),
+  pageSize: z.coerce.number().int().min(1).max(100).optional().default(10),
 });
 
 export const manualSearchResponseSchema = z.object({
-  products: z.array(
+  items: z.array(
     z.object({
       id: z.string(),
       name: z.string(),
@@ -55,4 +57,6 @@ export const manualSearchResponseSchema = z.object({
       canonicalProductId: z.string(),
     }),
   ),
+  total: z.number(),
+  nextPageIndex: z.number().optional(),
 });

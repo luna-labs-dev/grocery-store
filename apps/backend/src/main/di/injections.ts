@@ -9,7 +9,6 @@ import {
   CartController,
   GroupController,
   MarketController,
-  ProductController,
   ShoppingEventController,
 } from '@/api/controllers';
 import {
@@ -141,7 +140,6 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
   container.register<FastifyController>(controllers.fastify, AuthController);
   container.register<FastifyController>(controllers.fastify, GroupController);
   container.register<FastifyController>(controllers.fastify, MarketController);
-  container.register<FastifyController>(controllers.fastify, ProductController);
   container.register<FastifyController>(
     controllers.fastify,
     ShoppingEventController,

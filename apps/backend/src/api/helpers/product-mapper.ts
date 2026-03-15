@@ -53,13 +53,17 @@ export const productMapper = {
       brand?: string;
       imageUrl?: string;
     }[];
+    total: number;
+    nextPageIndex?: number;
   }): ManualSearchResponse => ({
-    products: data.products.map((p) => ({
+    items: data.products.map((p) => ({
       id: p.id,
       name: p.name,
       brand: p.brand ?? null,
       imageUrl: p.imageUrl ?? null,
       canonicalProductId: p.id, // Assuming ID is canonical or placeholder
     })),
+    total: data.total,
+    nextPageIndex: data.nextPageIndex,
   }),
 };
