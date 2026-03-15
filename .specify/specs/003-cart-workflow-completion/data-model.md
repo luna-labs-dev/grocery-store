@@ -3,38 +3,41 @@
 ## Entities
 
 ### PhysicalEAN
-- **barcode**: String (Primary Key / Unique)
-- **productIdentityId**: UUID (Foreign Key -> ProductIdentity)
+Mapping of a physical barcode to a Product Identity.
+- **id**: UUID (PK)
+- **barcode**: String (Indexed, Unique)
+- **productIdentityId**: UUID (FK -> ProductIdentity)
 - **createdAt**: Timestamp
 - **updatedAt**: Timestamp
 
 ### ProductIdentity
-- **id**: UUID (Primary Key)
+The specific variant of a product (e.g., "Coca-Cola 350ml").
+- **id**: UUID (PK)
+- **canonicalProductId**: UUID (FK -> CanonicalProduct)
 - **name**: String
 - **brand**: String (Optional)
-- **description**: String (Optional)
 - **imageUrl**: String (Optional)
-- **canonicalProductId**: UUID (Foreign Key -> CanonicalProduct)
 - **createdAt**: Timestamp
 - **updatedAt**: Timestamp
 
 ### ExternalFetchLog
-- **id**: UUID (Primary Key)
+Audit log for external API requests.
+- **id**: UUID (PK)
 - **barcode**: String
-- **source**: Enum ('OFF', 'UPCITEMDB')
+- **source**: Enum ('OPEN_FOOD_FACTS', 'UPC_ITEM_DB')
 - **rawResponse**: JSONB
-- **status**: Enum ('SUCCESS', 'MISS', 'ERROR')
+- **status**: Enum ('SUCCESS', 'NOT_FOUND', 'ERROR')
 - **createdAt**: Timestamp
 
 ### OutboxEvent
-- **id**: UUID (Primary Key)
-- **type**: String (e.g., 'ProductScanned')
+Events for background hydration.
+- **id**: UUID (PK)
+- **type**: String ('EXTERNAL_PRODUCT_FETCHED')
 - **payload**: JSONB
-- **status**: Enum ('PENDING', 'PROCESSED', 'FAILED')
-- **retryCount**: Integer
+- **processedAt**: Timestamp (Nullable)
 - **createdAt**: Timestamp
-- **processedAt**: Timestamp (Optional)
 
 ## Relationships
-- `PhysicalEAN` Many -> 1 `ProductIdentity`
-- `ProductIdentity` Many -> 1 `CanonicalProduct`
+- **PhysicalEAN** (N:1) -> **ProductIdentity**
+- **ProductIdentity** (N:1) -> **CanonicalProduct**
+- **ExternalFetchLog** (1:1) -> **OutboxEvent** (Conceptually linked by barcode/timestamp)

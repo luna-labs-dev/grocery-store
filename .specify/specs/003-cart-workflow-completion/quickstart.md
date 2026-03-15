@@ -1,22 +1,20 @@
-# Quickstart: Cart Workflow
+# Quickstart: Feature 003
 
-## Scanning Workflow
-1. Shopper opens scanning interface (`ScannerOverlay`).
-2. `react-zxing` captures barcode and sends to backend: `GET /api/products/scan/:barcode`.
-3. Backend checks local `PhysicalEAN`.
-4. If miss, backend triggers `CompositeExternalProductClient` (OFF/UPCitemdb).
-5. If match found externally, `OutboxEvent` (ProductScanned) is emitted for background hydration.
-6. `PriceConfirmationDrawer` opens in Frontend with Name, Brand, and Image.
-7. Shopper confirms price and item is added to cart.
+## Prerequisites
+- **Backend Secrets**: Ensure `OPEN_FOOD_FACTS_API_KEY` (if any) and `UPC_ITEM_DB_KEY` are in `.env`.
+- **Database**: Run migrations (`pnpm drizzle-kit push`) to create `physical_eans`, etc.
 
-## Manual Search Workflow
-1. Shopper enters query in search bar.
-2. Backend receives `GET /api/products/search?q=...&page=...`.
-3. Fuzzy match across `ProductIdentity` (Name/Brand) within local catalog only.
-4. `Infinite Scroll` loads more results in the UI.
+## Development Workflow
+1. **Backend**: Implement the `ScanProductUseCase` and `ManualSearchUseCase`.
+2. **Schema**: Verify `product-schemas.ts` matches the contract (`searchQuery` instead of `q`).
+3. **Orval**: Run `pnpm orval` to update frontend hooks.
+4. **Frontend**:
+   - Use `useScanProduct` in `use-scan-product.ts`.
+   - Use `useSearchProductsInfinite` in `product-search.tsx`.
+   - Wrap the scanner in a `Drawer` in the Details page.
+   - Handle the `TrackKindSettings` error state for "Access Denied".
 
-## Environment Setup
-Ensure the following variables are in `.env`:
-- `OFF_BASE_URL`
-- `UPCITEMDB_BASE_URL`
-- `UPCITEMDB_API_KEY` (Backend Secret)
+## Testing
+- Unit: `pnpm vitest apps/backend/src/application/usecases/products`
+- Contract: `pnpm vitest apps/backend/tests/contract/product`
+- UI: Use the simulated scanner tool; test denied permissions by mocking `navigator.mediaDevices.getUserMedia` rejection.

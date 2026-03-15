@@ -13,6 +13,22 @@
 - **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3, US4)
 - Include exact file paths in descriptions
 
+---
+
+## Phase 0: Remediation & Alignment (CRITICAL)
+
+**Purpose**: Fix reported bugs and align with updated guidelines before proceeding with new features.
+
+- [x] T_REM_001 [P] Standardize `ProductController` routes to **singular** (`/api/product/...`) and unique `operationId`s in `apps/backend/src/api/controllers/product-controller.ts`
+- [x] T_REM_002 [P] Update `VariableWeightParser` and `ScanProductUseCase` to align with singular route logic and `searchQuery` nomenclature.
+- [x] T_REM_003 [P] Update Orval configuration (`orval.config.ts`) and run `pnpm orval` from project root.
+- [x] T_REM_004 Migrate `use-scan-product.ts` to use Orval-generated `useScanProduct` hook.
+- [x] T_REM_005 Migrate `product-search.tsx` to use Orval-generated `useSearchProductInfinite` hook (ensure `searchQuery` is used).
+- [x] T_REM_006 Improve `ScannerOverlay` UX: decouple `isScanning` from `isPaused`, add backdrop to prevent background interaction.
+- [x] T_REM_007 Verify all fixes: run backend tests, frontend tests, and manual scanning loop.
+
+---
+
 ## Phase 1: Setup (Shared Infrastructure)
 
 **Purpose**: Project initialization and basic structure
@@ -20,7 +36,7 @@
 - [ ] T001 [P] Define `ExternalFetchLog` and `OutboxEvent` schemas in `apps/backend/src/infrastructure/database/schema/`
 - [ ] T002 [P] Register `OFF` and `UPCitemdb` environment variables in `apps/backend/src/main/config/env.ts`
 - [ ] T003 Configure `Buidler` circuit breaker factory in `apps/backend/src/infrastructure/services/resilience/`
-- [ ] T004 [P] Install `react-zxing` in `apps/frontend/` using `pnpm add react-zxing`
+- [ ] T004 [P] Install `react-zxing` and `vaul` in `apps/frontend/` using `pnpm add react-zxing vaul`
 
 ---
 
@@ -41,18 +57,17 @@
 
 **Goal**: Instant recognition of products existing in the local database with mandatory price confirmation.
 
-**Independent Test**: Scan an EAN-13 from `physical_eans`. Verify app prompts for price confirmation instead of auto-adding.
-
 ### Tests for User Story 1
 - [ ] T009 [P] [US1] Unit test for `ScanProductUseCase` (Internal Match + FR-008 Confirmation) in `apps/backend/tests/unit/application/usecases/products/`
-- [ ] T010 [P] [US1] Contract test for `GET /api/products/scan/:barcode` (ensure `requiresPriceConfirmation` in response) in `apps/backend/tests/contract/`
+- [ ] T010 [P] [US1] Contract test for `GET /api/product/scan/:barcode` (ensure `requiresPriceConfirmation` in response) in `apps/backend/tests/contract/`
 - [ ] T011 [P] [US1] Unit test for `ScannerOverlay` component in `apps/frontend/src/features/shopping-event/components/`
 
 ### Implementation for User Story 1
 - [ ] T012 [P] [US1] Implement `DrizzlePhysicalEanRepository` in `apps/backend/src/infrastructure/database/repositories/`
 - [ ] T013 [US1] Implement `ScanProductUseCase` with mandatory confirmation logic in `apps/backend/src/application/usecases/products/`
 - [ ] T014 [US1] Create `ProductController.scanProduct` endpoint in `apps/backend/src/api/controllers/`
-- [ ] T015 [US1] Implement `ScannerOverlay` using `react-zxing` in `apps/frontend/src/features/shopping-event/components/`
+- [ ] T015 [US1] Implement `ScannerOverlay` using `react-zxing` (wrapped in a `Drawer`) in `apps/frontend/src/features/shopping-event/components/`
+- [ ] T015.1 [US1] Implement "Access Denied" error state for `ScannerOverlay` (FR-011) with "Enter Manually" recovery path.
 - [ ] T016 [US1] Implement `PriceConfirmationDrawer` using `vaul` in `apps/frontend/src/features/shopping-event/components/`
 
 **Checkpoint**: User Story 1 (MVP) functional for local matches with full-stack confirmation flow.
@@ -62,8 +77,6 @@
 ## Phase 4: User Story 2 - External API Fallback (Priority: P1)
 
 **Goal**: Search external databases (OFF/UPCitemdb) when local lookup fails.
-
-**Independent Test**: Scan barcode not in DB. Verify backend fetches data and frontend prompts for price.
 
 ### Tests for User Story 2
 - [ ] T017 [P] [US2] Unit tests for `OpenFoodFactsClient` and `UpcItemDbClient` in `apps/backend/tests/unit/infrastructure/services/`
@@ -75,6 +88,7 @@
 - [ ] T021 [US2] Update backend `ScanProductUseCase` to include external fallback and outbox event emission
 - [ ] T022 [US2] Create `HydrateProductJob` worker in `apps/backend/src/application/jobs/`
 - [ ] T023 [US2] Handle external product loading states in frontend scan flow
+- [ ] T023.1 [US2] Implement "Product Not Found" Drawer UI (FR-009) with "Enter Manually" path in `apps/frontend/src/features/shopping-event/components/`
 
 **Checkpoint**: External fallbacks successfully hydrate the catalog.
 
@@ -84,24 +98,20 @@
 
 **Goal**: Search for products by name/brand when barcodes are unavailable.
 
-**Independent Test**: Search for "Apples". Verify result list supports infinite scroll and price confirmation on selection.
-
 ### Tests for User Story 3
-- [ ] T024 [P] [US3] Unit test for `ManualSearchUseCase` in `apps/backend/tests/unit/application/usecases/products/`
-- [ ] T025 [P] [US3] Unit test for `ProductSearch` component with infinite scroll in `apps/frontend/src/features/market/components/`
+- [ ] T024 [P] [US3] Unit test for `ManualSearchUseCase` (verifying `searchQuery` filter) in `apps/backend/tests/unit/application/usecases/products/`
+- [ ] T025 [P] [US3] Unit test for `ProductSearch` component with infinite scroll (mocking `useSearchProductsInfinite`) in `apps/frontend/src/features/market/components/`
 
 ### Implementation for User Story 3
-- [ ] T026 [P] [US3] Implement fuzzy search + pagination in `DrizzleProductIdentityRepository` in `apps/backend/src/infrastructure/database/repositories/`
+- [ ] T026 [P] [US3] Implement fuzzy search (`searchQuery`) + pagination in `DrizzleProductIdentityRepository` in `apps/backend/src/infrastructure/database/repositories/`
 - [ ] T027 [US3] Implement `ManualSearchUseCase` in `apps/backend/src/application/usecases/products/`
-- [ ] T028 [US3] Implement search UI in `apps/frontend/src/features/market/components/` using `useInfiniteQuery`
+- [ ] T028 [US3] Implement search UI in `apps/frontend/src/features/market/components/` using the Orval-generated `useSearchProductsInfinite` hook.
 
 ---
 
 ## Phase 6: User Story 4 - Variable-Weight Support (Priority: P3)
 
 **Goal**: Extract weight/price from EAN-13 barcodes starting with "2".
-
-**Independent Test**: Scan barcode "2012345005007". Verify parsed weight is displayed in confirmation drawer.
 
 ### Tests for User Story 4
 - [ ] T029 [P] [US4] Unit tests for `VariableWeightParser` in `apps/backend/tests/unit/application/utils/`
@@ -139,19 +149,3 @@
 - Backend and Frontend Setup tasks (Phase 1).
 - US3 (Manual Search) implementation can run in parallel with US1/US2 after Foundational is complete.
 - Most unit tests [P] can run in parallel.
-
----
-
-## Implementation Strategy
-
-### MVP First (User Story 1 Only)
-1. Complete Setup and Foundation.
-2. Implement US1: Local match logic + Scanner UI + Price Confirmation.
-3. **STOP and VALIDATE**: Perfect the "local recognize & pay" loop before adding internet fallbacks.
-
-### Incremental Delivery
-1. Foundation -> Readiness.
-2. US1 -> Reliable local scanner (MVP).
-3. US2 -> Intelligent catalog expansion.
-4. US3 -> Manual fallback search.
-5. US4 -> Variable weight support.

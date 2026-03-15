@@ -10,7 +10,7 @@
 This feature involves complex integration and state management. The following specialists must be consulted during implementation:
 
 - **🏛️ Backend Architect Elite**: Guardian of Clean Architecture. Ensures UseCases for scanning and searching remain in the Domain layer and are properly mapped from API schemas.
-- **🛒 Retail Nexus Veteran**: Domain expert. Ensures variable-weight barcode logic (EAN-13 starting with '2') is implemented and circuit breakers for external APIs are strictly enforced.
+- **🛒 Retail Nexus Veteran**: Domain expert. Ensures variable-weight barcode logic (EAN-13 starting with '2') is implemented and circuit breakers for external APIs are strictly enforced. Standardizes nomenclature to **Open Food Facts**.
 - **🔄 Flow Coordinator**: State management lead. Orchestrates the transition from "Scanning" to "External Fetch" to "Confirm Price".
 
 ## User Scenarios & Testing *(mandatory)*
@@ -29,7 +29,7 @@ As a shopper, I want to scan a product's barcode and have it instantly recognize
 
 ---
 
-### User Story 2 - External API Fallback (OFF/UPCitemdb) (Priority: P1)
+### User Story 2 - External API Fallback (Open Food Facts/UPCitemdb) (Priority: P1)
 
 As a shopper, I want the system to search external databases when a scanned barcode is missing locally so I don't have to enter the data manually.
 
@@ -76,11 +76,12 @@ As a shopper, I want the system to recognize variable-weight barcodes (e.g., fro
 - **FR-002**: System MUST first query the local `physical_eans` table before external calls.
 - **FR-003**: System MUST implement `ExternalProductClient` with support for Open Food Facts and UPCitemdb; UPCitemdb MUST use a `Backend Secret` for authentication.
 - **FR-004**: External API calls MUST have a circuit breaker/timeout of 2000ms.
-- **FR-005**: Successfully fetched external products MUST be persisted to the local database via an Outbox pattern mandate; raw responses MUST be stored in `ExternalFetchLog`. A background worker MUST process these events immediately for rapid catalog hydration.
-- **FR-006**: System MUST provide a fuzzy search endpoint for manual product lookup, matching across both `name` and `brand` fields; the UI MUST implement `Infinite Scroll` for paginated results.
+- **FR-005**: Successfully fetched external products MUST be persisted to the local database via an Outbox pattern mandate; raw responses MUST be stored in `ExternalFetchLog`. A background worker MUST process these events (polling interval: 5000ms, defined as "Immediate" for UI hydration purposes).
+- **FR-006**: System MUST provide a fuzzy search endpoint for manual product lookup, matching across both `name` and `brand` fields using the `searchQuery` parameter; the UI MUST implement `Infinite Scroll` for paginated results.
 - **FR-007**: System MUST detect duplicate scans of items already in the cart and increment the existing quantity instead of creating a new line item.
 - FR-008: System MUST prompt for price confirmation for every scanned item before adding it to the cart, even for local matches. The confirmation drawer MUST display Name (H1), Brand (Sub), and Image (Side), with metadata being read-only.
 - FR-009: When scanner lookups fail (timeout or not found), the system MUST display a "Product Not Found" drawer with a clear "Enter Manually" path.
+- FR-011: If camera permissions are denied, the scanner interface MUST be replaced by an "Access Denied" error message with an explicit "Enter Manually" button.
 - FR-010: Manual search MUST be restricted to the local catalog to ensure result relevance and speed.
 
 ### Key Entities
@@ -119,5 +120,8 @@ As a shopper, I want the system to recognize variable-weight barcodes (e.g., fro
 
 ## Assumptions
 
-- We assume the camera hardware is capable of clear barcode capture.
-- We assume Open Food Facts is the primary external source due to OSS alignment.
+## Clarifications
+
+### Session 2026-03-12
+- Q: Search Parameter Nomenclature → A: `searchQuery` (Standard descriptive).
+- Q: Scanner Permissions Error Handling → A: Replace camera view with an "Access Denied" state + "Enter Manually" button.

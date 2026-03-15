@@ -1,28 +1,27 @@
-# Implementation Plan: [FEATURE]
+# Implementation Plan: Cart Workflow Completion
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/.specify/specs/[###-feature-name]/spec.md`
+**Branch**: `003-cart-workflow-completion` | **Date**: 2026-03-12 | **Spec**: [.specify/specs/003-cart-workflow-completion/spec.md](file:///home/tiago/01-dev-env/personal-repos/grocery-store/.specify/specs/003-cart-workflow-completion/spec.md)
+**Input**: Feature specification from `/.specify/specs/003-cart-workflow-completion/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/plan-template.md` for the execution workflow.
 
 ## Summary
 
-Complete the cart workflow by implementing a robust product scanning system with external fallbacks (Open Food Facts & UPCitemdb) and manual fuzzy search. This implementation spans the full stack, integrating `react-zxing` for high-performance scanning in the browser and a resilient backend pipeline. Mandatory price confirmation (FR-008) is enforced for every item.
+Complete the cart workflow by implementing a robust product scanning system with external fallbacks (Open Food Facts & UPCitemdb) and manual fuzzy search. This implementation spans the full stack, integrating `react-zxing` for high-performance scanning and a resilient backend pipeline. Key design refinements include:
+- **Nomenclature**: Transitioned from `q` to `searchQuery` for all search-related APIs.
+- **Scanner UX**: Moved into a `Drawer` (Vaul) to prevent background interaction, with a dedicated "Access Denied" state for camera permissions.
+- **Contract Safety**: Mandated Orval-generated hooks (with `useInfinite: true` support) and singular API routes (`/product`).
 
 ## Technical Context
 
-**Package Manager**: `pnpm` (exclusive) via `pnpm workspaces` (Principle VIII)
-
-### [Backend (apps/backend)]
-- **Primary Dependencies**: Fastify (API), Zod (Validation), tsyringe (DI), Axios (HTTP), Buidler (Circuit Breaker), Drizzle ORM (DB)  
-- **Storage**: PostgreSQL (via Drizzle)  
-- **Performance**: Local matches < 100ms, External fallbacks < 2500ms total.  
-- **Constraints**: 2000ms circuit breaker timeout, ABAC mandatory via RequesterContext.
-
-### [Frontend (apps/frontend)]
-- **Primary Dependencies**: React 19, Vite, TanStack (Query, Router), Tailwind CSS 4, Radix UI, `react-zxing` (WASM scanner), `lucide-react`, `sonner` (toasts), `motion` (animations), `vaul` (drawers).
-- **Patterns**: Feature-slicing architecture, Infinite Scroll for search, state managed via TanStack Query and Zustand.
-
+**Language/Version**: TypeScript 5.7+ (Strict) | Node.js 22+ (Backend) | React 19 (Frontend)
+**Primary Dependencies**: Fastify, Drizzle ORM, tsyringe, Axios, Buidler (Backend) | TanStack Query, Orval, react-zxing, Vaul (Frontend)
+**Storage**: PostgreSQL (hosted)
+**Testing**: vitest (100% logic coverage mandated)
+**Target Platform**: WASM-powered Scanning in Browsers (Mobile-first)
+**Project Type**: Web Application (Monorepo)
+**Performance Goals**: Local match < 100ms | External fallback < 2500ms total
+**Constraints**: < 2000ms circuit breaker | Singular API routes | Orval-only frontend API calls | `searchQuery` naming parameter.
 
 ## Constitution Check
 
@@ -31,18 +30,18 @@ Complete the cart workflow by implementing a robust product scanning system with
 Verify alignment with [Grocery Store Constitution](file:///home/tiago/01-dev-env/personal-repos/grocery-store/.specify/memory/constitution.md):
 - [x] **Clean Architecture**: Backend layers (Domain, App, Infra, API) are strictly separated.
 - [x] **Golden Product Logic**: Data flow follows Canonical -> Identity -> EAN.
-- [x] **ABAC Compliance**: Permissions evaluated via `RequesterContext` in UseCases.
+- [x] **ABAC Compliance**: Permissions evaluated via `RequesterContext`.
 - [x] **OSS Resilience**: Open Food Facts prioritized; Circuit breakers implemented.
-- [x] **Fiscal Ground Truth**: Mandatory price confirmation (FR-008).
+- [x] **Fiscal Ground Truth**: Mandatory price confirmation via Drawer (FR-008).
 - [x] **Monorepo & pnpm**: Managed exclusively via pnpm workspaces (Principle VIII).
-
+- [x] **Organizational Cohesion**: Singular routes (/product) and kebab-case naming enforced (Principle VI).
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```text
-.specify/specs/[###-feature]/
+.specify/specs/003-cart-workflow-completion/
 ├── plan.md              # This file (/speckit.plan command output)
 ├── research.md          # Phase 0 output (/speckit.plan command)
 ├── data-model.md        # Phase 1 output (/speckit.plan command)
@@ -57,28 +56,21 @@ Verify alignment with [Grocery Store Constitution](file:///home/tiago/01-dev-env
 apps/
 ├── backend/
 │   ├── src/
-│   │   ├── api/             # Controllers, helpers, routes
-│   │   ├── application/     # UseCase implementations, repository contracts
-│   │   ├── domain/          # Entities, UseCase definitions
-│   │   ├── infrastructure/  # Repositories, external clients
-│   │   └── main/            # DI, server config, auth
-│   └── tests/
+│   │   ├── api/             # Singular controllers (e.g., product-controller.ts)
+│   │   ├── application/     # UseCases (ScanProduct, ManualSearch)
+│   │   ├── domain/          # Entities & Usecase Definitions
+│   │   └── infrastructure/  # Repositories & External Clients (OFF, UPCitemdb)
 ├── frontend/
-│   └── src/
-│       ├── features/        # Scanning and Search UI features
-│       ├── components/      # Shared UI units
-│       ├── infrastructure/  # API clients
-│       └── hooks/           # custom hooks for scanning/search logic
+│   ├── src/
+│   │   ├── features/        # shopping-event, manual-search
+│   │   ├── infrastructure/  # Orval-generated endpoints.ts
+│   │   └── config/          # custom-http-client.ts for Orval
 ```
 
-**Structure Decision**: Using active monorepo structure with apps/backend (Clean Architecture) and apps/frontend (Feature-sliced).
-
+**Structure Decision**: Using established monorepo structure with Clean Architecture (Backend) and Feature-Slicing (Frontend). Orval bridge provides the contract safely.
 
 ## Complexity Tracking
 
-> **Fill ONLY if Constitution Check has violations that must be justified**
-
-| Violation                  | Why Needed         | Simpler Alternative Rejected Because |
-| -------------------------- | ------------------ | ------------------------------------ |
-| [e.g., 4th project]        | [current need]     | [why 3 projects insufficient]        |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient]  |
+| Violation | Why Needed | Simpler Alternative Rejected Because |
+| --------- | ---------- | ------------------------------------ |
+| N/A       |            |                                      |

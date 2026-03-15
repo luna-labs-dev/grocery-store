@@ -81,6 +81,7 @@ The backend follows a Clean Architecture approach with a strict separation of co
   - Tables: snake_case (e.g., `shopping_event`).
   - Columns: camelCase (e.g., `inviteCode`).
   - Enums/Roles: lowercase and kebab-case (e.g., `partially-filled`).
+- **API Routes**: MUST use **singular** nouns (e.g., `/product` instead of `/products`). Plural is reserved for variable names representing collections in code, never in URI paths.
 
 ### 5. Repository Pattern
 - **Aggregate Roots**: Dominant entities (e.g., `CollaborationGroup`) act as roots. Persist entirely and atomically.
@@ -110,7 +111,7 @@ The backend follows a Clean Architecture approach with a strict separation of co
 - **Middleware**: Use `authMiddleware` and `groupBarrierMiddleware` as standard pre-handlers.
 
 ### 10. Controller Workflow (Strict)
-- **Base Class**: All controllers MUST extend `FastifyController` and use `@injectable()`.
+- **Base Class**: All controllers MUST extend `FastifyController` and use `@injectable()`. The route prefix is automatically derived from the class name (singular).
 - **Typed Instance**: `registerRoutes(app: FastifyTypedInstance)` is mandatory.
 - **Route Validation**:
   - `schema`: MUST contain `tags`, `summary`, `operationId`.
@@ -132,6 +133,14 @@ The backend follows a Clean Architecture approach with a strict separation of co
 - **Package Manager**: Use `pnpm` exclusively. Never use `npm` or `yarn`.
 - **Workspaces**: The repository uses `pnpm workspaces`. All internal dependencies MUST be linked via workspace protocols (e.g., `workspace:*`).
 - **Scripts**: Always run commands from the root or within workspace folders using `pnpm`.
+
+### 13. Frontend API Integration (Strict)
+- **Orval Mandate**: All API calls, TanStack Queries, and Mutations MUST be generated via **Orval**. 
+- **Prohibited**: Manually building `axios` calls, `useQuery`, or `useMutation` for API interactions is strictly **FORBIDDEN**.
+- **Workflow**: 
+  1. Define/Update backend schemas and routes.
+  2. Run Orval generation command (usually from the frontend or root).
+  3. Import and use the generated hooks in components.
 
 ---
 
