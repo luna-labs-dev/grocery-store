@@ -1,23 +1,26 @@
 import { useZxing } from 'react-zxing';
+import { Loading } from '@/components';
 
 interface ScannerOverlayProps {
   onScan: (barcode: string) => void;
   isPaused?: boolean;
+  isScanning?: boolean;
 }
 
 export const ScannerOverlay = ({
   onScan,
   isPaused = false,
+  isScanning = false,
 }: ScannerOverlayProps) => {
   const { ref } = useZxing({
     onDecodeResult(result) {
       onScan(result.getText());
     },
-    paused: isPaused,
+    paused: isPaused || isScanning,
   });
 
   return (
-    <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black border-2 border-primary/20">
+    <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black border-2 border-primary/20 shadow-lg">
       <video ref={ref} className="w-full h-full object-cover">
         <track kind="captions" />
       </video>
@@ -33,9 +36,13 @@ export const ScannerOverlay = ({
         </div>
       </div>
 
-      {isPaused && (
-        <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
-          <p className="text-white font-medium">Scanner Paused</p>
+      {(isPaused || isScanning) && (
+        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center backdrop-blur-sm gap-2">
+          {isScanning ? (
+            <Loading text="Identificando produto..." />
+          ) : (
+            <p className="text-white font-medium">Scanner Pausado</p>
+          )}
         </div>
       )}
     </div>

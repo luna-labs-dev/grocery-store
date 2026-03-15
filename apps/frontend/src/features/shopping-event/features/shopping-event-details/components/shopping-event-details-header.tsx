@@ -54,7 +54,7 @@ export function ShoppingEventDetailsHeader({
         </div>
         <div className="min-w-0 flex flex-col gap-1">
           <p className="text-sm font-semibold leading-tight truncate">
-            {shoppingEvent.market.name}
+            {shoppingEvent.market?.name ?? 'Mercado desconhecido'}
           </p>
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Calendar className="h-3 w-3 shrink-0" />

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { ProductSearch } from '../manual-search/components/product-search';
 import { PriceConfirmationDrawer } from '../product-scan/components/price-confirmation-drawer';
 import { ScannerOverlay } from '../product-scan/components/scanner-overlay';
-import { useScanProduct } from '../product-scan/hooks/use-scan-product';
+import { useScanProductHook } from '../product-scan/hooks/use-scan-product';
 import {
   ShoppingEventDetailsHeader,
   ShoppingEventDetailsProducts,
@@ -57,7 +57,7 @@ export const ShoppingEventDetailsPage = ({
     setIsDrawerOpen,
     setScannedProduct,
     closeDrawer,
-  } = useScanProduct();
+  } = useScanProductHook();
 
   if (!data && isFetching) {
     return (
@@ -153,7 +153,8 @@ export const ShoppingEventDetailsPage = ({
             <div className="mt-4">
               <ScannerOverlay
                 onScan={scan}
-                isPaused={isScanning || isDrawerOpen}
+                isScanning={isScanning}
+                isPaused={isDrawerOpen}
               />
             </div>
           )}

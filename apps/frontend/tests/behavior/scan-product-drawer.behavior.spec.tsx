@@ -5,7 +5,6 @@ import { AddProductToCartDrawer } from '../../src/features/shopping-event/featur
 
 // Mock components from @/components
 vi.mock('@/components', () => ({
-  // biome-ignore lint/style/useNamingConvention: components
   Drawer: ({
     children,
     open,
@@ -20,27 +19,21 @@ vi.mock('@/components', () => ({
     </div>
   ),
 
-  // biome-ignore lint/style/useNamingConvention: components
   DrawerContent: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="drawer-content">{children}</div>
   ),
-  // biome-ignore lint/style/useNamingConvention: components
   DrawerHeader: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),
-  // biome-ignore lint/style/useNamingConvention: components
   DrawerTitle: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),
-  // biome-ignore lint/style/useNamingConvention: components
   DrawerDescription: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),
-  // biome-ignore lint/style/useNamingConvention: components
   DrawerFooter: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),
-  // biome-ignore lint/style/useNamingConvention: components
   DrawerTrigger: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="drawer-trigger">{children}</div>
   ),
@@ -58,7 +51,6 @@ vi.mock('@/hooks', () => ({
 vi.mock(
   '@/features/shopping-event/features/shopping-event-details/components/cart/product-form-composite',
   () => ({
-    // biome-ignore lint/style/useNamingConvention: components
     ProductFormComposite: {
       root: ({
         children,

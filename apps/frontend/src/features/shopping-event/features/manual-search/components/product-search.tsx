@@ -1,19 +1,22 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import type { InfiniteData } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
-import type { ScanResult } from '../../product-scan/hooks/use-scan-product';
 import { Loading } from '@/components';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { httpClient } from '@/config/clients/http-client';
 import { useIsInView } from '@/hooks/use-is-in-view';
+import { useSearchProductInfinite } from '@/infrastructure/api/cart';
+import type {
+  ScanProduct200,
+  SearchProduct200,
+} from '@/infrastructure/api/types';
 
 interface ProductSearchProps {
-  onSelect: (product: ScanResult['product']) => void;
+  onSelect: (product: ScanProduct200['product']) => void;
   onCancel: () => void;
 }
 
 export const ProductSearch = ({ onSelect, onCancel }: ProductSearchProps) => {
-  const [query, setQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const {
     data,
@@ -22,25 +25,18 @@ export const ProductSearch = ({ onSelect, onCancel }: ProductSearchProps) => {
     isFetchingNextPage,
     isLoading,
     isError,
-  } = useInfiniteQuery({
-    queryKey: ['product-search', query],
-    queryFn: async ({ pageParam = 0 }) => {
-      const response = await httpClient.get('/products/search', {
-        params: {
-          query,
-          pageIndex: pageParam,
-          pageSize: 10,
-        },
-      });
-      return response.data;
+  } = useSearchProductInfinite<InfiniteData<SearchProduct200>>(
+    { searchQuery },
+    {
+      query: {
+        queryKey: ['search-product', searchQuery],
+        enabled: searchQuery.length >= 2,
+        initialPageParam: 0,
+        getNextPageParam: (lastPage: SearchProduct200) =>
+          lastPage.nextPageIndex ?? undefined,
+      },
     },
-    initialPageParam: 0,
-    getNextPageParam: (lastPage, allPages) => {
-      const nextPageIndex = allPages.length;
-      return lastPage.items.length === 10 ? nextPageIndex : undefined;
-    },
-    enabled: query.length >= 2,
-  });
+  );
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const { isInView } = useIsInView(loadMoreRef);
@@ -58,8 +54,8 @@ export const ProductSearch = ({ onSelect, onCancel }: ProductSearchProps) => {
       <div className="flex gap-2">
         <Input
           placeholder="Search products by name or brand..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           className="flex-1"
           autoFocus
         />
@@ -77,7 +73,7 @@ export const ProductSearch = ({ onSelect, onCancel }: ProductSearchProps) => {
             <button
               type="button"
               key={product.id}
-              onClick={() => onSelect(product)}
+              onClick={() => onSelect(product as ScanProduct200['product'])}
               className="flex items-center gap-4 p-3 rounded-lg border hover:bg-muted transition-colors text-left w-full"
             >
               {product.imageUrl && (
@@ -105,12 +101,14 @@ export const ProductSearch = ({ onSelect, onCancel }: ProductSearchProps) => {
             {isFetchingNextPage && <Loading text="Loading more..." />}
           </div>
 
-          {!isLoading && allProducts.length === 0 && query.length >= 2 && (
-            <p className="text-center text-muted-foreground py-8">
-              No products found
-            </p>
-          )}
-          {query.length < 2 && (
+          {!isLoading &&
+            allProducts.length === 0 &&
+            searchQuery.length >= 2 && (
+              <p className="text-center text-muted-foreground py-8">
+                No products found
+              </p>
+            )}
+          {searchQuery.length < 2 && (
             <p className="text-center text-muted-foreground py-8 italic font-light opacity-60">
               Type at least 2 characters to search
             </p>
