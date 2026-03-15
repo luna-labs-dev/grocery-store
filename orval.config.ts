@@ -15,6 +15,17 @@ export default defineConfig({
           path: './apps/frontend/src/config/clients/custom-http-client.ts',
           name: 'customInstance',
         },
+        query: {
+          version: 5,
+        },
+        operations: {
+          searchProduct: {
+            query: {
+              useInfinite: true,
+              useInfiniteQueryParam: 'pageIndex',
+            },
+          },
+        },
       },
       mode: 'tags',
       indexFiles: true,
