@@ -1,12 +1,12 @@
 import 'reflect-metadata';
 import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
+import type {
+  ExternalProductClient,
+  ExternalProductMatch,
+} from '@/application/contracts/external-product-client';
 import type { OutboxEventRepositories as OutboxRepository } from '@/application/contracts/repositories/outbox-event-repository';
 import type { PhysicalEanRepository } from '@/application/contracts/repositories/product-hierarchy/physical-ean-repository';
 import type { ProductIdentityRepository } from '@/application/contracts/repositories/product-identity-repository';
-import type {
-  ExternalProductClient,
-  ExternalProductResult,
-} from '@/application/contracts/services/external-product-client';
 import { ScanProductUseCase } from '@/application/usecases/products/scan-product-use-case';
 import type { OutboxEvent } from '@/domain/entities/outbox-event';
 
@@ -72,12 +72,11 @@ describe('ScanProductUseCase', () => {
 
   it('should return EXTERNAL, require confirmation, and emit outbox event if not found locally', async () => {
     const barcode = '3017620422003';
-    const externalResult: ExternalProductResult = {
-      barcode,
+    const externalResult: ExternalProductMatch = {
       name: 'Nutella',
       brand: 'Ferrero',
       imageUrl: 'http://nutella.url',
-      rawResponse: { foo: 'bar' },
+      rawPayload: { foo: 'bar' },
       source: 'OFF',
     };
 

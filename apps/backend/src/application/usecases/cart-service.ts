@@ -2,10 +2,19 @@ import { inject, injectable } from 'tsyringe';
 import type {
   AddCanonicalProductRepository,
   AddProductIdentityRepository,
+  ExternalProductClient,
   GetProductIdentityByValueRepository,
   OutboxEventRepositories,
   ShoppingEventRepositories,
 } from '@/application/contracts';
+import type { PhysicalEanRepository } from '@/application/contracts/repositories/product-hierarchy';
+import type { ProductIdentityRepository } from '@/application/contracts/repositories/product-identity-repository';
+import type {
+  ICartService,
+  ManualSearchResponse,
+  ScanProductRequest,
+  ScanProductResponse,
+} from '@/domain';
 import {
   CanonicalProduct,
   OutboxEvent,
@@ -18,12 +27,13 @@ import {
   ShoppingEventAlreadyEndedException,
   ShoppingEventNotFoundException,
 } from '@/domain/exceptions';
+import { VariableWeightParser } from '@/domain/products/variable-weight-parser';
 import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
 
 @injectable()
-export class CartService {
+export class CartService implements ICartService {
   constructor(
     @inject(infra.shoppingEventRepositories)
     private readonly shoppingEventRepository: ShoppingEventRepositories,
@@ -31,9 +41,14 @@ export class CartService {
     private readonly canonicalProductRepository: AddCanonicalProductRepository,
     @inject(infra.productIdentityRepositories)
     private readonly productIdentityRepository: AddProductIdentityRepository &
-      GetProductIdentityByValueRepository,
+      GetProductIdentityByValueRepository &
+      ProductIdentityRepository,
     @inject(infra.outboxEventRepositories)
-    private readonly outboxEventRepository: OutboxEventRepositories,
+    private readonly outboxRepository: OutboxEventRepositories,
+    @inject(infra.physicalEanRepository)
+    private readonly physicalEanRepository: PhysicalEanRepository,
+    @inject(infra.compositeProductClient)
+    private readonly externalClient: ExternalProductClient,
   ) {}
 
   async addProductToCart(
@@ -131,7 +146,7 @@ export class CartService {
       type: 'ProductScanned',
       payload: { canonicalProductId: cp.id, barcode },
     });
-    await this.outboxEventRepository.add(outboxEvent);
+    await this.outboxRepository.add(outboxEvent);
 
     return cp.id;
   }
@@ -221,5 +236,100 @@ export class CartService {
     shoppingEvent.removeProductById(productId);
 
     await this.shoppingEventRepository.update(shoppingEvent);
+  }
+
+  async manualSearch(
+    ctx: RequesterContext,
+    { query }: { query: string },
+  ): Promise<ManualSearchResponse> {
+    await ctx.checkPermission('create', 'shoppingEvent');
+
+    const result = await this.productIdentityRepository.search(query, 0, 10);
+
+    return {
+      products: result.items.map((identity) => ({
+        id: identity.id,
+        name: identity.name || 'Unknown',
+        brand: identity.brand,
+        imageUrl: identity.imageUrl,
+      })),
+    };
+  }
+
+  async scanProduct({
+    barcode,
+  }: ScanProductRequest): Promise<ScanProductResponse> {
+    let weightValue: number | undefined;
+
+    // 0. Variable Weight Check
+    if (VariableWeightParser.isVariableWeight(barcode)) {
+      const parsed = VariableWeightParser.parse(barcode);
+      barcode = parsed.baseEan;
+      weightValue = parsed.value;
+    }
+
+    // 1. Local Database Match (PhysicalEAN)
+    const physicalEan = await this.physicalEanRepository.findByBarcode(barcode);
+    if (physicalEan) {
+      const identity = await this.productIdentityRepository.getById(
+        physicalEan.productIdentityId,
+      );
+      if (identity) {
+        return {
+          product: {
+            id: identity.id,
+            name: identity.name || 'Unknown',
+            brand: identity.brand,
+            imageUrl: identity.imageUrl,
+          },
+          matchType: 'INTERNAL',
+        };
+      }
+    }
+
+    // 2. Check for direct ProductIdentity match (legacy or non-physical EAN)
+    const directIdentity = await this.productIdentityRepository.getByValue(
+      'EAN',
+      barcode,
+    );
+    if (directIdentity) {
+      return {
+        product: {
+          id: directIdentity.id,
+          name: directIdentity.name || 'Unknown',
+          brand: directIdentity.brand,
+          imageUrl: directIdentity.imageUrl,
+          price: weightValue, // Incorporate the parsed value if it's a variable weight item
+        },
+        matchType: 'INTERNAL',
+      };
+    }
+
+    // 3. External Fallback
+    const externalMatch = await this.externalClient.fetchByBarcode(barcode);
+    if (externalMatch) {
+      // Fire outbox event for background hydration
+      await this.outboxRepository.add(
+        OutboxEvent.create({
+          type: 'ProductScanned',
+          payload: { barcode, source: externalMatch.source },
+        }),
+      );
+
+      return {
+        product: {
+          id: `TEMP_${barcode}`, // Temporary ID for frontend, hydration happens in background
+          name: externalMatch.name,
+          brand: externalMatch.brand,
+          imageUrl: externalMatch.imageUrl,
+        },
+        matchType: 'EXTERNAL',
+      };
+    }
+
+    return {
+      product: null,
+      matchType: 'NONE',
+    };
   }
 }

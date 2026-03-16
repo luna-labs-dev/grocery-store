@@ -2,7 +2,7 @@ import type {
   ExternalFetchLog,
   PhysicalEAN,
   ProductIdentity,
-} from '../entities';
+} from '../../../domain/entities';
 
 export interface ProductRepository {
   findPhysicalByBarcode(barcode: string): Promise<PhysicalEAN | null>;

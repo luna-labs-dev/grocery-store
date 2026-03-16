@@ -52,7 +52,8 @@ describe('SearchProducts UseCase', () => {
       name: 'External Product',
       brand: 'Brand X',
       description: 'Desc',
-      imageUrl: 'http://image.url',
+      source: 'OFF',
+      rawPayload: {},
     });
 
     const result = await service.search('12345678');

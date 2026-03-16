@@ -13,12 +13,8 @@ import {
   scanProductResponseSchema,
   updateProductInCartRequestSchema,
 } from '../helpers';
-import type {
-  CartService,
-  ManualSearchUseCase,
-  ScanProductUseCase,
-} from '@/application';
-import { getPossibleExceptionsSchemas } from '@/domain';
+import type { ManualSearchUseCase, ScanProductUseCase } from '@/application';
+import { getPossibleExceptionsSchemas, type ICartService } from '@/domain';
 import {
   ProductNotFoundException,
   ShoppingEventAlreadyEndedException,
@@ -37,7 +33,7 @@ const { usecases } = injection;
 export class CartController extends FastifyController {
   constructor(
     @inject(usecases.cartService)
-    private readonly cartService: CartService,
+    private readonly cartService: ICartService,
     @inject(injection.usecases.scanProductUseCase)
     private scanProductUseCase: ScanProductUseCase,
     @inject(injection.usecases.manualSearchUseCase)
@@ -61,11 +57,13 @@ export class CartController extends FastifyController {
           params: scanProductParamsSchema,
           response: {
             200: scanProductResponseSchema,
+            ...getPossibleExceptionsSchemas([new ProductNotFoundException()]),
           },
         },
       },
       async (request, reply) => {
         const { barcode } = request.params;
+
         const result = await this.scanProductUseCase.execute(barcode);
         return reply.send(
           productMapper.toScanResponse({
@@ -87,6 +85,7 @@ export class CartController extends FastifyController {
           querystring: manualSearchQuerySchema,
           response: {
             200: manualSearchResponseSchema,
+            ...getPossibleExceptionsSchemas([new ProductNotFoundException()]),
           },
         },
       },

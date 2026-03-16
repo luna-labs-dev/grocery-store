@@ -22,6 +22,7 @@ import {
   UserService,
 } from '@/application';
 import { HydrateProductJob } from '@/application/usecases/products/hydrate-product-job';
+import type { ICartService } from '@/domain';
 import {
   Buidler,
   CompositeExternalProductClient,
@@ -48,36 +49,31 @@ const { infra, usecases, controllers } = injection;
 
 export const registerInjections = (app: FastifyTypedInstance): void => {
   // Repositories
-  container.register(infra.userRepositories, {
-    useClass: DrizzleUserRepository,
-  });
-  container.register(infra.marketRepositories, {
-    useClass: DrizzleMarketRepository,
-  });
-  container.register(infra.groupRepositories, {
-    useClass: DrizzleGroupRepository,
-  });
-  container.register(infra.shoppingEventRepositories, {
-    useClass: DrizzleShoppingEventRepository,
-  });
-  container.register(infra.productRepositories, {
-    useClass: DrizzleProductRepository,
-  });
-  container.register(infra.canonicalProductRepositories, {
-    useClass: DrizzleCanonicalProductRepository,
-  });
-  container.register(infra.productIdentityRepositories, {
-    useClass: DrizzleProductIdentityRepository,
-  });
-  container.register(infra.outboxEventRepositories, {
-    useClass: DrizzleOutboxEventRepository,
-  });
-  container.register(infra.physicalEanRepository, {
-    useClass: DrizzlePhysicalEanRepository,
-  });
-  container.register(infra.externalFetchLogRepository, {
-    useClass: DrizzleExternalFetchLogRepository,
-  });
+  container.register(infra.userRepositories, DrizzleUserRepository);
+  container.register(infra.marketRepositories, DrizzleMarketRepository);
+  container.register(infra.groupRepositories, DrizzleGroupRepository);
+  container.register(
+    infra.shoppingEventRepositories,
+    DrizzleShoppingEventRepository,
+  );
+  container.register(infra.productRepositories, DrizzleProductRepository);
+  container.register(
+    infra.canonicalProductRepositories,
+    DrizzleCanonicalProductRepository,
+  );
+  container.register(
+    infra.productIdentityRepositories,
+    DrizzleProductIdentityRepository,
+  );
+  container.register(
+    infra.outboxEventRepositories,
+    DrizzleOutboxEventRepository,
+  );
+  container.register(infra.physicalEanRepository, DrizzlePhysicalEanRepository);
+  container.register(
+    infra.externalFetchLogRepository,
+    DrizzleExternalFetchLogRepository,
+  );
 
   // Services
   container.register(usecases.hydrateProductJob, {
@@ -96,42 +92,27 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
         baseURL: env.googlePlaces.baseURL,
       }),
   });
-  container.register(infra.places, { useClass: GooglePlaces });
-  container.register(infra.configService, { useClass: ConfigService });
-  container.register(infra.settingsRepository, {
-    useClass: DrizzleSettingsRepository,
-  });
-  container.register(infra.permissionService, {
-    useClass: SecurityPermissionService,
-  });
-  container.register(infra.openFoodFactsClient, {
-    useClass: OpenFoodFactsClient,
-  });
-  container.register(infra.upcItemDbClient, {
-    useClass: UpcItemDbClient,
-  });
-  container.register(infra.compositeProductClient, {
-    useClass: CompositeExternalProductClient,
-  });
-  container.register(Buidler, { useClass: Buidler });
+  container.register(infra.places, GooglePlaces);
+  container.register(infra.configService, ConfigService);
+  container.register(infra.settingsRepository, DrizzleSettingsRepository);
+  container.register(infra.permissionService, SecurityPermissionService);
+  container.register(infra.openFoodFactsClient, OpenFoodFactsClient);
+  container.register(infra.upcItemDbClient, UpcItemDbClient);
+  container.register(
+    infra.compositeProductClient,
+    CompositeExternalProductClient,
+  );
+  container.register(Buidler, Buidler);
 
   // Usecases
-  container.register(usecases.cartService, { useClass: CartService });
-  container.register(usecases.marketService, { useClass: MarketService });
-  container.register(usecases.userService, { useClass: UserService });
-  container.register(usecases.groupService, { useClass: GroupService });
-  container.register(usecases.shoppingEventService, {
-    useClass: ShoppingEventService,
-  });
-  container.register(usecases.hydrateProductUseCase, {
-    useClass: HydrateProductUseCase,
-  });
-  container.register(usecases.manualSearchUseCase, {
-    useClass: ManualSearchUseCase,
-  });
-  container.register(usecases.scanProductUseCase, {
-    useClass: ScanProductUseCase,
-  });
+  container.register<ICartService>(usecases.cartService, CartService);
+  container.register(usecases.marketService, MarketService);
+  container.register(usecases.userService, UserService);
+  container.register(usecases.groupService, GroupService);
+  container.register(usecases.shoppingEventService, ShoppingEventService);
+  container.register(usecases.hydrateProductUseCase, HydrateProductUseCase);
+  container.register(usecases.manualSearchUseCase, ManualSearchUseCase);
+  container.register(usecases.scanProductUseCase, ScanProductUseCase);
 
   // Fastify Instance
   container.registerInstance<FastifyTypedInstance>('FastifyInstance', app);
