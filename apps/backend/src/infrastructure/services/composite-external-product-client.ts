@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import type {
   ExternalProductClient,
-  ExternalProductData,
+  ExternalProductMatch,
 } from '@/application/contracts/external-product-client';
 import { injection } from '@/main/di/injection-tokens';
 
@@ -16,7 +16,7 @@ export class CompositeExternalProductClient implements ExternalProductClient {
     private readonly fallbackClient: ExternalProductClient,
   ) {}
 
-  async fetchByBarcode(barcode: string): Promise<ExternalProductData | null> {
+  async fetchByBarcode(barcode: string): Promise<ExternalProductMatch | null> {
     const primaryResult = await this.primaryClient.fetchByBarcode(barcode);
     if (primaryResult) {
       return primaryResult;

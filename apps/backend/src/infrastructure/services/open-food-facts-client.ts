@@ -4,7 +4,7 @@ import { inject, injectable } from 'tsyringe';
 import { Buidler } from './resilience/buidler';
 import type {
   ExternalProductClient,
-  ExternalProductData,
+  ExternalProductMatch,
 } from '@/application/contracts/external-product-client';
 import type { CircuitBreaker } from '@/domain/core/circuit-breaker';
 import { env } from '@/main/config/env';
@@ -41,7 +41,7 @@ export class OpenFoodFactsClient implements ExternalProductClient {
     });
   }
 
-  async fetchByBarcode(barcode: string): Promise<ExternalProductData | null> {
+  async fetchByBarcode(barcode: string): Promise<ExternalProductMatch | null> {
     try {
       return await this.circuitBreaker.execute(async () => {
         try {
@@ -65,6 +65,8 @@ export class OpenFoodFactsClient implements ExternalProductClient {
             name: product_name,
             brand: brands ? brands.split(',')[0].trim() : undefined,
             description: generic_name,
+            source: 'OFF',
+            rawPayload: response.data,
           };
         } catch (error) {
           if (axios.isAxiosError(error) && error.response?.status === 404) {

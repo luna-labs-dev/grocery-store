@@ -58,6 +58,8 @@ describe('HydrateProductJob', () => {
       name: 'Enriched Product',
       brand: 'Enriched Brand',
       description: 'Enriched Description',
+      source: 'OFF',
+      rawPayload: {},
     });
     vi.mocked(mockCanonicalProductRepository.getById).mockResolvedValue(
       cp as never,
@@ -138,6 +140,8 @@ describe('HydrateProductJob', () => {
       name: 'Enriched',
       brand: 'Enriched',
       description: 'Enriched',
+      source: 'OFF',
+      rawPayload: {},
     });
     vi.mocked(mockCanonicalProductRepository.getById).mockResolvedValue(
       undefined as never,
@@ -197,6 +201,10 @@ describe('HydrateProductJob', () => {
     // Event 2 succeeds
     vi.mocked(mockExternalClient.fetchByBarcode).mockResolvedValueOnce({
       name: 'Success',
+      brand: 'Success',
+      description: 'Success',
+      source: 'OFF',
+      rawPayload: {},
     });
     vi.mocked(mockCanonicalProductRepository.getById).mockResolvedValue(
       CanonicalProduct.create({ name: 'Old' }, 'cp-2'),

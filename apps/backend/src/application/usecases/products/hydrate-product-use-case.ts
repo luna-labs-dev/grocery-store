@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe';
+import type { ExternalProductClient } from '@/application/contracts/external-product-client';
 import type { OutboxEventRepositories } from '@/application/contracts/repositories/outbox-event-repository';
 import type { PhysicalEanRepository } from '@/application/contracts/repositories/physical-ean-repository';
-import type { ExternalProductClient } from '@/application/contracts/services/external-product-client';
 import type { OutboxEvent } from '@/domain/entities/outbox-event';
 import { injection } from '@/main/di/injection-tokens';
 

@@ -62,6 +62,18 @@ describe('UpcItemDbClient', () => {
       name: 'Sample Product',
       brand: 'Sample Brand',
       description: 'Sample Description',
+      source: 'UPCITEMDB',
+      rawPayload: {
+        code: 'OK',
+        items: [
+          {
+            ean: '123456789',
+            title: 'Sample Product',
+            brand: 'Sample Brand',
+            description: 'Sample Description',
+          },
+        ],
+      },
     });
   });
 

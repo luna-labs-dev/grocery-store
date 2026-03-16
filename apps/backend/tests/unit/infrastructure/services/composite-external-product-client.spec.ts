@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import 'reflect-metadata';
-import type { ExternalProductClient } from '@/application/contracts/services/external-product-client';
+import type { ExternalProductClient } from '@/application/contracts/external-product-client';
 import { CompositeExternalProductClient } from '@/infrastructure/services/composite-external-product-client';
 
 describe('CompositeExternalProductClient', () => {
@@ -20,11 +20,10 @@ describe('CompositeExternalProductClient', () => {
 
   it('should return result from primary client (OFF) if found', async () => {
     vi.mocked(offClient.fetchByBarcode).mockResolvedValue({
-      barcode: '123',
       name: 'Primary Product',
       brand: 'Primary Brand',
       imageUrl: 'http://image.url',
-      rawResponse: {},
+      rawPayload: {},
       source: 'OFF',
     });
     vi.mocked(upcClient.fetchByBarcode).mockResolvedValue(null);
@@ -44,11 +43,10 @@ describe('CompositeExternalProductClient', () => {
   it('should return result from fallback client (UPC) if primary fails/not found', async () => {
     vi.mocked(offClient.fetchByBarcode).mockResolvedValue(null);
     vi.mocked(upcClient.fetchByBarcode).mockResolvedValue({
-      barcode: '123',
       name: 'Fallback Product',
       brand: 'Fallback Brand',
       imageUrl: 'http://image.url',
-      rawResponse: {},
+      rawPayload: {},
       source: 'UPCITEMDB',
     });
 

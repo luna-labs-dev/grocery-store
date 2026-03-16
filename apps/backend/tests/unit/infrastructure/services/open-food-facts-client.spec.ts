@@ -59,6 +59,15 @@ describe('OpenFoodFactsClient', () => {
       name: 'Nutella',
       brand: 'Ferrero',
       description: 'Hazelnut spread',
+      source: 'OFF',
+      rawPayload: {
+        status: 1,
+        product: {
+          product_name: 'Nutella',
+          brands: 'Ferrero',
+          generic_name: 'Hazelnut spread',
+        },
+      },
     });
   });
 
