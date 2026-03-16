@@ -3,7 +3,13 @@ import type {
   GetMarketByIdRepository,
   ShoppingEventRepositories,
 } from '@/application/contracts';
-import { ShoppingEvent, type ShoppingEventStatus } from '@/domain';
+import {
+  type GetShoppingEventListParams,
+  type IShoppingEventService,
+  ShoppingEvent,
+  type ShoppingEventStatus,
+  type StartShoppingEventParams,
+} from '@/domain';
 import type { RequesterContext } from '@/domain/core/requester-context';
 import { Products } from '@/domain/entities/products';
 import {
@@ -17,7 +23,7 @@ import { injection } from '@/main/di/injection-tokens';
 const { infra } = injection;
 
 @injectable()
-export class ShoppingEventService {
+export class ShoppingEventService implements IShoppingEventService {
   constructor(
     @inject(infra.shoppingEventRepositories)
     private readonly shoppingEventRepository: ShoppingEventRepositories,
@@ -27,7 +33,7 @@ export class ShoppingEventService {
 
   async startShoppingEvent(
     ctx: RequesterContext,
-    { marketId }: { marketId: string },
+    { marketId }: StartShoppingEventParams,
   ): Promise<ShoppingEvent> {
     await ctx.checkPermission('create', 'shoppingEvent');
 
@@ -81,14 +87,7 @@ export class ShoppingEventService {
 
   async getShoppingEventList(
     ctx: RequesterContext,
-    params: {
-      status?: string;
-      period?: { start: Date; end: Date };
-      pageIndex?: number;
-      pageSize?: number;
-      orderBy?: string;
-      orderDirection?: 'asc' | 'desc';
-    },
+    params: GetShoppingEventListParams,
   ): Promise<{ total: number; shoppingEvents: ShoppingEvent[] }> {
     await ctx.checkPermission('read', 'shoppingEvent');
 

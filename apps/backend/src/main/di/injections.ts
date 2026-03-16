@@ -22,7 +22,12 @@ import {
   UserService,
 } from '@/application';
 import { HydrateProductJob } from '@/application/usecases/products/hydrate-product-job';
-import type { ICartService, IGroupService, IMarketService } from '@/domain';
+import type {
+  ICartService,
+  IGroupService,
+  IMarketService,
+  IShoppingEventService,
+} from '@/domain';
 import {
   Buidler,
   CompositeExternalProductClient,
@@ -108,8 +113,11 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
   container.register<ICartService>(usecases.cartService, CartService);
   container.register<IGroupService>(usecases.groupService, GroupService);
   container.register<IMarketService>(usecases.marketService, MarketService);
+  container.register<IShoppingEventService>(
+    usecases.shoppingEventService,
+    ShoppingEventService,
+  );
   container.register(usecases.userService, UserService);
-  container.register(usecases.shoppingEventService, ShoppingEventService);
   container.register(usecases.hydrateProductUseCase, HydrateProductUseCase);
   container.register(usecases.manualSearchUseCase, ManualSearchUseCase);
   container.register(usecases.scanProductUseCase, ScanProductUseCase);

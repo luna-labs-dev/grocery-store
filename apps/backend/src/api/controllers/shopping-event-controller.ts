@@ -10,8 +10,10 @@ import {
   startShoppingEventRequestSchema,
   startShoppingEventResponseSchema,
 } from '../helpers';
-import type { ShoppingEventService } from '@/application';
-import { getPossibleExceptionsSchemas } from '@/domain';
+import {
+  getPossibleExceptionsSchemas,
+  type IShoppingEventService,
+} from '@/domain';
 import {
   MarketNotFoundException,
   ShoppingEventAlreadyEndedException,
@@ -31,7 +33,7 @@ const { usecases } = injection;
 export class ShoppingEventController extends FastifyController {
   constructor(
     @inject(usecases.shoppingEventService)
-    private readonly shoppingEventService: ShoppingEventService,
+    private readonly shoppingEventService: IShoppingEventService,
   ) {
     super();
   }
@@ -147,7 +149,7 @@ export class ShoppingEventController extends FastifyController {
               pageIndex,
               pageSize,
               orderBy,
-              orderDirection: orderDirection.toUpperCase() as 'asc' | 'desc',
+              orderDirection: orderDirection.toUpperCase() as 'ASC' | 'DESC',
             },
           );
 
