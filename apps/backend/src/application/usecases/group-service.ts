@@ -12,14 +12,19 @@ import {
   UserNotFoundException,
   UserNotInGroupException,
 } from '@/domain/exceptions';
-import type { GetInviteInfoResult, JoinGroupParams } from '@/domain/usecases';
+import type {
+  GetInviteInfoResult,
+  IGroupService,
+  JoinGroupParams,
+  RemoveMemberParams,
+} from '@/domain/usecases';
 import { env } from '@/main/config/env';
 import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
 
 @injectable()
-export class GroupService {
+export class GroupService implements IGroupService {
   constructor(
     @inject(infra.userRepositories)
     private readonly userRepository: UserRepositories,
@@ -98,7 +103,7 @@ export class GroupService {
 
   async removeMember(
     ctx: RequesterContext,
-    { targetUserId }: { targetUserId: string },
+    { targetUserId }: RemoveMemberParams,
   ): Promise<void> {
     await ctx.checkPermission('removeMember', 'group');
 
@@ -180,11 +185,7 @@ export class GroupService {
   ): Promise<GetInviteInfoResult> {
     await ctx.checkPermission('update', 'group');
 
-    ctx.group.generateInviteCode();
-
-    // Non-null assertion as generateInviteCode always produces a code
-    // biome-ignore lint/style/noNonNullAssertion: generateInviteCode ensures this
-    const newCode = ctx.group.inviteCode!;
+    const newCode = ctx.group.generateInviteCode();
 
     await this.groupRepository.updateInviteCode(ctx.group.id, newCode);
 

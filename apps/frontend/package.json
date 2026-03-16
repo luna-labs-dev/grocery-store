@@ -8,6 +8,7 @@
     "lint": "biome check src",
     "lint:fix": "biome check --write src",
     "test": "vitest run",
+    "test:watch": "vitest",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json"
   },

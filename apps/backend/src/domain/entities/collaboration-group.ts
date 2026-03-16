@@ -94,8 +94,9 @@ export class CollaborationGroup extends Entity<CollaborationGroupProps> {
     }
   }
 
-  public generateInviteCode(): void {
+  public generateInviteCode(): string {
     this.props.inviteCode = generateReferalCode({ name: this.props.name });
+    return this.props.inviteCode;
   }
 
   public updateName(name: string): void {

@@ -41,7 +41,7 @@ describe('InviteQRCode Behavior', () => {
 
   it('should display the invite code', () => {
     render(<InviteQRCode {...defaultProps} />);
-    expect(screen.getByText(/Código: 123456/i)).toBeInTheDocument();
+    expect(screen.getByText('123456')).toBeInTheDocument();
   });
 
   it('should copy the link to clipboard and show success toast when button is clicked', async () => {
