@@ -1,7 +1,7 @@
 import type { FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
-import type { UserService } from '@/application';
 import type { GroupRepositories } from '@/application/contracts';
+import type { IUserService } from '@/domain';
 import type { PermissionService } from '@/domain/core/logic/permissions/permission-service';
 import { RequesterContext } from '@/domain/core/requester-context';
 import {
@@ -14,7 +14,7 @@ import { injection } from '@/main/di/injection-tokens';
 const { usecases, infra } = injection;
 
 export const groupBarrierMiddleware = async (request: FastifyRequest) => {
-  const userService = container.resolve<UserService>(usecases.userService);
+  const userService = container.resolve<IUserService>(usecases.userService);
   const groupRepository = container.resolve<GroupRepositories>(
     infra.groupRepositories,
   );
@@ -29,7 +29,7 @@ export const groupBarrierMiddleware = async (request: FastifyRequest) => {
   }
 
   const dbUser = await userService.getUser({
-    id: user.id,
+    externalId: user.id,
   });
 
   const groups = dbUser.groups || [];

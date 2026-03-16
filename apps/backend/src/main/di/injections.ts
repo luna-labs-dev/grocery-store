@@ -27,6 +27,7 @@ import type {
   IGroupService,
   IMarketService,
   IShoppingEventService,
+  IUserService,
 } from '@/domain';
 import {
   Buidler,
@@ -117,7 +118,7 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
     usecases.shoppingEventService,
     ShoppingEventService,
   );
-  container.register(usecases.userService, UserService);
+  container.register<IUserService>(usecases.userService, UserService);
   container.register(usecases.hydrateProductUseCase, HydrateProductUseCase);
   container.register(usecases.manualSearchUseCase, ManualSearchUseCase);
   container.register(usecases.scanProductUseCase, ScanProductUseCase);
