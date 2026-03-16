@@ -1,4 +1,8 @@
-import type { Market } from '../../entities';
+import type { Market } from '../entities';
+
+export interface GetMarketByIdParams {
+  marketId: string;
+}
 
 export interface GetMarketListParams {
   search?: string;
@@ -18,6 +22,7 @@ export interface GetMarketListResult {
   markets: Market[];
 }
 
-export interface GetMarketList {
-  execute(params: GetMarketListParams): Promise<GetMarketListResult>;
+export interface IMarketService {
+  getMarketById(params: GetMarketByIdParams): Promise<Market>;
+  getMarketList(params: GetMarketListParams): Promise<GetMarketListResult>;
 }

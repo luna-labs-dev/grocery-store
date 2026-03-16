@@ -17,7 +17,7 @@ export interface ManualSearchRequest {
 }
 
 export interface ManualSearchResponse {
-  products: {
+  items: {
     id: string;
     name: string;
     brand?: string;
@@ -45,14 +45,20 @@ export interface ScanProductRequest {
 }
 
 export interface ScanProductResponse {
-  product: {
+  barcode: string;
+  matchType: 'LOCAL' | 'EXTERNAL' | 'VARIABLE_WEIGHT' | 'NOT_FOUND';
+  product?: {
     id: string;
     name: string;
     brand?: string;
     imageUrl?: string;
-    price?: number;
-  } | null;
-  matchType: 'INTERNAL' | 'EXTERNAL' | 'NONE';
+    canonicalProductId: string;
+  };
+  variableWeight?: {
+    productCode: string;
+    weight: number;
+    price: number;
+  };
 }
 
 export interface ICartService {
@@ -60,10 +66,6 @@ export interface ICartService {
     ctx: RequesterContext,
     params: AddProductToCartParams,
   ): Promise<Product>;
-  manualSearch(
-    ctx: RequesterContext,
-    params: ManualSearchRequest,
-  ): Promise<ManualSearchResponse>;
   removeProductFromCart(
     ctx: RequesterContext,
     params: RemoveProductFromCartParams,
@@ -72,5 +74,9 @@ export interface ICartService {
     ctx: RequesterContext,
     params: UpdateProductInCartParams,
   ): Promise<Product>;
+  manualSearch(
+    ctx: RequesterContext,
+    params: ManualSearchRequest,
+  ): Promise<ManualSearchResponse>;
   scanProduct(params: ScanProductRequest): Promise<ScanProductResponse>;
 }

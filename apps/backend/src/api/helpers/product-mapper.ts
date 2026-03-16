@@ -10,21 +10,7 @@ export type ScanProductResponse = z.infer<typeof scanProductResponseSchema>;
 export type ManualSearchResponse = z.infer<typeof manualSearchResponseSchema>;
 
 export const productMapper = {
-  toScanResponse: (data: {
-    barcode: string;
-    product?: {
-      id?: string;
-      name: string;
-      brand?: string;
-      imageUrl?: string;
-      canonicalProductId?: string;
-    } | null;
-    matchType: 'LOCAL' | 'EXTERNAL' | 'VARIABLE_WEIGHT' | 'NOT_FOUND';
-    variableWeight?: {
-      totalPrice?: number;
-      weightInGrams?: number;
-    };
-  }): ScanProductResponse => ({
+  toScanResponse: (data: ScanProductResponse): ScanProductResponse => ({
     barcode: data.barcode,
     matchType: data.matchType,
 
@@ -40,8 +26,8 @@ export const productMapper = {
     variableWeight: data.variableWeight
       ? {
           productCode: 'TODO', // We need to decide where to get this if not in result
-          weight: data.variableWeight.weightInGrams,
-          price: data.variableWeight.totalPrice,
+          weight: data.variableWeight.weight,
+          price: data.variableWeight.price,
         }
       : undefined,
   }),

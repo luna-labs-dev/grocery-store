@@ -13,7 +13,6 @@ import {
   scanProductResponseSchema,
   updateProductInCartRequestSchema,
 } from '../helpers';
-import type { ManualSearchUseCase, ScanProductUseCase } from '@/application';
 import { getPossibleExceptionsSchemas, type ICartService } from '@/domain';
 import {
   ProductNotFoundException,
@@ -34,10 +33,6 @@ export class CartController extends FastifyController {
   constructor(
     @inject(usecases.cartService)
     private readonly cartService: ICartService,
-    @inject(injection.usecases.scanProductUseCase)
-    private scanProductUseCase: ScanProductUseCase,
-    @inject(injection.usecases.manualSearchUseCase)
-    private manualSearchUseCase: ManualSearchUseCase,
   ) {
     super();
   }
@@ -64,13 +59,8 @@ export class CartController extends FastifyController {
       async (request, reply) => {
         const { barcode } = request.params;
 
-        const result = await this.scanProductUseCase.execute(barcode);
-        return reply.send(
-          productMapper.toScanResponse({
-            barcode,
-            ...result,
-          }),
-        );
+        const result = await this.cartService.scanProduct({ barcode });
+        return reply.send(productMapper.toScanResponse(result));
       },
     );
 
@@ -92,10 +82,11 @@ export class CartController extends FastifyController {
       async (request, reply) => {
         const { searchQuery } = request.query;
 
-        const result = await this.manualSearchUseCase.execute(
-          searchQuery,
-          0,
-          10,
+        const result = await this.cartService.manualSearch(
+          request.requesterContext,
+          {
+            query: searchQuery,
+          },
         );
         const hasNextPage = result.items.length === 10;
 
@@ -106,9 +97,9 @@ export class CartController extends FastifyController {
               name: item.name ?? 'Unknown',
               brand: item.brand,
               imageUrl: item.imageUrl,
-              canonicalProductId: item.canonicalProductId,
+              canonicalProductId: 0, // TODO: This is not right. This should be the canonical product id.
             })),
-            total: result.total,
+            total: result.items.length, // TODO: This is not right. This should be the total number of items in the cart, not the number of items returned in the current page.
             nextPageIndex: hasNextPage ? 1 : undefined,
           }),
         );

@@ -5,7 +5,11 @@ import type {
   GetMarketListRepository,
   Places,
 } from '@/application/contracts';
-import type { GetMarketByIdParams, GetMarketListParams } from '@/domain';
+import type {
+  GetMarketByIdParams,
+  GetMarketListParams,
+  IMarketService,
+} from '@/domain';
 import { type GetMarketListResult, Market } from '@/domain';
 import {
   MarketNotFoundException,
@@ -16,7 +20,7 @@ import { injection } from '@/main/di/injection-tokens';
 const { marketRepositories, places } = injection.infra;
 
 @injectable()
-export class MarketService {
+export class MarketService implements IMarketService {
   constructor(
     @inject(marketRepositories)
     private readonly repositories: GetMarketListRepository &

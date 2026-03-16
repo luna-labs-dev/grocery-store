@@ -247,7 +247,7 @@ export class CartService implements ICartService {
     const result = await this.productIdentityRepository.search(query, 0, 10);
 
     return {
-      products: result.items.map((identity) => ({
+      items: result.items.map((identity) => ({
         id: identity.id,
         name: identity.name || 'Unknown',
         brand: identity.brand,
@@ -276,13 +276,24 @@ export class CartService implements ICartService {
       );
       if (identity) {
         return {
+          barcode,
+          matchType: 'LOCAL',
           product: {
             id: identity.id,
             name: identity.name || 'Unknown',
             brand: identity.brand,
             imageUrl: identity.imageUrl,
+            canonicalProductId: identity.canonicalProductId,
           },
-          matchType: 'INTERNAL',
+          ...(weightValue
+            ? {
+                variableWeight: {
+                  productCode: barcode,
+                  weight: weightValue,
+                  price: 0, // TODO: figure out how to get this
+                },
+              }
+            : {}),
         };
       }
     }
@@ -294,14 +305,15 @@ export class CartService implements ICartService {
     );
     if (directIdentity) {
       return {
+        barcode,
+        matchType: 'LOCAL',
         product: {
           id: directIdentity.id,
           name: directIdentity.name || 'Unknown',
           brand: directIdentity.brand,
           imageUrl: directIdentity.imageUrl,
-          price: weightValue, // Incorporate the parsed value if it's a variable weight item
+          canonicalProductId: directIdentity.canonicalProductId,
         },
-        matchType: 'INTERNAL',
       };
     }
 
@@ -317,19 +329,21 @@ export class CartService implements ICartService {
       );
 
       return {
+        barcode,
+        matchType: 'EXTERNAL',
         product: {
           id: `TEMP_${barcode}`, // Temporary ID for frontend, hydration happens in background
           name: externalMatch.name,
           brand: externalMatch.brand,
           imageUrl: externalMatch.imageUrl,
+          canonicalProductId: `TEMP_${barcode}`,
         },
-        matchType: 'EXTERNAL',
       };
     }
 
     return {
-      product: null,
-      matchType: 'NONE',
+      barcode,
+      matchType: 'NOT_FOUND',
     };
   }
 }
