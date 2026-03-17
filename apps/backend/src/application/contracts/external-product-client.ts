@@ -8,5 +8,5 @@ export interface ExternalProductMatch {
 }
 
 export interface ExternalProductClient {
-  fetchByBarcode(barcode: string): Promise<ExternalProductMatch | null>;
+  fetchByBarcode(barcode: string): Promise<ExternalProductMatch | undefined>;
 }
