@@ -71,7 +71,7 @@ describe('OpenFoodFactsClient', () => {
     });
   });
 
-  it('should return null if product is not found', async () => {
+  it('should return undefined if product is not found', async () => {
     vi.mocked(axios.get).mockResolvedValue({
       data: {
         status: 0,
@@ -81,14 +81,14 @@ describe('OpenFoodFactsClient', () => {
 
     const result = await client.fetchByBarcode('123456789');
 
-    expect(result).toBeNull();
+    expect(result).toBeUndefined();
   });
 
-  it('should handle network errors gracefully and return null', async () => {
+  it('should handle network errors gracefully and return undefined', async () => {
     vi.mocked(axios.get).mockRejectedValue(new Error('Network error'));
 
     const result = await client.fetchByBarcode('123456789');
 
-    expect(result).toBeNull();
+    expect(result).toBeUndefined();
   });
 });

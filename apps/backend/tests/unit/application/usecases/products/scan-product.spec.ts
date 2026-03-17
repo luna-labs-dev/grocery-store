@@ -5,18 +5,13 @@ import type {
   ExternalProductMatch,
 } from '@/application/contracts/external-product-client';
 import type { OutboxEventRepositories as OutboxRepository } from '@/application/contracts/repositories/outbox-event-repository';
-import type { PhysicalEanRepository } from '@/application/contracts/repositories/product-hierarchy/physical-ean-repository';
 import type { ProductIdentityRepository } from '@/application/contracts/repositories/product-identity-repository';
 import { ScanProductUseCase } from '@/application/usecases/products/scan-product-use-case';
-import type { OutboxEvent } from '@/domain/entities/outbox-event';
 
 describe('ScanProductUseCase', () => {
   let useCase: ScanProductUseCase;
-  const mockPhysicalEanRepo = {
-    findByBarcode: vi.fn(),
-  } as unknown as Mocked<PhysicalEanRepository>;
   const mockProductIdentityRepo = {
-    getById: vi.fn(),
+    getByValue: vi.fn(),
   } as unknown as Mocked<ProductIdentityRepository>;
   const mockExternalClient = {
     fetchByBarcode: vi.fn(),
@@ -30,7 +25,6 @@ describe('ScanProductUseCase', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     useCase = new ScanProductUseCase(
-      mockPhysicalEanRepo,
       mockProductIdentityRepo,
       mockExternalClient,
       mockOutboxRepo,
@@ -56,18 +50,19 @@ describe('ScanProductUseCase', () => {
       imageUrl: 'http://image.url',
     } as unknown as never;
 
-    vi.mocked(mockPhysicalEanRepo.findByBarcode).mockResolvedValue({
-      barcode,
-      productIdentityId: 'pi1',
-    } as never);
-    vi.mocked(mockProductIdentityRepo.getById).mockResolvedValue(mockProduct);
+    vi.mocked(mockProductIdentityRepo.getByValue).mockResolvedValue(
+      mockProduct,
+    );
 
     const result = await useCase.execute(barcode);
 
     expect(result.matchType).toBe('LOCAL');
     expect(result.product).toEqual(mockProduct);
     expect(result.requiresPriceConfirmation).toBe(true);
-    expect(mockPhysicalEanRepo.findByBarcode).toHaveBeenCalledWith(barcode);
+    expect(mockProductIdentityRepo.getByValue).toHaveBeenCalledWith(
+      'EAN',
+      barcode,
+    );
   });
 
   it('should return EXTERNAL, require confirmation, and emit outbox event if not found locally', async () => {
@@ -80,7 +75,7 @@ describe('ScanProductUseCase', () => {
       source: 'OFF',
     };
 
-    vi.mocked(mockPhysicalEanRepo.findByBarcode).mockResolvedValue(null);
+    vi.mocked(mockProductIdentityRepo.getByValue).mockResolvedValue(undefined);
     vi.mocked(mockExternalClient.fetchByBarcode).mockResolvedValue(
       externalResult,
     );
@@ -90,16 +85,21 @@ describe('ScanProductUseCase', () => {
     expect(result.matchType).toBe('EXTERNAL');
     expect(result.product?.name).toBe('Nutella');
     expect(result.requiresPriceConfirmation).toBe(true);
-    expect(mockOutboxRepo.add).toHaveBeenCalledWith({
-      type: 'ProductScanned',
-      payload: externalResult,
-    } as OutboxEvent);
+    expect(mockOutboxRepo.add).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'ProductScanned',
+        payload: expect.objectContaining({
+          barcode,
+          source: externalResult.source,
+        }),
+      }),
+    );
   });
 
   it('should return NOT_FOUND if no local and no external match', async () => {
     const barcode = '0000000000000';
-    vi.mocked(mockPhysicalEanRepo.findByBarcode).mockResolvedValue(null);
-    vi.mocked(mockExternalClient.fetchByBarcode).mockResolvedValue(null);
+    vi.mocked(mockProductIdentityRepo.getByValue).mockResolvedValue(undefined);
+    vi.mocked(mockExternalClient.fetchByBarcode).mockResolvedValue(undefined);
 
     const result = await useCase.execute(barcode);
 

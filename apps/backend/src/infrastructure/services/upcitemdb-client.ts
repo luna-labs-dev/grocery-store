@@ -40,7 +40,9 @@ export class UpcItemDbClient implements ExternalProductClient {
     });
   }
 
-  async fetchByBarcode(barcode: string): Promise<ExternalProductMatch | null> {
+  async fetchByBarcode(
+    barcode: string,
+  ): Promise<ExternalProductMatch | undefined> {
     try {
       return await this.circuitBreaker.execute(async () => {
         try {
@@ -51,13 +53,13 @@ export class UpcItemDbClient implements ExternalProductClient {
           const { items } = response.data;
 
           if (!items || items.length === 0) {
-            return null;
+            return undefined;
           }
 
           const item = items[0];
 
           if (!item.title) {
-            return null;
+            return undefined;
           }
 
           return {
@@ -69,13 +71,13 @@ export class UpcItemDbClient implements ExternalProductClient {
           };
         } catch (error) {
           if (axios.isAxiosError(error) && error.response?.status === 404) {
-            return null;
+            return undefined;
           }
           throw error;
         }
       });
     } catch (_error) {
-      return null;
+      return undefined;
     }
   }
 }

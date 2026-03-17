@@ -26,7 +26,7 @@ describe('CompositeExternalProductClient', () => {
       rawPayload: {},
       source: 'OFF',
     });
-    vi.mocked(upcClient.fetchByBarcode).mockResolvedValue(null);
+    vi.mocked(upcClient.fetchByBarcode).mockResolvedValue(undefined);
 
     const result = await compositeClient.fetchByBarcode('123');
 
@@ -41,7 +41,7 @@ describe('CompositeExternalProductClient', () => {
   });
 
   it('should return result from fallback client (UPC) if primary fails/not found', async () => {
-    vi.mocked(offClient.fetchByBarcode).mockResolvedValue(null);
+    vi.mocked(offClient.fetchByBarcode).mockResolvedValue(undefined);
     vi.mocked(upcClient.fetchByBarcode).mockResolvedValue({
       name: 'Fallback Product',
       brand: 'Fallback Brand',
@@ -59,12 +59,12 @@ describe('CompositeExternalProductClient', () => {
     expect(upcClient.fetchByBarcode).toHaveBeenCalledWith('123');
   });
 
-  it('should return null if both fail', async () => {
-    vi.mocked(offClient.fetchByBarcode).mockResolvedValue(null);
-    vi.mocked(upcClient.fetchByBarcode).mockResolvedValue(null);
+  it('should return undefined if both fail', async () => {
+    vi.mocked(offClient.fetchByBarcode).mockResolvedValue(undefined);
+    vi.mocked(upcClient.fetchByBarcode).mockResolvedValue(undefined);
 
     const result = await compositeClient.fetchByBarcode('123');
 
-    expect(result).toBeNull();
+    expect(result).toBeUndefined();
   });
 });

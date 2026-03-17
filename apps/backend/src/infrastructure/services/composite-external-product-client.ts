@@ -16,7 +16,9 @@ export class CompositeExternalProductClient implements ExternalProductClient {
     private readonly fallbackClient: ExternalProductClient,
   ) {}
 
-  async fetchByBarcode(barcode: string): Promise<ExternalProductMatch | null> {
+  async fetchByBarcode(
+    barcode: string,
+  ): Promise<ExternalProductMatch | undefined> {
     const primaryResult = await this.primaryClient.fetchByBarcode(barcode);
     if (primaryResult) {
       return primaryResult;

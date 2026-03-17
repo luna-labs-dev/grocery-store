@@ -41,7 +41,9 @@ export class OpenFoodFactsClient implements ExternalProductClient {
     });
   }
 
-  async fetchByBarcode(barcode: string): Promise<ExternalProductMatch | null> {
+  async fetchByBarcode(
+    barcode: string,
+  ): Promise<ExternalProductMatch | undefined> {
     try {
       return await this.circuitBreaker.execute(async () => {
         try {
@@ -52,13 +54,13 @@ export class OpenFoodFactsClient implements ExternalProductClient {
           const { product, status } = response.data;
 
           if (status !== 1 || !product) {
-            return null; // Product not found
+            return undefined; // Product not found
           }
 
           const { product_name, brands, generic_name } = product;
 
           if (!product_name) {
-            return null; // Not enough useful data
+            return undefined; // Not enough useful data
           }
 
           return {
@@ -70,13 +72,13 @@ export class OpenFoodFactsClient implements ExternalProductClient {
           };
         } catch (error) {
           if (axios.isAxiosError(error) && error.response?.status === 404) {
-            return null;
+            return undefined;
           }
           throw error;
         }
       });
     } catch (_error) {
-      return null;
+      return undefined;
     }
   }
 }
