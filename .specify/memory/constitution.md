@@ -26,7 +26,7 @@ Maintain strict boundaries between Domain, Application, Infrastructure, API, and
 Every physical product (EAN) maps to a Product Identity, which in turn maps to a conceptual Canonical Product. Market-specific data (price/availability) always links to the Product Identity to ensure data consistency across the ecosystem.
 
 ### III. Test-Driven Development (TDD) & Total Coverage
-Mandatory Red-Green-Refactor. All new logic requires 100% test coverage (Vitest). Verification MUST include both success paths and failure scenarios (exception handling) for every API boundary and usecase. **Running `vitest`, `tsc`, and `biome check` after every implementation is mandatory to ensure state integrity.**
+Mandatory Red-Green-Refactor. All new logic requires 100% test coverage (Vitest). Verification MUST include both success paths and failure scenarios (exception handling) for every API boundary and usecase. **ABSOLUTE MANDATORY RULE: Every implementation MUST be verified by running root-level commands to ensure NO file is left behind: `pnpm lint`, `pnpm test`, and `pnpm --filter backend typecheck` (for backend types). Running commands only in subdirectories is strictly forbidden as it may ignore broken files.**
 
 ### IV. Secure Authorization Context (ABAC)
 Security checks MUST use the `RequesterContext` for authenticated users and scoped groups. Usecases must explicitly evaluate permissions using the context's policy engine rather than scattered manual repository checks.
@@ -39,6 +39,10 @@ The project maintains a strict directory hierarchy and naming standards defined 
 
 - **Files**: MUST use **kebab-case**.
 - **Code**: Classes/Interfaces MUST use **PascalCase**; Variables/Tokens MUST use **camelCase**.
+- **Semantic Naming**:
+  - **Interfaces**: MUST NOT include "Service" suffix and MUST include a semantic "Role" suffix (e.g., `ICartManager`, `IProductResolver`).
+  - **Implementations**: MUST be named semantically using a **Nature-Role** pattern. Nature prefix: `db-` (local), `remote-` (external), `job-` (background). Role suffix: matches the interface role.
+  - **Service Suffix**: Reserved exclusively for technical infra utility abstractions (e.g., `ResilienceService`).
 - **Database**: Tables MUST use **snake_case**; Columns MUST use **camelCase**; Enums/Roles MUST use **kebab-case**.
 - **Authority**: All technical decisions must align with `.specify/memory/guidelines.md`.
 
@@ -50,7 +54,7 @@ The project is a Monorepo managed exclusively via `pnpm` with `pnpm workspaces`.
 
 ## Clean Code & Minimalism
 
-"Rule of Simplicity": Before implementation, find the most elegant core of the logic. Avoid over-engineering. All new code must be audited against SOLID principles. Technical debt must be rejected in favor of maintainable, clean solutions. Use strict typing; `any` is forbidden unless explicitly justified. **ABSOLUTE MANDATORY RULE: Use `undefined` instead of `null` across the entire codebase.**
+"Rule of Simplicity": Before implementation, find the most elegant core of the logic. Avoid over-engineering. All new code must be audited against SOLID principles. Technical debt must be rejected in favor of maintainable, clean solutions. Use strict typing; `any` is forbidden unless explicitly justified. **ABSOLUTE MANDATORY RULE: Use `undefined` instead of `null`. ABSOLUTE MANDATORY RULE: Strictly follow semantic naming conventions (UseCases vs Services vs DB/Remote implementations) defined in Principle VI. ABSOLUTE MANDATORY RULE: Always use root-level `pnpm lint`, `pnpm test`, and `pnpm --filter backend typecheck` for all verifications.**
 
 ## Database & Persistence Integrity
 

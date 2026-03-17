@@ -69,12 +69,18 @@ The backend follows a Clean Architecture approach with a strict separation of co
 - **Location**: `src/domain/usecases/{module}/{feature}.ts`.
 - **Convention**:
   - Define `SomeFeatureParams` interface.
-  - (Optional) Define `SomeFeature` interface with an `execute` method.
+  - Define `ISomeFeatureRole` interface (e.g., `ICartManager`, `IProductResolver`. File: `cart.ts`, `product-scan.ts`).
   - (Optional) Define `SomeFeatureResult` for complex returns.
 
 ### 4. Naming Conventions (Strict)
 - **Files**: MUST use **kebab-case** (e.g., `group-service.ts`) across all projects.
-- **Classes/Interfaces**: PascalCase (e.g., `CollaborationGroup`, `GroupRepository`).
+- **Classes/Interfaces**: PascalCase (e.g., `CollaborationGroup`, `GroupRepository`). UseCase interfaces MUST include a semantic **Role suffix** (Manager, Resolver, Finder, Hydrator, Engine, Worker) and MUST NOT include "Service".
+- **Implementations**:
+  - **Nature-Role Pattern**: MUST use prefix for nature and suffix for role.
+  - **Database/Local**: MUST use `db-` prefix (e.g., `db-cart-manager.ts` / `DbCartManager`).
+  - **Remote/External**: MUST use `remote-` prefix (e.g., `remote-product-resolver.ts` / `RemoteProductResolver`).
+  - **Job/Worker**: MUST use `job-` prefix (e.g., `job-product-hydrator.ts` / `JobProductHydrator`).
+  - **Service Suffix**: Reserved exclusively for technical infra utility abstractions (e.g., `ResilienceService`).
 - **Variables/Tokens**: camelCase (e.g., `userRepositories`).
 - **Environment**: UPPER_SNAKE_CASE.
 - **Database**: 
@@ -97,10 +103,10 @@ The backend follows a Clean Architecture approach with a strict separation of co
 ### 7. Testing (TDD) & Quality Gates
 - **Mandatory**: 100% test coverage with `vitest`.
 - **Coverage**: Must test both Success and Failure (exceptions) for every boundary.
-- **Post-Implementation Verification**: Every task or feature completion MUST be verified by running:
-  - `pnpm vitest run` (Functional correctness)
-  - `pnpm tsc` (Type safety)
-  - `pnpm biome check` (Linting and formatting) No suppression of Biome rules is allowed unless explicitly justified and approved. All Biome setup must be respected strictly.
+- **Post-Implementation Verification (ABSOLUTE MANDATORY)**: Every task or feature completion MUST be verified by running the following root-level commands to ensure total codebase coverage (never run locally in subdirectories):
+  1. `pnpm test` (Functional correctness - coverage for all projects)
+  2. `pnpm --filter backend typecheck` (Full backend type safety)
+  3. `pnpm lint` (Global linting and formatting) No suppression of Biome rules is allowed unless explicitly justified.
 
 ### 8. Database Integrity
 - **Transactions**: Write operations involving multiple tables MUST use a `TransactionManager` at the Service/Application layer.
