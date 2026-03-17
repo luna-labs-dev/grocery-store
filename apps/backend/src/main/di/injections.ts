@@ -21,14 +21,36 @@ import {
   ShoppingEventService,
   UserService,
 } from '@/application';
+import type { ExternalProductClient } from '@/application/contracts/external-product-client';
+import type { GroupRepositories } from '@/application/contracts/repositories/group';
+import type { MarketRepositories } from '@/application/contracts/repositories/market';
+import type { OutboxEventRepositories } from '@/application/contracts/repositories/outbox-event-repository';
+import type {
+  AddCanonicalProductRepository,
+  GetCanonicalProductByIdRepository,
+  UpdateCanonicalProductRepository,
+} from '@/application/contracts/repositories/product-hierarchy';
+import type { ProductIdentityRepository } from '@/application/contracts/repositories/product-identity-repository';
+import type { ProductRepository } from '@/application/contracts/repositories/product-repository';
+import type { SettingsRepository } from '@/application/contracts/repositories/settings-repository';
+import type { ShoppingEventRepositories } from '@/application/contracts/repositories/shopping-event';
+import type { ProductRepositories } from '@/application/contracts/repositories/shopping-event/cart';
+import type { UserRepositories } from '@/application/contracts/repositories/user';
+import type { IConfigService } from '@/application/contracts/services/config-service';
+import type { Places } from '@/application/contracts/services/places';
 import { HydrateProductJob } from '@/application/usecases/products/hydrate-product-job';
 import type {
   ICartService,
   IGroupService,
+  IHydrateProductJob,
+  IHydrateProductUseCase,
+  IManualSearchUseCase,
   IMarketService,
+  IScanProductUseCase,
   IShoppingEventService,
   IUserService,
 } from '@/domain';
+import type { PermissionService } from '@/domain/core/logic/permissions/permission-service';
 import {
   Buidler,
   CompositeExternalProductClient,
@@ -38,7 +60,6 @@ import {
   DrizzleGroupRepository,
   DrizzleMarketRepository,
   DrizzleOutboxEventRepository,
-  DrizzlePhysicalEanRepository,
   DrizzleProductIdentityRepository,
   DrizzleProductRepository,
   DrizzleSettingsRepository,
@@ -55,34 +76,46 @@ const { infra, usecases, controllers } = injection;
 
 export const registerInjections = (app: FastifyTypedInstance): void => {
   // Repositories
-  container.register(infra.userRepositories, DrizzleUserRepository);
-  container.register(infra.marketRepositories, DrizzleMarketRepository);
-  container.register(infra.groupRepositories, DrizzleGroupRepository);
-  container.register(
+  container.register<UserRepositories>(
+    infra.userRepositories,
+    DrizzleUserRepository,
+  );
+  container.register<MarketRepositories>(
+    infra.marketRepositories,
+    DrizzleMarketRepository,
+  );
+  container.register<GroupRepositories>(
+    infra.groupRepositories,
+    DrizzleGroupRepository,
+  );
+  container.register<ShoppingEventRepositories>(
     infra.shoppingEventRepositories,
     DrizzleShoppingEventRepository,
   );
-  container.register(infra.productRepositories, DrizzleProductRepository);
-  container.register(
-    infra.canonicalProductRepositories,
-    DrizzleCanonicalProductRepository,
+  container.register<ProductRepositories>(
+    infra.productRepositories,
+    DrizzleProductRepository,
   );
-  container.register(
+  container.register<
+    AddCanonicalProductRepository &
+      GetCanonicalProductByIdRepository &
+      UpdateCanonicalProductRepository
+  >(infra.canonicalProductRepositories, DrizzleCanonicalProductRepository);
+  container.register<ProductIdentityRepository>(
     infra.productIdentityRepositories,
     DrizzleProductIdentityRepository,
   );
-  container.register(
+  container.register<OutboxEventRepositories>(
     infra.outboxEventRepositories,
     DrizzleOutboxEventRepository,
   );
-  container.register(infra.physicalEanRepository, DrizzlePhysicalEanRepository);
-  container.register(
+  container.register<ProductRepository>(
     infra.externalFetchLogRepository,
     DrizzleExternalFetchLogRepository,
   );
 
   // Services
-  container.register(usecases.hydrateProductJob, {
+  container.register<IHydrateProductJob>(usecases.hydrateProductJob, {
     useFactory: (c) =>
       new HydrateProductJob(
         c.resolve(infra.outboxEventRepositories),
@@ -98,13 +131,25 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
         baseURL: env.googlePlaces.baseURL,
       }),
   });
-  container.register(infra.places, GooglePlaces);
-  container.register(infra.configService, ConfigService);
-  container.register(infra.settingsRepository, DrizzleSettingsRepository);
-  container.register(infra.permissionService, SecurityPermissionService);
-  container.register(infra.openFoodFactsClient, OpenFoodFactsClient);
-  container.register(infra.upcItemDbClient, UpcItemDbClient);
-  container.register(
+  container.register<Places>(infra.places, GooglePlaces);
+  container.register<IConfigService>(infra.configService, ConfigService);
+  container.register<SettingsRepository>(
+    infra.settingsRepository,
+    DrizzleSettingsRepository,
+  );
+  container.register<PermissionService>(
+    infra.permissionService,
+    SecurityPermissionService,
+  );
+  container.register<ExternalProductClient>(
+    infra.openFoodFactsClient,
+    OpenFoodFactsClient,
+  );
+  container.register<ExternalProductClient>(
+    infra.upcItemDbClient,
+    UpcItemDbClient,
+  );
+  container.register<ExternalProductClient>(
     infra.compositeProductClient,
     CompositeExternalProductClient,
   );
@@ -119,9 +164,18 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
     ShoppingEventService,
   );
   container.register<IUserService>(usecases.userService, UserService);
-  container.register(usecases.hydrateProductUseCase, HydrateProductUseCase);
-  container.register(usecases.manualSearchUseCase, ManualSearchUseCase);
-  container.register(usecases.scanProductUseCase, ScanProductUseCase);
+  container.register<IHydrateProductUseCase>(
+    usecases.hydrateProductUseCase,
+    HydrateProductUseCase,
+  );
+  container.register<IManualSearchUseCase>(
+    usecases.manualSearchUseCase,
+    ManualSearchUseCase,
+  );
+  container.register<IScanProductUseCase>(
+    usecases.scanProductUseCase,
+    ScanProductUseCase,
+  );
 
   // Fastify Instance
   container.registerInstance<FastifyTypedInstance>('FastifyInstance', app);
