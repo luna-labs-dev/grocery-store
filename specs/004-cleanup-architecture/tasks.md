@@ -89,8 +89,8 @@
 
 - [x] T029 [P] Update `src/main/di/injections.ts` to ensure all registration tokens match refined interfaces
 - [x] T030 **VALIDATE**: Full project `pnpm biome check && pnpm tsc && pnpm vitest run`
-- [ ] T031 Update `walkthrough.md` with architectural cleanup status
-- [ ] T032 Final check of SOLID adherence in all refactored files
+- [x] T031 Update `walkthrough.md` with architectural cleanup status
+- [x] T032 Final check of SOLID adherence in all refactored files
 
 ---
 
