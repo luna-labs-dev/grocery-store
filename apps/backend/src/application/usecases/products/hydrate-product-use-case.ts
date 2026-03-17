@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import type { ExternalProductClient } from '@/application/contracts/external-product-client';
 import type { OutboxEventRepositories } from '@/application/contracts/repositories/outbox-event-repository';
-import type { PhysicalEanRepository } from '@/application/contracts/repositories/physical-ean-repository';
+import type { ProductIdentityRepository } from '@/application/contracts/repositories/product-identity-repository';
 import type { OutboxEvent } from '@/domain/entities/outbox-event';
 import { injection } from '@/main/di/injection-tokens';
 
@@ -12,8 +12,8 @@ export class HydrateProductUseCase {
     private outboxRepo: OutboxEventRepositories,
     @inject(injection.infra.compositeProductClient)
     private externalClient: ExternalProductClient,
-    @inject(injection.infra.physicalEanRepository)
-    private physicalEanRepo: PhysicalEanRepository,
+    @inject(injection.infra.productIdentityRepositories)
+    private productIdentityRepo: ProductIdentityRepository,
   ) {}
 
   async execute(event: OutboxEvent): Promise<void> {
@@ -29,7 +29,10 @@ export class HydrateProductUseCase {
       }
 
       // 1. Check if Identity already exists (idempotency)
-      const existing = await this.physicalEanRepo.findByBarcode(barcode);
+      const existing = await this.productIdentityRepo.getByValue(
+        'EAN',
+        barcode,
+      );
       if (existing) {
         event.markCompleted();
         await this.outboxRepo.update(event);

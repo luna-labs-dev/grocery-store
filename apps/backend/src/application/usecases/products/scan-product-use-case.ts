@@ -1,39 +1,18 @@
 import { inject, injectable } from 'tsyringe';
 import type { ExternalProductClient } from '@/application/contracts/external-product-client';
 import type { OutboxEventRepositories } from '@/application/contracts/repositories/outbox-event-repository';
-import type { PhysicalEanRepository } from '@/application/contracts/repositories/physical-ean-repository';
 import type { ProductIdentityRepository } from '@/application/contracts/repositories/product-identity-repository';
-import { parseVariableWeight } from '@/application/utils/variable-weight-parser';
+import { VariableWeightParser } from '@/domain/core/logic/variable-weight-parser';
 import type { OutboxEvent } from '@/domain/entities/outbox-event';
+import type {
+  IScanProductUseCase,
+  ScanProductResult,
+} from '@/domain/usecases/scan-product.interface';
 import { injection } from '@/main/di/injection-tokens';
 
-export type ScanMatchType =
-  | 'LOCAL'
-  | 'EXTERNAL'
-  | 'VARIABLE_WEIGHT'
-  | 'NOT_FOUND';
-
-export interface ScanProductResult {
-  matchType: ScanMatchType;
-  product?: {
-    id?: string;
-    name: string;
-    brand?: string;
-    imageUrl?: string;
-  };
-  variableWeight?: {
-    totalPrice?: number;
-    weightInGrams?: number;
-  };
-  requiresPriceConfirmation: boolean;
-  source: 'local' | 'external' | 'variable-weight' | 'none';
-}
-
 @injectable()
-export class ScanProductUseCase {
+export class ScanProductUseCase implements IScanProductUseCase {
   constructor(
-    @inject(injection.infra.physicalEanRepository)
-    private physicalEanRepo: PhysicalEanRepository,
     @inject(injection.infra.productIdentityRepositories)
     private productIdentityRepo: ProductIdentityRepository,
     @inject(injection.infra.compositeProductClient)
@@ -44,7 +23,7 @@ export class ScanProductUseCase {
 
   async execute(barcode: string): Promise<ScanProductResult> {
     // 1. Check Variable Weight (Prefix 2)
-    const vwResult = parseVariableWeight(barcode);
+    const vwResult = VariableWeightParser.parse(barcode);
 
     if (vwResult) {
       return {
@@ -58,26 +37,20 @@ export class ScanProductUseCase {
       };
     }
 
-    // 2. Check Local Database
-    const localEan = await this.physicalEanRepo.findByBarcode(barcode);
-    if (localEan) {
-      const identity = await this.productIdentityRepo.getById(
-        localEan.productIdentityId,
-      );
-      if (identity) {
-        return {
-          matchType: 'LOCAL',
-          product: {
-            id: identity.id,
-            name: identity.name ?? 'Produto sem nome',
-            brand: identity.brand || undefined,
-            imageUrl: identity.imageUrl || undefined,
-          },
-
-          requiresPriceConfirmation: true,
-          source: 'local',
-        };
-      }
+    // 2. Check Local Database (Consolidated Identity)
+    const identity = await this.productIdentityRepo.getByValue('EAN', barcode);
+    if (identity) {
+      return {
+        matchType: 'LOCAL',
+        product: {
+          id: identity.id,
+          name: identity.name ?? 'Produto sem nome',
+          brand: identity.brand || undefined,
+          imageUrl: identity.imageUrl || undefined,
+        },
+        requiresPriceConfirmation: true,
+        source: 'local',
+      };
     }
 
     // 3. External Fallback
@@ -85,7 +58,7 @@ export class ScanProductUseCase {
     if (externalResult) {
       await this.outboxRepo.add({
         type: 'ProductScanned',
-        payload: externalResult,
+        payload: { barcode, source: externalResult.source },
       } as OutboxEvent);
 
       return {

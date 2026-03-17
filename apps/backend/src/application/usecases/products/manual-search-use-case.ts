@@ -1,10 +1,11 @@
 import { inject, injectable } from 'tsyringe';
 import type { ProductIdentityRepository } from '@/application/contracts/repositories/product-identity-repository';
 import type { ProductIdentity } from '@/domain/entities/product-identity';
+import type { IManualSearchUseCase } from '@/domain/usecases/manual-search.interface';
 import { injection } from '@/main/di/injection-tokens';
 
 @injectable()
-export class ManualSearchUseCase {
+export class ManualSearchUseCase implements IManualSearchUseCase {
   constructor(
     @inject(injection.infra.productIdentityRepositories)
     private productIdentityRepo: ProductIdentityRepository,

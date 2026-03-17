@@ -1,11 +1,12 @@
 import { injectable } from 'tsyringe';
 import { db } from './setup/connection';
 import * as schema from './setup/schema';
+import type { ProductRepository } from '@/application/contracts/repositories/product-repository';
 import type { ExternalFetchLog } from '@/domain';
 
 @injectable()
-export class DrizzleExternalFetchLogRepository {
-  save = async (
+export class DrizzleExternalFetchLogRepository implements ProductRepository {
+  saveFetchLog = async (
     log: ExternalFetchLog,
     transaction?: unknown,
   ): Promise<void> => {

@@ -3,29 +3,30 @@ import type { ExternalProductClient } from '@/application/contracts/external-pro
 import type {
   AddCanonicalProductRepository,
   OutboxEventRepositories,
-  ProductIdentityRepositories,
 } from '@/application/contracts/repositories';
+import type { ProductIdentityRepository } from '@/application/contracts/repositories/product-identity-repository';
 import {
   CanonicalProduct,
   type OutboxEvent,
   ProductIdentity,
 } from '@/domain/entities';
+import type { IHydrateProductUseCase } from '@/domain/usecases/hydrate-product.interface';
 import { injection } from '@/main/di/injection-tokens';
 
 @injectable()
-export class HydrateProductJob {
+export class HydrateProductJob implements IHydrateProductUseCase {
   constructor(
     @inject(injection.infra.outboxEventRepositories)
     private readonly outboxRepo: OutboxEventRepositories,
     @inject(injection.infra.canonicalProductRepositories)
     private readonly canonicalProductRepo: AddCanonicalProductRepository,
     @inject(injection.infra.compositeProductClient)
-    readonly _externalClient: ExternalProductClient,
+    private readonly externalClient: ExternalProductClient,
     @inject(injection.infra.productIdentityRepositories)
-    private readonly productIdentityRepo: ProductIdentityRepositories,
+    private readonly productIdentityRepo: ProductIdentityRepository,
   ) {}
 
-  async run(): Promise<void> {
+  async execute(): Promise<void> {
     const pendingEvents = await this.outboxRepo.getPending();
 
     for (const event of pendingEvents) {
@@ -47,34 +48,38 @@ export class HydrateProductJob {
   private async processProductScanned(event: OutboxEvent): Promise<void> {
     const payload = event.payload as {
       barcode: string;
-      name: string;
-      brand?: string;
-      imageUrl?: string;
-      description?: string;
+      source: string;
     };
-    const { barcode, name, brand, imageUrl, description } = payload;
+    const { barcode } = payload;
 
     // 1. Check if Identity already exists (idempotency)
     const existing = await this.productIdentityRepo.getByValue('EAN', barcode);
     if (existing) return;
 
-    // 2. Create Canonical Product
+    // 2. Fetch external data
+    const externalProduct = await this.externalClient.fetchByBarcode(barcode);
+    if (!externalProduct) {
+      throw new Error(`External data not found for barcode: ${barcode}`);
+    }
+
+    // 3. Create Canonical Product
     const canonical = CanonicalProduct.create({
-      name,
-      brand,
-      description,
+      name: externalProduct.name,
+      brand: externalProduct.brand,
+      description: externalProduct.description,
     });
 
     await this.canonicalProductRepo.add(canonical);
 
-    // 3. Create Product Identity
+    // 4. Create Product Identity
     const identity = ProductIdentity.create({
       canonicalProductId: canonical.id,
       type: 'EAN',
       value: barcode,
-      name,
-      brand,
-      imageUrl,
+      name: externalProduct.name,
+      brand: externalProduct.brand,
+      imageUrl: externalProduct.imageUrl,
+      source: externalProduct.source,
     });
 
     await this.productIdentityRepo.add(identity);
