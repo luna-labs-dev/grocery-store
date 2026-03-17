@@ -3,20 +3,14 @@
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Supreme Architectural Priority: Clean Architecture > Clean Code > SOLID
+This is the most important rule in the codebase and is **mandatory** for every implementation.
+1. **Clean Architecture**: maintain strict boundaries between Domain, Application, Infrastructure, API, and Main layers. Domain logic must be pure.
+2. **Clean Code**: prioritize readability, simplicity, and maintainability.
+3. **SOLID**: strictly adhere to Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
-
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### II. Test-Driven Development (TDD) & Total Coverage
+Mandatory Red-Green-Refactor. All new logic requires 100% test coverage. Verification MUST include both success paths and failure scenarios for every API boundary and usecase. Running automated checks after every implementation is mandatory.
 
 ### [PRINCIPLE_4_NAME]
 <!-- Example: IV. Integration Testing -->

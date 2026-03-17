@@ -50,7 +50,7 @@ The project is a Monorepo managed exclusively via `pnpm` with `pnpm workspaces`.
 
 ## Clean Code & Minimalism
 
-"Rule of Simplicity": Before implementation, find the most elegant core of the logic. Avoid over-engineering. All new code must be audited against SOLID principles. Technical debt must be rejected in favor of maintainable, clean solutions. Use strict typing; `any` is forbidden unless explicitly justified.
+"Rule of Simplicity": Before implementation, find the most elegant core of the logic. Avoid over-engineering. All new code must be audited against SOLID principles. Technical debt must be rejected in favor of maintainable, clean solutions. Use strict typing; `any` is forbidden unless explicitly justified. **ABSOLUTE MANDATORY RULE: Use `undefined` instead of `null` across the entire codebase.**
 
 ## Database & Persistence Integrity
 
@@ -60,4 +60,4 @@ All write operations involving multiple tables MUST be orchestrated within a tra
 
 This constitution supersedes all other project practices. Amendments require documentation in a Sync Impact Report and a semantic version bump. PR reviews must verify compliance with these core principles and the associated guidelines.
 
-**Version**: 1.5.0 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-03-11
+**Version**: 1.6.0 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-03-17
