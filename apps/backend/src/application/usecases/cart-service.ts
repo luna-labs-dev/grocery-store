@@ -1,15 +1,11 @@
 import { inject, injectable } from 'tsyringe';
-import type {
-  ShoppingEventRepositories,
-} from '@/application/contracts';
+import type { ShoppingEventRepositories } from '@/application/contracts';
 import type {
   ICartService,
   ManualSearchResponse,
+  Product,
   ScanProductRequest,
   ScanProductResponse,
-} from '@/domain';
-import type {
-  Product,
 } from '@/domain';
 import type { RequesterContext } from '@/domain/core/requester-context';
 import {
@@ -103,7 +99,7 @@ export class CartService implements ICartService {
   }
 
   private async handleManualEntry(name: string): Promise<string> {
-    return this.hydrateProductUseCase.register(name, ''); 
+    return this.hydrateProductUseCase.register(name, '');
   }
 
   async updateProductInCart(

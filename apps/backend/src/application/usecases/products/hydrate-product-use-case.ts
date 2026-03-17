@@ -49,7 +49,7 @@ export class HydrateProductUseCase implements IHydrateProductUseCase {
         return;
       }
 
-      // Logic for actual hydration... 
+      // Logic for actual hydration...
       event.markCompleted();
       await this.outboxRepo.update(event);
     } catch (error: unknown) {
@@ -62,7 +62,10 @@ export class HydrateProductUseCase implements IHydrateProductUseCase {
 
   async register(name: string, barcode: string): Promise<string> {
     if (barcode) {
-      const identity = await this.productIdentityRepo.getByValue('EAN', barcode);
+      const identity = await this.productIdentityRepo.getByValue(
+        'EAN',
+        barcode,
+      );
 
       if (identity) {
         return identity.canonicalProductId;
