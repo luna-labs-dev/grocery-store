@@ -2,6 +2,7 @@ import type { OutboxEvent } from '@/domain/entities/outbox-event';
 
 export interface IHydrateProductUseCase {
   execute(event: OutboxEvent): Promise<void>;
+  register(name: string, barcode: string): Promise<string>;
 }
 
 export interface IHydrateProductJob {

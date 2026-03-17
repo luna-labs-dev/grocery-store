@@ -1,15 +1,25 @@
 import { inject, injectable } from 'tsyringe';
 import type { ExternalProductClient } from '@/application/contracts/external-product-client';
-import type { OutboxEventRepositories } from '@/application/contracts/repositories/outbox-event-repository';
+import type {
+  AddCanonicalProductRepository,
+  OutboxEventRepositories,
+} from '@/application/contracts/repositories';
 import type { ProductIdentityRepository } from '@/application/contracts/repositories/product-identity-repository';
-import type { OutboxEvent } from '@/domain/entities/outbox-event';
+import {
+  CanonicalProduct,
+  OutboxEvent,
+  ProductIdentity,
+} from '@/domain/entities';
+import type { IHydrateProductUseCase } from '@/domain/usecases/hydrate-product.interface';
 import { injection } from '@/main/di/injection-tokens';
 
 @injectable()
-export class HydrateProductUseCase {
+export class HydrateProductUseCase implements IHydrateProductUseCase {
   constructor(
     @inject(injection.infra.outboxEventRepositories)
     private outboxRepo: OutboxEventRepositories,
+    @inject(injection.infra.canonicalProductRepositories)
+    private canonicalProductRepo: AddCanonicalProductRepository,
     @inject(injection.infra.compositeProductClient)
     private externalClient: ExternalProductClient,
     @inject(injection.infra.productIdentityRepositories)
@@ -39,7 +49,7 @@ export class HydrateProductUseCase {
         return;
       }
 
-      // Logic for actual hydration... (Placeholder for now as per task)
+      // Logic for actual hydration... 
       event.markCompleted();
       await this.outboxRepo.update(event);
     } catch (error: unknown) {
@@ -48,5 +58,40 @@ export class HydrateProductUseCase {
       await this.outboxRepo.update(event);
       throw error;
     }
+  }
+
+  async register(name: string, barcode: string): Promise<string> {
+    if (barcode) {
+      const identity = await this.productIdentityRepo.getByValue('EAN', barcode);
+
+      if (identity) {
+        return identity.canonicalProductId;
+      }
+    }
+
+    // "Pending Hydration" strategy: Create canonical product on the fly
+    const cp = CanonicalProduct.create({
+      name,
+      description: barcode ? 'Pending enrichment' : 'Manual entry',
+    });
+    await this.canonicalProductRepo.add(cp);
+
+    if (barcode) {
+      const pi = ProductIdentity.create({
+        canonicalProductId: cp.id,
+        type: 'EAN',
+        value: barcode,
+      });
+      await this.productIdentityRepo.add(pi);
+
+      // Outbox event to hydrate asynchronously
+      const outboxEvent = OutboxEvent.create({
+        type: 'ProductScanned',
+        payload: { canonicalProductId: cp.id, barcode },
+      });
+      await this.outboxRepo.add(outboxEvent);
+    }
+
+    return cp.id;
   }
 }

@@ -10,11 +10,11 @@ import {
   type OutboxEvent,
   ProductIdentity,
 } from '@/domain/entities';
-import type { IHydrateProductUseCase } from '@/domain/usecases/hydrate-product.interface';
+import type { IHydrateProductJob } from '@/domain/usecases/hydrate-product.interface';
 import { injection } from '@/main/di/injection-tokens';
 
 @injectable()
-export class HydrateProductJob implements IHydrateProductUseCase {
+export class HydrateProductJob implements IHydrateProductJob {
   constructor(
     @inject(injection.infra.outboxEventRepositories)
     private readonly outboxRepo: OutboxEventRepositories,

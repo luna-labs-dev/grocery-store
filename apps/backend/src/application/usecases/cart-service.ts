@@ -1,47 +1,42 @@
 import { inject, injectable } from 'tsyringe';
 import type {
-  AddCanonicalProductRepository,
-  ExternalProductClient,
-  OutboxEventRepositories,
   ShoppingEventRepositories,
 } from '@/application/contracts';
-import type { ProductIdentityRepository } from '@/application/contracts/repositories/product-identity-repository';
 import type {
   ICartService,
   ManualSearchResponse,
   ScanProductRequest,
   ScanProductResponse,
 } from '@/domain';
-import {
-  CanonicalProduct,
-  OutboxEvent,
-  type Product,
-  ProductIdentity,
+import type {
+  Product,
 } from '@/domain';
-import { VariableWeightParser } from '@/domain/core/logic/variable-weight-parser';
 import type { RequesterContext } from '@/domain/core/requester-context';
 import {
   ProductNotFoundException,
   ShoppingEventAlreadyEndedException,
   ShoppingEventNotFoundException,
 } from '@/domain/exceptions';
+import type {
+  IHydrateProductUseCase,
+  IManualSearchUseCase,
+  IScanProductUseCase,
+} from '@/domain/usecases';
 import { injection } from '@/main/di/injection-tokens';
 
-const { infra } = injection;
+const { infra, usecases } = injection;
 
 @injectable()
 export class CartService implements ICartService {
   constructor(
     @inject(infra.shoppingEventRepositories)
     private readonly shoppingEventRepository: ShoppingEventRepositories,
-    @inject(infra.canonicalProductRepositories)
-    private readonly canonicalProductRepository: AddCanonicalProductRepository,
-    @inject(infra.productIdentityRepositories)
-    private readonly productIdentityRepository: ProductIdentityRepository,
-    @inject(infra.outboxEventRepositories)
-    private readonly outboxRepository: OutboxEventRepositories,
-    @inject(infra.compositeProductClient)
-    private readonly externalClient: ExternalProductClient,
+    @inject(usecases.hydrateProductUseCase)
+    private readonly hydrateProductUseCase: IHydrateProductUseCase,
+    @inject(usecases.manualSearchUseCase)
+    private readonly manualSearchUseCase: IManualSearchUseCase,
+    @inject(usecases.scanProductUseCase)
+    private readonly scanProductUseCase: IScanProductUseCase,
   ) {}
 
   async addProductToCart(
@@ -101,57 +96,14 @@ export class CartService implements ICartService {
     barcode?: string,
   ): Promise<string> {
     if (barcode) {
-      return this.handleBarcodeEntry(name, barcode);
+      return this.hydrateProductUseCase.register(name, barcode);
     }
 
     return this.handleManualEntry(name);
   }
 
-  private async handleBarcodeEntry(
-    name: string,
-    barcode: string,
-  ): Promise<string> {
-    const identity = await this.productIdentityRepository.getByValue(
-      'EAN',
-      barcode,
-    );
-
-    if (identity) {
-      return identity.canonicalProductId;
-    }
-
-    // "Pending Hydration" strategy: Create canonical product on the fly
-    const cp = CanonicalProduct.create({
-      name,
-      description: 'Pending enrichment',
-    });
-    await this.canonicalProductRepository.add(cp);
-
-    const pi = ProductIdentity.create({
-      canonicalProductId: cp.id,
-      type: 'EAN',
-      value: barcode,
-    });
-    await this.productIdentityRepository.add(pi);
-
-    // Outbox event to hydrate asynchronously
-    const outboxEvent = OutboxEvent.create({
-      type: 'ProductScanned',
-      payload: { canonicalProductId: cp.id, barcode },
-    });
-    await this.outboxRepository.add(outboxEvent);
-
-    return cp.id;
-  }
-
   private async handleManualEntry(name: string): Promise<string> {
-    // Manual entry: Create a "Global" entry for this name if it doesn't exist
-    const cp = CanonicalProduct.create({
-      name,
-      description: 'Manual entry',
-    });
-    await this.canonicalProductRepository.add(cp);
-    return cp.id;
+    return this.hydrateProductUseCase.register(name, ''); 
   }
 
   async updateProductInCart(
@@ -237,7 +189,7 @@ export class CartService implements ICartService {
   ): Promise<ManualSearchResponse> {
     await ctx.checkPermission('create', 'shoppingEvent');
 
-    const result = await this.productIdentityRepository.search(query, 0, 10);
+    const result = await this.manualSearchUseCase.execute(query, 0, 10);
 
     return {
       items: result.items.map((identity) => ({
@@ -252,76 +204,34 @@ export class CartService implements ICartService {
   async scanProduct({
     barcode,
   }: ScanProductRequest): Promise<ScanProductResponse> {
-    let weightValue: number | undefined;
+    const result = await this.scanProductUseCase.execute(barcode);
 
-    // 0. Variable Weight Check
-    if (VariableWeightParser.isVariableWeight(barcode)) {
-      const parsed = VariableWeightParser.parse(barcode);
-      if (parsed) {
-        barcode = parsed.eanPart;
-        weightValue = parsed.totalPrice;
-      }
-    }
-
-    // 1. Local Database Match (Consolidated Identity)
-    const identity = await this.productIdentityRepository.getByValue(
-      'EAN',
-      barcode,
-    );
-
-    if (identity) {
+    if (result.matchType === 'NOT_FOUND') {
       return {
         barcode,
-        matchType: 'LOCAL',
-        product: {
-          id: identity.id,
-          name: identity.name || 'Unknown',
-          brand: identity.brand,
-          imageUrl: identity.imageUrl,
-          canonicalProductId: identity.canonicalProductId,
-        },
-        ...(weightValue
-          ? {
-              variableWeight: {
-                productCode: barcode,
-                weight: weightValue,
-                price: 0, // TODO: figure out how to get this
-              },
-            }
-          : {}),
-      };
-    }
-
-    // 2. Check for direct ProductIdentity match (legacy or non-physical EAN)
-    // Note: getByValue('EAN') already covers this in the new model, but keeping as a separate check if needed for other types
-
-    // 3. External Fallback
-    const externalMatch = await this.externalClient.fetchByBarcode(barcode);
-    if (externalMatch) {
-      // Fire outbox event for background hydration
-      await this.outboxRepository.add(
-        OutboxEvent.create({
-          type: 'ProductScanned',
-          payload: { barcode, source: externalMatch.source },
-        }),
-      );
-
-      return {
-        barcode,
-        matchType: 'EXTERNAL',
-        product: {
-          id: `TEMP_${barcode}`, // Temporary ID for frontend, hydration happens in background
-          name: externalMatch.name,
-          brand: externalMatch.brand,
-          imageUrl: externalMatch.imageUrl,
-          canonicalProductId: `TEMP_${barcode}`,
-        },
+        matchType: 'NOT_FOUND',
       };
     }
 
     return {
       barcode,
-      matchType: 'NOT_FOUND',
+      matchType: result.matchType,
+      product: result.product
+        ? {
+            id: result.product.id || `TEMP_${barcode}`,
+            name: result.product.name,
+            brand: result.product.brand,
+            imageUrl: result.product.imageUrl,
+            canonicalProductId: result.product.id || `TEMP_${barcode}`,
+          }
+        : undefined,
+      variableWeight: result.variableWeight
+        ? {
+            productCode: barcode,
+            weight: result.variableWeight.weightInGrams || 0,
+            price: result.variableWeight.totalPrice || 0,
+          }
+        : undefined,
     };
   }
 }
