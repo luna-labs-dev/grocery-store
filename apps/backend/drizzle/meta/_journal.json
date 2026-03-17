@@ -106,6 +106,13 @@
       "when": 1773207214153,
       "tag": "0014_tense_blacklash",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1773728856410,
+      "tag": "0015_fearless_wonder_man",
+      "breakpoints": true
     }
   ]
 }

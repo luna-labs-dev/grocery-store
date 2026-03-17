@@ -183,6 +183,7 @@ export const productIdentityTable = pgTable('product_identity', {
   name: varchar('name', { length: 256 }),
   brand: varchar('brand', { length: 256 }),
   imageUrl: text('imageUrl'),
+  source: varchar('source', { length: 50 }).notNull().default('LOCAL'),
   createdAt: timestamp('createdAt', { precision: 6 }).defaultNow().notNull(),
 });
 

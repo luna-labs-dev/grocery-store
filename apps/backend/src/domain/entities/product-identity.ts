@@ -7,6 +7,7 @@ export interface ProductIdentityProps {
   name?: string;
   brand?: string;
   imageUrl?: string;
+  source: string;
   createdAt: Date;
 }
 
@@ -17,6 +18,7 @@ export interface CreateProductIdentityProps {
   name?: string;
   brand?: string;
   imageUrl?: string;
+  source?: string;
   createdAt?: Date;
 }
 
@@ -49,6 +51,10 @@ export class ProductIdentity extends Entity<ProductIdentityProps> {
     return this.props.imageUrl;
   }
 
+  get source(): string {
+    return this.props.source;
+  }
+
   get createdAt(): Date {
     return this.props.createdAt;
   }
@@ -60,6 +66,7 @@ export class ProductIdentity extends Entity<ProductIdentityProps> {
     return new ProductIdentity(
       {
         ...props,
+        source: props.source ?? 'LOCAL',
         createdAt: props.createdAt ?? new Date(),
       },
       id,

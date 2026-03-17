@@ -11,6 +11,11 @@ $ARGUMENTS
 You **MUST** consider the user input before proceeding (if not empty).
 
 ## Pre-Execution Checks
+## Phase 0: Global Validation Baseline (Mandatory)
+- [x] Address Biome lint errors in frontend and backend.
+- [x] Fix TypeScript type errors in backend.
+- [x] Ensure all tests pass.
+- [x] Establish root-level check (`pnpm lint && pnpm --filter backend typecheck && pnpm test`) as a mandatory baseline.
 
 **Check for extension hooks (before implementation)**:
 - Check if `.specify/extensions.yml` exists in the project root.
@@ -57,11 +62,11 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Create a status table:
 
      ```text
-     | Checklist | Total | Completed | Incomplete | Status |
-     |-----------|-------|-----------|------------|--------|
-     | ux.md     | 12    | 12        | 0          | ✓ PASS |
-     | test.md   | 8     | 5         | 3          | ✗ FAIL |
-     | security.md | 6   | 6         | 0          | ✓ PASS |
+     | Checklist   | Total | Completed | Incomplete | Status |
+     | ----------- | ----- | --------- | ---------- | ------ |
+     | ux.md       | 12    | 12        | 0          | ✓ PASS |
+     | test.md     | 8     | 5         | 3          | ✗ FAIL |
+     | security.md | 6     | 6         | 0          | ✓ PASS |
      ```
 
    - Calculate overall status:

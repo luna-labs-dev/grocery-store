@@ -4,7 +4,6 @@ export * from './external-fetch-log';
 export * from './group-member';
 export * from './market';
 export * from './outbox-event';
-export * from './physical-ean';
 export * from './price-report';
 export * from './product';
 export * from './product-identity';

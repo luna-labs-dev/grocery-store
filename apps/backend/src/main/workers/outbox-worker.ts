@@ -1,5 +1,5 @@
 import { container } from 'tsyringe';
-import { HydrateProductJob } from '@/application/usecases/product-hierarchy/hydrate-product-job';
+import { HydrateProductJob } from '@/application/usecases/products/hydrate-product-job';
 
 export class OutboxWorker {
   private timer: NodeJS.Timeout | null = null;

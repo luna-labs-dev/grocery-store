@@ -3,7 +3,6 @@ export * from './drizzle-external-fetch-log-repository';
 export * from './drizzle-group-repository';
 export * from './drizzle-market-repository';
 export * from './drizzle-outbox-event-repository';
-export * from './drizzle-physical-ean-repository';
 export * from './drizzle-product-identity-repository';
 export * from './drizzle-product-repository';
 export * from './drizzle-settings-repository';

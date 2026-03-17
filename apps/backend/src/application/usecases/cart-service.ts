@@ -1,13 +1,10 @@
 import { inject, injectable } from 'tsyringe';
 import type {
   AddCanonicalProductRepository,
-  AddProductIdentityRepository,
   ExternalProductClient,
-  GetProductIdentityByValueRepository,
   OutboxEventRepositories,
   ShoppingEventRepositories,
 } from '@/application/contracts';
-import type { PhysicalEanRepository } from '@/application/contracts/repositories/product-hierarchy';
 import type { ProductIdentityRepository } from '@/application/contracts/repositories/product-identity-repository';
 import type {
   ICartService,
@@ -21,13 +18,13 @@ import {
   type Product,
   ProductIdentity,
 } from '@/domain';
+import { VariableWeightParser } from '@/domain/core/logic/variable-weight-parser';
 import type { RequesterContext } from '@/domain/core/requester-context';
 import {
   ProductNotFoundException,
   ShoppingEventAlreadyEndedException,
   ShoppingEventNotFoundException,
 } from '@/domain/exceptions';
-import { VariableWeightParser } from '@/domain/products/variable-weight-parser';
 import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
@@ -40,13 +37,9 @@ export class CartService implements ICartService {
     @inject(infra.canonicalProductRepositories)
     private readonly canonicalProductRepository: AddCanonicalProductRepository,
     @inject(infra.productIdentityRepositories)
-    private readonly productIdentityRepository: AddProductIdentityRepository &
-      GetProductIdentityByValueRepository &
-      ProductIdentityRepository,
+    private readonly productIdentityRepository: ProductIdentityRepository,
     @inject(infra.outboxEventRepositories)
     private readonly outboxRepository: OutboxEventRepositories,
-    @inject(infra.physicalEanRepository)
-    private readonly physicalEanRepository: PhysicalEanRepository,
     @inject(infra.compositeProductClient)
     private readonly externalClient: ExternalProductClient,
   ) {}
@@ -264,58 +257,43 @@ export class CartService implements ICartService {
     // 0. Variable Weight Check
     if (VariableWeightParser.isVariableWeight(barcode)) {
       const parsed = VariableWeightParser.parse(barcode);
-      barcode = parsed.baseEan;
-      weightValue = parsed.value;
-    }
-
-    // 1. Local Database Match (PhysicalEAN)
-    const physicalEan = await this.physicalEanRepository.findByBarcode(barcode);
-    if (physicalEan) {
-      const identity = await this.productIdentityRepository.getById(
-        physicalEan.productIdentityId,
-      );
-      if (identity) {
-        return {
-          barcode,
-          matchType: 'LOCAL',
-          product: {
-            id: identity.id,
-            name: identity.name || 'Unknown',
-            brand: identity.brand,
-            imageUrl: identity.imageUrl,
-            canonicalProductId: identity.canonicalProductId,
-          },
-          ...(weightValue
-            ? {
-                variableWeight: {
-                  productCode: barcode,
-                  weight: weightValue,
-                  price: 0, // TODO: figure out how to get this
-                },
-              }
-            : {}),
-        };
+      if (parsed) {
+        barcode = parsed.eanPart;
+        weightValue = parsed.totalPrice;
       }
     }
 
-    // 2. Check for direct ProductIdentity match (legacy or non-physical EAN)
-    const directIdentity = await this.productIdentityRepository.getByValue(
+    // 1. Local Database Match (Consolidated Identity)
+    const identity = await this.productIdentityRepository.getByValue(
       'EAN',
       barcode,
     );
-    if (directIdentity) {
+
+    if (identity) {
       return {
         barcode,
         matchType: 'LOCAL',
         product: {
-          id: directIdentity.id,
-          name: directIdentity.name || 'Unknown',
-          brand: directIdentity.brand,
-          imageUrl: directIdentity.imageUrl,
-          canonicalProductId: directIdentity.canonicalProductId,
+          id: identity.id,
+          name: identity.name || 'Unknown',
+          brand: identity.brand,
+          imageUrl: identity.imageUrl,
+          canonicalProductId: identity.canonicalProductId,
         },
+        ...(weightValue
+          ? {
+              variableWeight: {
+                productCode: barcode,
+                weight: weightValue,
+                price: 0, // TODO: figure out how to get this
+              },
+            }
+          : {}),
       };
     }
+
+    // 2. Check for direct ProductIdentity match (legacy or non-physical EAN)
+    // Note: getByValue('EAN') already covers this in the new model, but keeping as a separate check if needed for other types
 
     // 3. External Fallback
     const externalMatch = await this.externalClient.fetchByBarcode(barcode);

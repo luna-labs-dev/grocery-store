@@ -1,10 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import type { ExternalProductClient } from '@/application/contracts';
-import type {
-  AddCanonicalProductRepository,
-  AddProductIdentityRepository,
-  GetProductIdentityByValueRepository,
-} from '@/application/contracts/repositories/product-hierarchy';
+import type { AddCanonicalProductRepository } from '@/application/contracts/repositories/product-hierarchy';
+import type { ProductIdentityRepository } from '@/application/contracts/repositories/product-identity-repository';
 import { CanonicalProduct, ProductIdentity } from '@/domain';
 import { injection } from '@/main/di/injection-tokens';
 
@@ -14,8 +11,7 @@ const { infra } = injection;
 export class SearchProductsService {
   constructor(
     @inject(infra.productIdentityRepositories)
-    private readonly productIdentityRepository: GetProductIdentityByValueRepository &
-      AddProductIdentityRepository,
+    private readonly productIdentityRepository: ProductIdentityRepository,
     @inject(infra.canonicalProductRepositories)
     private readonly canonicalProductRepository: AddCanonicalProductRepository,
     @inject(infra.compositeProductClient)
