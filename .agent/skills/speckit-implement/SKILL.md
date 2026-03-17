@@ -66,11 +66,11 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Create a status table:
 
      ```text
-     | Checklist | Total | Completed | Incomplete | Status |
-     |-----------|-------|-----------|------------|--------|
-     | ux.md     | 12    | 12        | 0          | ✓ PASS |
-     | test.md   | 8     | 5         | 3          | ✗ FAIL |
-     | security.md | 6   | 6         | 0          | ✓ PASS |
+     | Checklist   | Total | Completed | Incomplete | Status |
+     | ----------- | ----- | --------- | ---------- | ------ |
+     | ux.md       | 12    | 12        | 0          | ✓ PASS |
+     | test.md     | 8     | 5         | 3          | ✗ FAIL |
+     | security.md | 6     | 6         | 0          | ✓ PASS |
      ```
 
    - Calculate overall status:
@@ -154,6 +154,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - **Validation checkpoints**: Verify each phase completion before proceeding
 
 7. Implementation execution rules:
+   - **Supreme Architectural Priority**: Every line of code MUST strictly follow **Clean Architecture > Clean Code > SOLID**. Refuse to implement logic that violates layer boundaries or SOLID principles.
    - **Setup first**: Initialize project structure, dependencies, configuration
    - **Tests before code**: If you need to write tests for contracts, entities, and integration scenarios
    - **Core development**: Implement models, services, CLI commands, endpoints

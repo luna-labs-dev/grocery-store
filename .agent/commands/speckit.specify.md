@@ -1,5 +1,4 @@
 ---
-trigger: always_on
 description: Create or update the feature specification from a natural language feature description.
 handoffs: 
   - label: Build Technical Plan
@@ -149,12 +148,12 @@ Given that feature description, do this:
            
            **Suggested Answers**:
            
-           | Option | Answer                    | Implications                          |
-           | ------ | ------------------------- | ------------------------------------- |
-           | A      | [First suggested answer]  | [What this means for the feature]     |
-           | B      | [Second suggested answer] | [What this means for the feature]     |
-           | C      | [Third suggested answer]  | [What this means for the feature]     |
-           | Custom | Provide your own answer   | [Explain how to provide custom input] |
+           | Option | Answer | Implications |
+           |--------|--------|--------------|
+           | A      | [First suggested answer] | [What this means for the feature] |
+           | B      | [Second suggested answer] | [What this means for the feature] |
+           | C      | [Third suggested answer] | [What this means for the feature] |
+           | Custom | Provide your own answer | [Explain how to provide custom input] |
            
            **Your choice**: _[Wait for user response]_
            ```

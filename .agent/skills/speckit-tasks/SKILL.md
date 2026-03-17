@@ -129,6 +129,8 @@ The tasks.md should be immediately executable - each task must be specific enoug
 
 ## Task Generation Rules
 
+**Supreme Architectural Priority**: All tasks MUST be designed to strictly follow **Clean Architecture > Clean Code > SOLID**. Task descriptions MUST specify the appropriate layer and respect interface boundaries.
+
 **CRITICAL**: Tasks MUST be organized by user story to enable independent implementation and testing.
 
 **Tests are OPTIONAL**: Only generate test tasks if explicitly requested in the feature specification or if user requests TDD approach.

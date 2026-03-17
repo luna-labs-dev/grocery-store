@@ -1,5 +1,4 @@
 ---
-trigger: always_on
 description: Execute the implementation plan by processing and executing all tasks defined in tasks.md
 ---
 
@@ -58,11 +57,11 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Create a status table:
 
      ```text
-     | Checklist   | Total | Completed | Incomplete | Status |
-     | ----------- | ----- | --------- | ---------- | ------ |
-     | ux.md       | 12    | 12        | 0          | ✓ PASS |
-     | test.md     | 8     | 5         | 3          | ✗ FAIL |
-     | security.md | 6     | 6         | 0          | ✓ PASS |
+     | Checklist | Total | Completed | Incomplete | Status |
+     |-----------|-------|-----------|------------|--------|
+     | ux.md     | 12    | 12        | 0          | ✓ PASS |
+     | test.md   | 8     | 5         | 3          | ✗ FAIL |
+     | security.md | 6   | 6         | 0          | ✓ PASS |
      ```
 
    - Calculate overall status:

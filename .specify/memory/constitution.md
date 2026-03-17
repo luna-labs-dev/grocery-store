@@ -13,7 +13,13 @@
 
 ## Core Principles
 
-### I. Clean Architecture & Separation of Concerns
+### I. Supreme Architectural Priority: Clean Architecture > Clean Code > SOLID
+This is the most important rule in the codebase and is **mandatory** for every implementation.
+1. **Clean Architecture**: maintain strict boundaries between Domain, Application, Infrastructure, API, and Main layers. Domain logic must be pure.
+2. **Clean Code**: prioritize readability, simplicity, and maintainability.
+3. **SOLID**: strictly adhere to Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion.
+
+### II. Separation of Concerns
 Maintain strict boundaries between Domain, Application, Infrastructure, API, and Main layers. Domain logic must be pure and free of external dependencies. Repositories must handle the persistence of entire Aggregate Roots atomically.
 
 ### II. "Golden Product" Hierarchy

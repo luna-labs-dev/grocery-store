@@ -87,5 +87,6 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Key rules
 
+- **Supreme Architectural Priority**: All designs MUST strictly follow **Clean Architecture > Clean Code > SOLID**. Violation of this priority is a hard gate failure.
 - Use absolute paths
 - ERROR on gate failures or unresolved clarifications
