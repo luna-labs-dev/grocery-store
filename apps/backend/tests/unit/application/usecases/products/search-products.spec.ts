@@ -1,11 +1,8 @@
 import 'reflect-metadata';
 import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import type { ExternalProductClient } from '@/application/contracts';
-import type {
-  AddCanonicalProductRepository,
-  AddProductIdentityRepository,
-  GetProductIdentityByValueRepository,
-} from '@/application/contracts/repositories/product-hierarchy';
+import type { AddCanonicalProductRepository } from '@/application/contracts/repositories/product-hierarchy';
+import type { ProductIdentityRepository } from '@/application/contracts/repositories/product-identity-repository';
 import { SearchProductsService } from '@/application/usecases/products/search-products-service';
 
 describe('SearchProducts UseCase', () => {
@@ -13,9 +10,7 @@ describe('SearchProducts UseCase', () => {
   const mockIdentityRepo = {
     getByValue: vi.fn(),
     add: vi.fn(),
-  } as unknown as Mocked<
-    GetProductIdentityByValueRepository & AddProductIdentityRepository
-  >;
+  } as unknown as Mocked<ProductIdentityRepository>;
   const mockCanonicalRepo = {
     add: vi.fn(),
   } as unknown as Mocked<AddCanonicalProductRepository>;
