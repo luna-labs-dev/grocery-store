@@ -1,0 +1,1 @@
+ALTER TABLE "product_identity" ADD COLUMN "source" varchar(50) DEFAULT 'LOCAL' NOT NULL;
