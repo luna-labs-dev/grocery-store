@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 import axios from 'axios';
 import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
-import type { Buidler } from '@/infrastructure/services/resilience/buidler';
-import { UpcItemDbClient } from '@/infrastructure/services/upcitemdb-client';
+import type { ResilienceService } from '@/infrastructure/services/resilience/resilience-service';
+import { UpcItemDbService } from '@/infrastructure/services/upcitemdb-service';
 
 vi.mock('axios', () => {
   const mockAxios = {
@@ -25,17 +25,17 @@ vi.mock('axios-retry', () => ({
   default: vi.fn(),
 }));
 
-describe('UpcItemDbClient', () => {
-  let client: UpcItemDbClient;
+describe('UpcItemDbService', () => {
+  let client: UpcItemDbService;
   const mockBuilder = {
     createCircuitBreaker: vi.fn().mockReturnValue({
       execute: vi.fn((cb) => cb()),
     }),
-  } as unknown as Mocked<Buidler>;
+  } as unknown as Mocked<ResilienceService>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    client = new UpcItemDbClient(mockBuilder as unknown as never);
+    client = new UpcItemDbService(mockBuilder as unknown as never);
   });
 
   it('should fetch product data by barcode successfully', async () => {

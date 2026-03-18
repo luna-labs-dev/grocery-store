@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 import axios from 'axios';
 import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
-import { OpenFoodFactsClient } from '@/infrastructure/services/open-food-facts-client';
-import type { Buidler } from '@/infrastructure/services/resilience/buidler';
+import { OpenFoodFactsService } from '@/infrastructure/services/open-food-facts-service';
+import type { ResilienceService } from '@/infrastructure/services/resilience/resilience-service';
 
 vi.mock('axios', () => {
   const mockAxios = {
@@ -25,17 +25,17 @@ vi.mock('axios-retry', () => ({
   default: vi.fn(),
 }));
 
-describe('OpenFoodFactsClient', () => {
-  let client: OpenFoodFactsClient;
+describe('OpenFoodFactsService', () => {
+  let client: OpenFoodFactsService;
   const mockBuilder = {
     createCircuitBreaker: vi.fn().mockReturnValue({
       execute: vi.fn((cb) => cb()),
     }),
-  } as unknown as Mocked<Buidler>;
+  } as unknown as Mocked<ResilienceService>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    client = new OpenFoodFactsClient(mockBuilder as unknown as never);
+    client = new OpenFoodFactsService(mockBuilder as unknown as never);
   });
 
   it('should fetch product data by barcode successfully', async () => {

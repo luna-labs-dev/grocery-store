@@ -4,13 +4,13 @@ import type {
   GroupRepositories,
   UserRepositories,
 } from '@/application/contracts';
-import { GroupService } from '@/application/usecases/group-service';
+import { DbGroupManager } from '@/application/usecases/db-group-manager';
 import { RequesterContext } from '@/domain/core/requester-context';
 import { CollaborationGroup, GroupMember, User } from '@/domain/entities';
 import { UserNotInGroupException } from '@/domain/exceptions';
 
-describe('GroupService - Magic Link', () => {
-  let sut: GroupService;
+describe('DbGroupManager - Magic Link', () => {
+  let sut: DbGroupManager;
   let userRepository: Mocked<UserRepositories>;
   let groupRepository: Mocked<GroupRepositories>;
 
@@ -28,7 +28,7 @@ describe('GroupService - Magic Link', () => {
       updateInviteCode: vi.fn(),
     } as unknown as Mocked<GroupRepositories>;
 
-    sut = new GroupService(userRepository, groupRepository);
+    sut = new DbGroupManager(userRepository, groupRepository);
   });
 
   const createMockUser = (

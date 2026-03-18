@@ -3,7 +3,7 @@ import type { FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
 import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import type { GroupRepositories } from '@/application/contracts/repositories/group';
-import { UserService } from '@/application/usecases/user-service';
+import { DbUserManager } from '@/application/usecases/db-user-manager';
 import { type CollaborationGroup, GroupMember, User } from '@/domain/entities';
 import {
   UnauthorizedException,
@@ -12,23 +12,23 @@ import {
 import { injection } from '@/main/di/injection-tokens';
 import { groupBarrierMiddleware } from '@/main/fastify/middlewares/group-barrier-middleware';
 
-vi.mock('@/application/usecases/user-service');
+vi.mock('@/application/usecases/db-user-manager');
 
 const { usecases, infra } = injection;
 
 describe('groupBarrierMiddleware', () => {
-  let userService: Mocked<UserService>;
+  let userManager: Mocked<DbUserManager>;
   let groupRepository: Mocked<GroupRepositories>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    userService = vi.mocked(new UserService(null as unknown as never));
+    userManager = vi.mocked(new DbUserManager(null as unknown as never));
     groupRepository = {
       getById: vi.fn(),
     } as unknown as Mocked<GroupRepositories>;
 
     vi.spyOn(container, 'resolve').mockImplementation((token: unknown) => {
-      if (token === usecases.userService) return userService;
+      if (token === usecases.userManager) return userManager;
       if (token === infra.groupRepositories) return groupRepository;
       return null;
     });
@@ -82,7 +82,7 @@ describe('groupBarrierMiddleware', () => {
       'user-1',
     );
 
-    userService.getUser.mockResolvedValue(userWithNoGroups);
+    userManager.getUser.mockResolvedValue(userWithNoGroups);
 
     const request = { auth: { user: mockUser } } as unknown as FastifyRequest;
     await expect(groupBarrierMiddleware(request)).rejects.toThrow(
@@ -91,7 +91,7 @@ describe('groupBarrierMiddleware', () => {
   });
 
   it('should set the first group as active by default', async () => {
-    userService.getUser.mockResolvedValue(mockDbUser);
+    userManager.getUser.mockResolvedValue(mockDbUser);
     groupRepository.getById.mockResolvedValue({
       id: 'group-1',
     } as unknown as CollaborationGroup);
@@ -107,7 +107,7 @@ describe('groupBarrierMiddleware', () => {
   });
 
   it('should set the group from x-group-id header if valid', async () => {
-    userService.getUser.mockResolvedValue(mockDbUser);
+    userManager.getUser.mockResolvedValue(mockDbUser);
     groupRepository.getById.mockResolvedValue({
       id: 'group-2',
     } as unknown as CollaborationGroup);
@@ -123,7 +123,7 @@ describe('groupBarrierMiddleware', () => {
   });
 
   it('should fallback to first group if x-group-id is invalid for the user', async () => {
-    userService.getUser.mockResolvedValue(mockDbUser);
+    userManager.getUser.mockResolvedValue(mockDbUser);
     groupRepository.getById.mockResolvedValue({
       id: 'group-1',
     } as unknown as CollaborationGroup);

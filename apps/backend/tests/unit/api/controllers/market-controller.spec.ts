@@ -3,22 +3,22 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
 import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import { MarketController } from '@/api/controllers/market-controller';
-import { MarketService } from '@/application/usecases/market-service';
+import { DbMarketManager } from '@/application/usecases/db-market-manager';
 
-vi.mock('@/application/usecases/market-service');
+vi.mock('@/application/usecases/db-market-manager');
 
 describe('MarketController Integration', () => {
   let marketController: MarketController;
-  let marketService: Mocked<MarketService>;
+  let marketManager: Mocked<DbMarketManager>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    marketService = new MarketService(
+    marketManager = new DbMarketManager(
       null as unknown as never,
       null as unknown as never,
-    ) as Mocked<MarketService>;
-    container.registerInstance('MarketService', marketService);
-    marketController = new MarketController(marketService);
+    ) as Mocked<DbMarketManager>;
+    container.registerInstance('DbMarketManager', marketManager);
+    marketController = new MarketController(marketManager);
   });
 
   const mockMarket = {
@@ -36,7 +36,7 @@ describe('MarketController Integration', () => {
 
   describe('listMarkets', () => {
     it('should return market list from service', async () => {
-      marketService.getMarketList.mockResolvedValue({
+      marketManager.getMarketList.mockResolvedValue({
         total: 1,
         markets: [mockMarket as unknown as never],
       });
@@ -82,7 +82,7 @@ describe('MarketController Integration', () => {
 
   describe('getMarketById', () => {
     it('should return single market', async () => {
-      marketService.getMarketById.mockResolvedValue(
+      marketManager.getMarketById.mockResolvedValue(
         mockMarket as unknown as never,
       );
 

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { UserService } from '@/application/usecases/user-service';
+import { DbUserManager } from '@/application/usecases/db-user-manager';
 
 function makeUserRepository(
   overrides: Partial<{ getById: ReturnType<typeof vi.fn> }> = {},
@@ -11,14 +11,14 @@ function makeUserRepository(
   };
 }
 
-describe('UserService', () => {
+describe('DbUserManager', () => {
   let userRepository: ReturnType<typeof makeUserRepository>;
-  let userService: UserService;
+  let userManager: DbUserManager;
 
   beforeEach(() => {
     userRepository = makeUserRepository();
     // Bypass tsyringe injection for unit tests
-    userService = new UserService(userRepository as never);
+    userManager = new DbUserManager(userRepository as never);
   });
 
   afterEach(() => {
@@ -30,7 +30,7 @@ describe('UserService', () => {
       const dbUser = { id: 'user-789', name: 'Alice', familyId: 'fam-1' };
       userRepository.getById.mockResolvedValueOnce(dbUser);
 
-      const result = await userService.getUser({ externalId: 'user-789' });
+      const result = await userManager.getUser({ externalId: 'user-789' });
 
       expect(result).toStrictEqual(dbUser);
       expect(userRepository.getById).toHaveBeenCalledWith('user-789');
@@ -40,7 +40,7 @@ describe('UserService', () => {
       userRepository.getById.mockResolvedValueOnce(null);
 
       await expect(
-        userService.getUser({ externalId: 'ghost-user' }),
+        userManager.getUser({ externalId: 'ghost-user' }),
       ).rejects.toThrow('User with externalId ghost-user not found');
     });
   });

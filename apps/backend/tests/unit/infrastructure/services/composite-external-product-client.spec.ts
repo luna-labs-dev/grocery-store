@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import 'reflect-metadata';
 import type { ExternalProductClient } from '@/application/contracts/external-product-client';
-import { CompositeExternalProductClient } from '@/infrastructure/services/composite-external-product-client';
+import { CompositeExternalProductService } from '@/infrastructure/services/composite-external-product-service';
 
-describe('CompositeExternalProductClient', () => {
+describe('CompositeExternalProductService', () => {
   let offClient: Mocked<ExternalProductClient>;
   let upcClient: Mocked<ExternalProductClient>;
-  let compositeClient: CompositeExternalProductClient;
+  let compositeService: CompositeExternalProductService;
 
   beforeEach(() => {
     offClient = {
@@ -15,7 +15,10 @@ describe('CompositeExternalProductClient', () => {
     upcClient = {
       fetchByBarcode: vi.fn(),
     } as unknown as Mocked<ExternalProductClient>;
-    compositeClient = new CompositeExternalProductClient(offClient, upcClient);
+    compositeService = new CompositeExternalProductService(
+      offClient,
+      upcClient,
+    );
   });
 
   it('should return result from primary client (OFF) if found', async () => {
@@ -28,7 +31,7 @@ describe('CompositeExternalProductClient', () => {
     });
     vi.mocked(upcClient.fetchByBarcode).mockResolvedValue(undefined);
 
-    const result = await compositeClient.fetchByBarcode('123');
+    const result = await compositeService.fetchByBarcode('123');
 
     expect(result).toEqual(
       expect.objectContaining({
@@ -50,7 +53,7 @@ describe('CompositeExternalProductClient', () => {
       source: 'UPCITEMDB',
     });
 
-    const result = await compositeClient.fetchByBarcode('123');
+    const result = await compositeService.fetchByBarcode('123');
 
     expect(result).toEqual(
       expect.objectContaining({ name: 'Fallback Product' }),
@@ -63,7 +66,7 @@ describe('CompositeExternalProductClient', () => {
     vi.mocked(offClient.fetchByBarcode).mockResolvedValue(undefined);
     vi.mocked(upcClient.fetchByBarcode).mockResolvedValue(undefined);
 
-    const result = await compositeClient.fetchByBarcode('123');
+    const result = await compositeService.fetchByBarcode('123');
 
     expect(result).toBeUndefined();
   });

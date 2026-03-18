@@ -3,7 +3,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
 import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import { GroupController } from '@/api/controllers/group-controller';
-import { GroupService } from '@/application/usecases/group-service';
+import { DbGroupManager } from '@/application/usecases/db-group-manager';
 import { CollaborationGroup } from '@/domain/entities';
 import { LastOwnerCannotLeaveException } from '@/domain/exceptions';
 
@@ -24,20 +24,20 @@ vi.mock('@/api/helpers', async (importOriginal) => {
   };
 });
 
-vi.mock('@/application/usecases/group-service');
+vi.mock('@/application/usecases/db-group-manager');
 
 describe('GroupController Integration', () => {
   let groupController: GroupController;
-  let groupService: Mocked<GroupService>;
+  let groupManager: Mocked<DbGroupManager>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    groupService = new GroupService(
+    groupManager = new DbGroupManager(
       null as unknown as never,
       null as unknown as never,
-    ) as Mocked<GroupService>;
-    container.registerInstance('GroupService', groupService);
-    groupController = new GroupController(groupService);
+    ) as Mocked<DbGroupManager>;
+    container.registerInstance('DbGroupManager', groupManager);
+    groupController = new GroupController(groupManager);
   });
 
   const mockUser = { id: 'user-1' };
@@ -52,7 +52,7 @@ describe('GroupController Integration', () => {
 
   describe('getGroups', () => {
     it('should return all groups for the user', async () => {
-      groupService.getGroups.mockResolvedValue([mockGroup]);
+      groupManager.getGroups.mockResolvedValue([mockGroup]);
 
       const request = {
         auth: { user: mockUser },
@@ -93,7 +93,7 @@ describe('GroupController Integration', () => {
 
   describe('createGroup', () => {
     it('should create a group and return it', async () => {
-      groupService.createGroup.mockResolvedValue(mockGroup);
+      groupManager.createGroup.mockResolvedValue(mockGroup);
 
       const request = {
         auth: { user: mockUser },
@@ -124,7 +124,7 @@ describe('GroupController Integration', () => {
 
       await capturedHandler(request, reply);
 
-      expect(groupService.createGroup).toHaveBeenCalledWith({
+      expect(groupManager.createGroup).toHaveBeenCalledWith({
         userId: 'user-1',
         name: 'New Group',
         description: undefined,
@@ -135,7 +135,7 @@ describe('GroupController Integration', () => {
 
   describe('leaveGroup', () => {
     it('should throw error if service fails', async () => {
-      groupService.leaveGroup.mockRejectedValue(
+      groupManager.leaveGroup.mockRejectedValue(
         new LastOwnerCannotLeaveException(),
       );
 
@@ -207,7 +207,7 @@ describe('GroupController Integration', () => {
 
       await capturedHandler(request, reply);
 
-      expect(groupService.updateMemberRole).toHaveBeenCalledWith(
+      expect(groupManager.updateMemberRole).toHaveBeenCalledWith(
         request.requesterContext,
         {
           targetUserId: 'user-2',

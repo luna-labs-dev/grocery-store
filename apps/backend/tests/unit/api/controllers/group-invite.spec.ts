@@ -3,33 +3,32 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
 import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import { GroupController } from '@/api/controllers/group-controller';
-import { GroupService } from '@/application/usecases/group-service';
+import { DbGroupManager } from '@/application/usecases/db-group-manager';
 import { HttpStatusCode } from '@/domain/core/enums';
 import {
   UnexpectedException,
   UserNotInGroupException,
 } from '@/domain/exceptions';
 
-vi.mock('@/application/usecases/group-service');
+vi.mock('@/application/usecases/db-group-manager');
 
 describe('GroupController - Invite Link Integration', () => {
   let groupController: GroupController;
-  let groupService: Mocked<GroupService>;
+  let groupManager: Mocked<DbGroupManager>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    groupService = new GroupService(
+    groupManager = new DbGroupManager(
       null as unknown as never,
       null as unknown as never,
-    ) as Mocked<GroupService>;
-
-    container.registerInstance('GroupService', groupService);
-    groupController = new GroupController(groupService);
+    ) as Mocked<DbGroupManager>;
+    container.registerInstance('DbGroupManager', groupManager);
+    groupController = new GroupController(groupManager);
   });
 
   describe('GET /:groupId/invite', () => {
     it('should return 200 with invite info', async () => {
-      groupService.getInviteInfo.mockResolvedValue({
+      groupManager.getInviteInfo.mockResolvedValue({
         inviteCode: 'ABC-123',
         joinUrl: 'https://app.grocery.app/join?code=ABC-123',
       });
@@ -71,7 +70,7 @@ describe('GroupController - Invite Link Integration', () => {
     });
 
     it('should return 403 when user is not in group', async () => {
-      groupService.getInviteInfo.mockRejectedValue(
+      groupManager.getInviteInfo.mockRejectedValue(
         new UserNotInGroupException(),
       );
 
@@ -106,7 +105,7 @@ describe('GroupController - Invite Link Integration', () => {
     });
 
     it('should return 500 on unexpected error', async () => {
-      groupService.getInviteInfo.mockRejectedValue(new UnexpectedException());
+      groupManager.getInviteInfo.mockRejectedValue(new UnexpectedException());
 
       const request = {
         auth: { user: { id: 'user-1' } },

@@ -4,7 +4,7 @@ import type {
   GroupRepositories,
   UserRepositories,
 } from '@/application/contracts';
-import { GroupService } from '@/application/usecases/group-service';
+import { DbGroupManager } from '@/application/usecases/db-group-manager';
 import { RequesterContext } from '@/domain/core/requester-context';
 import { CollaborationGroup, GroupMember, User } from '@/domain/entities';
 import {
@@ -12,8 +12,8 @@ import {
   UserNotInGroupException,
 } from '@/domain/exceptions';
 
-describe('GroupService', () => {
-  let sut: GroupService;
+describe('DbGroupManager', () => {
+  let sut: DbGroupManager;
   let userRepository: Mocked<UserRepositories>;
   let groupRepository: Mocked<GroupRepositories>;
 
@@ -34,7 +34,7 @@ describe('GroupService', () => {
       update: vi.fn(),
     } as unknown as Mocked<GroupRepositories>;
 
-    sut = new GroupService(userRepository, groupRepository);
+    sut = new DbGroupManager(userRepository, groupRepository);
   });
 
   const createMockUser = (

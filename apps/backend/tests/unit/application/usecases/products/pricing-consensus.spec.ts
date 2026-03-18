@@ -1,11 +1,11 @@
 import 'reflect-metadata';
 import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import type { PriceReportRepository } from '@/application/contracts/repositories/product-hierarchy/price-report-repository';
-import { PricingConsensusService } from '@/application/usecases/products/pricing-consensus-service';
+import { DbPriceConsensusEngine } from '@/application/usecases/products/db-price-consensus-engine';
 import { PriceReport } from '@/domain';
 
-describe('PricingConsensus UseCase', () => {
-  let service: PricingConsensusService;
+describe('DbPriceConsensusEngine', () => {
+  let engine: DbPriceConsensusEngine;
   const mockRepo = {
     add: vi.fn(),
     getByProductIdentity: vi.fn(),
@@ -14,7 +14,7 @@ describe('PricingConsensus UseCase', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    service = new PricingConsensusService(mockRepo);
+    engine = new DbPriceConsensusEngine(mockRepo);
   });
 
   const baseParams = {
@@ -37,7 +37,7 @@ describe('PricingConsensus UseCase', () => {
     );
     mockRepo.getByProductIdentity.mockResolvedValue(reports);
 
-    await service.processPriceReport(baseParams);
+    await engine.processPriceReport(baseParams);
 
     expect(mockRepo.add).toHaveBeenCalled();
     expect(mockRepo.getByProductIdentity).toHaveBeenCalledWith('p1');
@@ -46,7 +46,7 @@ describe('PricingConsensus UseCase', () => {
   it('should flag reports as outliers if >30% different from regional average', async () => {
     mockRepo.getRegionalAverage.mockResolvedValue(10.0); // Avg is 10
 
-    await service.processPriceReport({ ...baseParams, price: 15.0 }); // 50% diff
+    await engine.processPriceReport({ ...baseParams, price: 15.0 }); // 50% diff
 
     expect(mockRepo.add).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -70,9 +70,9 @@ describe('PricingConsensus UseCase', () => {
     mockRepo.getByProductIdentity.mockResolvedValue(reports);
     mockRepo.getRegionalAverage.mockResolvedValue(10.0);
 
-    await service.processPriceReport(baseParams);
+    await engine.processPriceReport(baseParams);
 
-    // Filter logic checked in service, we verify it doesn't error
+    // Filter logic checked in engine, we verify it doesn't error
     expect(mockRepo.add).toHaveBeenCalled();
   });
 });
