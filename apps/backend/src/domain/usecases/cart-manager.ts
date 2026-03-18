@@ -1,5 +1,6 @@
 import type { Product } from '@/domain';
 import type { RequesterContext } from '@/domain/core/requester-context';
+import type { ProductIdentity } from '@/domain/entities/product-identity';
 
 export interface AddProductToCartParams {
   shoppingEventId: string;
@@ -12,17 +13,34 @@ export interface AddProductToCartParams {
   wholesalePrice?: number;
 }
 
-export interface ManualSearchRequest {
-  query: string;
+export interface ManualSearchResponse {
+  items: ProductIdentity[];
+  total: number;
 }
 
-export interface ManualSearchResponse {
-  items: {
-    id: string;
+export type ScanMatchType =
+  | 'LOCAL'
+  | 'EXTERNAL'
+  | 'VARIABLE_WEIGHT'
+  | 'NOT_FOUND';
+
+export interface ScanProductResult {
+  barcode: string;
+  matchType: ScanMatchType;
+  product?: {
+    id?: string;
     name: string;
     brand?: string;
     imageUrl?: string;
-  }[];
+    canonicalProductId?: string;
+  };
+  variableWeight?: {
+    productCode: string;
+    weight?: number;
+    price?: number;
+  };
+  requiresPriceConfirmation: boolean;
+  source: 'local' | 'external' | 'variable-weight' | 'none';
 }
 
 export interface RemoveProductFromCartParams {
@@ -44,24 +62,13 @@ export interface ScanProductRequest {
   barcode: string;
 }
 
-export interface ScanProductResponse {
-  barcode: string;
-  matchType: 'LOCAL' | 'EXTERNAL' | 'VARIABLE_WEIGHT' | 'NOT_FOUND';
-  product?: {
-    id: string;
-    name: string;
-    brand?: string;
-    imageUrl?: string;
-    canonicalProductId: string;
-  };
-  variableWeight?: {
-    productCode: string;
-    weight: number;
-    price: number;
-  };
+export interface ManualSearchRequest {
+  query: string;
+  pageIndex?: number;
+  pageSize?: number;
 }
 
-export interface ICartService {
+export interface ICartManager {
   addProductToCart(
     ctx: RequesterContext,
     params: AddProductToCartParams,
@@ -78,5 +85,5 @@ export interface ICartService {
     ctx: RequesterContext,
     params: ManualSearchRequest,
   ): Promise<ManualSearchResponse>;
-  scanProduct(params: ScanProductRequest): Promise<ScanProductResponse>;
+  scanProduct(params: ScanProductRequest): Promise<ScanProductResult>;
 }

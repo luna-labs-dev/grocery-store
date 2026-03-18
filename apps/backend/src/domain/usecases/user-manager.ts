@@ -8,6 +8,6 @@ export interface GetUserParams {
   externalId: string;
 }
 
-export interface IUserService {
+export interface IUserManager {
   getUser(params: GetUserParams): Promise<User>;
 }

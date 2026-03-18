@@ -22,7 +22,7 @@ export interface GetMarketListResult {
   markets: Market[];
 }
 
-export interface IMarketService {
+export interface IMarketManager {
   getMarketById(params: GetMarketByIdParams): Promise<Market>;
   getMarketList(params: GetMarketListParams): Promise<GetMarketListResult>;
 }

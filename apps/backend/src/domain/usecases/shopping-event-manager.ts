@@ -30,7 +30,7 @@ export interface GetShoppingEventByIdParams {
   shoppingEventId: string;
 }
 
-export interface IShoppingEventService {
+export interface IShoppingEventManager {
   startShoppingEvent(
     ctx: RequesterContext,
     params: StartShoppingEventParams,
