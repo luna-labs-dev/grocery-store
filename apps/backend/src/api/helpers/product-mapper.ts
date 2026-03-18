@@ -4,13 +4,17 @@ import type {
   productItemSchema,
   scanProductResponseSchema,
 } from '@/api/helpers/product-schemas';
+import type {
+  ManualSearchResponse as DomainSearchResponse,
+  ScanProductResult,
+} from '@/domain/usecases/cart-manager';
 
 export type ProductItemResponse = z.infer<typeof productItemSchema>;
 export type ScanProductResponse = z.infer<typeof scanProductResponseSchema>;
 export type ManualSearchResponse = z.infer<typeof manualSearchResponseSchema>;
 
 export const productMapper = {
-  toScanResponse: (data: ScanProductResponse): ScanProductResponse => ({
+  toScanResponse: (data: ScanProductResult): ScanProductResponse => ({
     barcode: data.barcode,
     matchType: data.matchType,
 
@@ -20,36 +24,28 @@ export const productMapper = {
           name: data.product.name,
           brand: data.product.brand ?? null,
           imageUrl: data.product.imageUrl ?? null,
+          canonicalProductId: data.product.canonicalProductId,
         }
       : undefined,
 
     variableWeight: data.variableWeight
       ? {
-          productCode: 'TODO', // We need to decide where to get this if not in result
+          productCode: data.variableWeight.productCode,
           weight: data.variableWeight.weight,
           price: data.variableWeight.price,
         }
       : undefined,
   }),
 
-  toSearchResponse: (data: {
-    products: {
-      id: string;
-      name: string;
-      brand?: string;
-      imageUrl?: string;
-    }[];
-    total: number;
-    nextPageIndex?: number;
-  }): ManualSearchResponse => ({
-    items: data.products.map((p) => ({
+  toSearchResponse: (data: DomainSearchResponse): ManualSearchResponse => ({
+    items: data.items.map((p) => ({
       id: p.id,
-      name: p.name,
+      name: p.name ?? 'Unknown',
       brand: p.brand ?? null,
       imageUrl: p.imageUrl ?? null,
-      canonicalProductId: p.id, // Assuming ID is canonical or placeholder
+      canonicalProductId: p.canonicalProductId,
     })),
     total: data.total,
-    nextPageIndex: data.nextPageIndex,
+    // Note: total is currently result.items.length in controller, we should probably have a real total
   }),
 };

@@ -1,6 +1,7 @@
 import './config/otel';
 import 'reflect-metadata';
 import { writeFileSync } from 'node:fs';
+import { container } from 'tsyringe';
 import { v4 as uuid } from 'uuid';
 import { env } from './config/env';
 import { registerInjections } from './di/injections';
@@ -28,7 +29,7 @@ app
 
     // Start background worker for outbox
     const { OutboxWorker } = await import('./workers/outbox-worker');
-    const worker = new OutboxWorker(5000);
+    const worker = container.resolve(OutboxWorker);
     worker.start();
 
     // Graceful shutdown

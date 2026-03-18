@@ -1,5 +1,6 @@
 export interface ParsedVariableWeight {
   barcode: string;
+  productCode: string;
   totalPrice?: number;
   weightInGrams?: number;
   eanPart: string;
@@ -23,12 +24,14 @@ export const VariableWeightParser = {
       return null;
     }
 
+    const productCode = barcode.substring(1, 6);
     const eanPart = barcode.substring(1, 6);
     const valueStr = barcode.substring(6, 11);
     const valuePart = Number.parseInt(valueStr, 10);
 
     return {
       barcode,
+      productCode,
       totalPrice: valuePart / 100,
       eanPart,
     };

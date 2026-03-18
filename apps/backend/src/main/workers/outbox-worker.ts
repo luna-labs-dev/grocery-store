@@ -1,11 +1,19 @@
-import { container } from 'tsyringe';
-import { HydrateProductJob } from '@/application/usecases/products/hydrate-product-job';
+import { inject, singleton } from 'tsyringe';
+import type { IHydrateProductJob } from '@/domain/usecases/product-hydrator';
+import { injection } from '@/main/di/injection-tokens';
 
+const { usecases } = injection;
+
+@singleton()
 export class OutboxWorker {
   private timer: NodeJS.Timeout | null = null;
   private isRunning = false;
 
-  constructor(private readonly intervalMs: number = 5000) {}
+  constructor(
+    @inject(usecases.productHydratorJob)
+    private readonly productHydrator: IHydrateProductJob,
+    private readonly intervalMs: number = 5000,
+  ) {}
 
   public start(): void {
     if (this.timer) {
@@ -31,10 +39,7 @@ export class OutboxWorker {
 
     this.isRunning = true;
     try {
-      // Resolve job from DI container to ensure fresh dependencies if needed
-      // Actually TSyringe resolves it correctly depending on scope.
-      const hydrateJob = container.resolve(HydrateProductJob);
-      await hydrateJob.execute();
+      await this.productHydrator.execute();
     } catch (error) {
       console.error('[OutboxWorker] Error during tick:', error);
     } finally {
