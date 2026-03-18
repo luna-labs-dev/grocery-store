@@ -12,14 +12,13 @@ import {
   ShoppingEventController,
 } from '@/api/controllers';
 import {
-  CartService,
-  GroupService,
-  HydrateProductUseCase,
-  ManualSearchUseCase,
-  MarketService,
-  ScanProductUseCase,
-  ShoppingEventService,
-  UserService,
+  DbCartManager,
+  DbGroupManager,
+  DbMarketManager,
+  DbShoppingEventManager,
+  DbUserManager,
+  JobProductHydrator,
+  RemoteProductHydrator,
 } from '@/application';
 import type { ExternalProductClient } from '@/application/contracts/external-product-client';
 import type { GroupRepositories } from '@/application/contracts/repositories/group';
@@ -38,22 +37,18 @@ import type { ProductRepositories } from '@/application/contracts/repositories/s
 import type { UserRepositories } from '@/application/contracts/repositories/user';
 import type { IConfigService } from '@/application/contracts/services/config-service';
 import type { Places } from '@/application/contracts/services/places';
-import { HydrateProductJob } from '@/application/usecases/products/hydrate-product-job';
 import type {
-  ICartService,
-  IGroupService,
+  ICartManager,
+  IGroupManager,
   IHydrateProductJob,
-  IHydrateProductUseCase,
-  IManualSearchUseCase,
-  IMarketService,
-  IScanProductUseCase,
-  IShoppingEventService,
-  IUserService,
+  IMarketManager,
+  IProductHydrator,
+  IShoppingEventManager,
+  IUserManager,
 } from '@/domain';
 import type { PermissionService } from '@/domain/core/logic/permissions/permission-service';
 import {
-  Buidler,
-  CompositeExternalProductClient,
+  CompositeExternalProductService,
   ConfigService,
   DrizzleCanonicalProductRepository,
   DrizzleExternalFetchLogRepository,
@@ -67,9 +62,10 @@ import {
   DrizzleUserRepository,
   GooglePlaces,
   GooglePlacesHttpClient,
-  OpenFoodFactsClient,
+  OpenFoodFactsService,
+  ResilienceService,
   SecurityPermissionService,
-  UpcItemDbClient,
+  UpcItemDbService,
 } from '@/infrastructure';
 
 const { infra, usecases, controllers } = injection;
@@ -115,12 +111,12 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
   );
 
   // Services
-  container.register<IHydrateProductJob>(usecases.hydrateProductJob, {
+  container.register<IHydrateProductJob>(usecases.productHydratorJob, {
     useFactory: (c) =>
-      new HydrateProductJob(
+      new JobProductHydrator(
         c.resolve(infra.outboxEventRepositories),
         c.resolve(infra.canonicalProductRepositories),
-        c.resolve(infra.compositeProductClient),
+        c.resolve(infra.compositeProductService),
         c.resolve(infra.productIdentityRepositories),
       ),
   });
@@ -142,39 +138,31 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
     SecurityPermissionService,
   );
   container.register<ExternalProductClient>(
-    infra.openFoodFactsClient,
-    OpenFoodFactsClient,
+    infra.openFoodFactsService,
+    OpenFoodFactsService,
   );
   container.register<ExternalProductClient>(
-    infra.upcItemDbClient,
-    UpcItemDbClient,
+    infra.upcItemDbService,
+    UpcItemDbService,
   );
   container.register<ExternalProductClient>(
-    infra.compositeProductClient,
-    CompositeExternalProductClient,
+    infra.compositeProductService,
+    CompositeExternalProductService,
   );
-  container.register(Buidler, Buidler);
+  container.register(ResilienceService, ResilienceService);
 
   // Usecases
-  container.register<ICartService>(usecases.cartService, CartService);
-  container.register<IGroupService>(usecases.groupService, GroupService);
-  container.register<IMarketService>(usecases.marketService, MarketService);
-  container.register<IShoppingEventService>(
-    usecases.shoppingEventService,
-    ShoppingEventService,
+  container.register<ICartManager>(usecases.cartManager, DbCartManager);
+  container.register<IGroupManager>(usecases.groupManager, DbGroupManager);
+  container.register<IMarketManager>(usecases.marketManager, DbMarketManager);
+  container.register<IShoppingEventManager>(
+    usecases.shoppingEventManager,
+    DbShoppingEventManager,
   );
-  container.register<IUserService>(usecases.userService, UserService);
-  container.register<IHydrateProductUseCase>(
-    usecases.hydrateProductUseCase,
-    HydrateProductUseCase,
-  );
-  container.register<IManualSearchUseCase>(
-    usecases.manualSearchUseCase,
-    ManualSearchUseCase,
-  );
-  container.register<IScanProductUseCase>(
-    usecases.scanProductUseCase,
-    ScanProductUseCase,
+  container.register<IUserManager>(usecases.userManager, DbUserManager);
+  container.register<IProductHydrator>(
+    usecases.productHydrator,
+    RemoteProductHydrator,
   );
 
   // Fastify Instance

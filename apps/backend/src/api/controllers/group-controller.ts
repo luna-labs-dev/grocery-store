@@ -11,8 +11,11 @@ import {
   removeMemberParamsSchema,
   updateMemberRoleRequestSchema,
 } from '../helpers';
-import type { GroupService } from '@/application';
-import { type GroupRole, getPossibleExceptionsSchemas } from '@/domain';
+import {
+  type GroupRole,
+  getPossibleExceptionsSchemas,
+  type IGroupManager,
+} from '@/domain';
 import { HttpStatusCode } from '@/domain/core/enums';
 import {
   InvalidGroupInvitationCodeException,
@@ -33,8 +36,8 @@ const { usecases } = injection;
 @injectable()
 export class GroupController extends FastifyController {
   constructor(
-    @inject(usecases.groupService)
-    private readonly groupService: GroupService,
+    @inject(usecases.groupManager)
+    private readonly groupManager: IGroupManager,
   ) {
     super();
   }
@@ -57,7 +60,7 @@ export class GroupController extends FastifyController {
       },
       async (request, reply) => {
         const { user } = request.auth;
-        const groups = await this.groupService.getGroups(user.id);
+        const groups = await this.groupManager.getGroups(user.id);
         const response = groups.map((g) => groupMapper.toResponse(g));
         reply.status(HttpStatusCode.Ok).send(response);
       },
@@ -82,7 +85,7 @@ export class GroupController extends FastifyController {
         const { name, description } = request.body;
         const { user } = request.auth;
 
-        const group = await this.groupService.createGroup({
+        const group = await this.groupManager.createGroup({
           userId: user.id,
           name,
           description,
@@ -117,7 +120,7 @@ export class GroupController extends FastifyController {
         const { inviteCode } = request.body;
         const { user } = request.auth;
 
-        await this.groupService.joinGroup({ userId: user.id, inviteCode });
+        await this.groupManager.joinGroup({ userId: user.id, inviteCode });
         reply.status(HttpStatusCode.NoContent).send();
       },
     );
@@ -146,7 +149,7 @@ export class GroupController extends FastifyController {
       async (request, reply) => {
         const { requesterContext } = request;
 
-        await this.groupService.leaveGroup(requesterContext);
+        await this.groupManager.leaveGroup(requesterContext);
         reply.status(HttpStatusCode.NoContent).send();
       },
     );
@@ -176,7 +179,7 @@ export class GroupController extends FastifyController {
         const { memberId } = request.params;
         const { requesterContext } = request;
 
-        await this.groupService.removeMember(requesterContext, {
+        await this.groupManager.removeMember(requesterContext, {
           targetUserId: memberId,
         });
         reply.status(HttpStatusCode.NoContent).send();
@@ -210,7 +213,7 @@ export class GroupController extends FastifyController {
         const { role } = request.body;
         const { requesterContext } = request;
 
-        await this.groupService.updateMemberRole(requesterContext, {
+        await this.groupManager.updateMemberRole(requesterContext, {
           targetUserId: memberId,
           role: role as GroupRole,
         });
@@ -238,7 +241,7 @@ export class GroupController extends FastifyController {
         const { requesterContext } = request;
 
         const inviteInfo =
-          await this.groupService.getInviteInfo(requesterContext);
+          await this.groupManager.getInviteInfo(requesterContext);
 
         const response = groupMapper.toInviteResponse(inviteInfo);
         reply.status(HttpStatusCode.Ok).send(response);
@@ -268,7 +271,7 @@ export class GroupController extends FastifyController {
         const { requesterContext } = request;
 
         const inviteInfo =
-          await this.groupService.regenerateInviteCode(requesterContext);
+          await this.groupManager.regenerateInviteCode(requesterContext);
 
         const response = groupMapper.toInviteResponse(inviteInfo);
         reply.status(HttpStatusCode.Ok).send(response);
@@ -299,7 +302,7 @@ export class GroupController extends FastifyController {
         const { name, description } = request.body;
         const { requesterContext } = request;
 
-        const group = await this.groupService.updateGroup(requesterContext, {
+        const group = await this.groupManager.updateGroup(requesterContext, {
           name: name ?? requesterContext.group.name,
           description: description ?? requesterContext.group.description,
         });
@@ -333,7 +336,7 @@ export class GroupController extends FastifyController {
       async (request, reply) => {
         const { requesterContext } = request;
 
-        await this.groupService.deleteGroup(requesterContext);
+        await this.groupManager.deleteGroup(requesterContext);
         reply.status(HttpStatusCode.NoContent).send();
       },
     );

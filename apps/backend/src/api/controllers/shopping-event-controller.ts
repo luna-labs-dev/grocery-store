@@ -12,7 +12,7 @@ import {
 } from '../helpers';
 import {
   getPossibleExceptionsSchemas,
-  type IShoppingEventService,
+  type IShoppingEventManager,
 } from '@/domain';
 import {
   MarketNotFoundException,
@@ -32,8 +32,8 @@ const { usecases } = injection;
 @injectable()
 export class ShoppingEventController extends FastifyController {
   constructor(
-    @inject(usecases.shoppingEventService)
-    private readonly shoppingEventService: IShoppingEventService,
+    @inject(usecases.shoppingEventManager)
+    private readonly shoppingEventManager: IShoppingEventManager,
   ) {
     super();
   }
@@ -61,7 +61,7 @@ export class ShoppingEventController extends FastifyController {
         const { requesterContext } = request;
         const { marketId } = request.body;
         const shoppingEvent =
-          await this.shoppingEventService.startShoppingEvent(requesterContext, {
+          await this.shoppingEventManager.startShoppingEvent(requesterContext, {
             marketId,
           });
 
@@ -101,7 +101,7 @@ export class ShoppingEventController extends FastifyController {
         const { totalPaid } = request.body;
         const { requesterContext } = request;
 
-        const shoppingEvent = await this.shoppingEventService.endShoppingEvent(
+        const shoppingEvent = await this.shoppingEventManager.endShoppingEvent(
           requesterContext,
           {
             shoppingEventId,
@@ -138,7 +138,7 @@ export class ShoppingEventController extends FastifyController {
           request.query;
 
         const shoppingEvents =
-          await this.shoppingEventService.getShoppingEventList(
+          await this.shoppingEventManager.getShoppingEventList(
             requesterContext,
             {
               status,
@@ -196,7 +196,7 @@ export class ShoppingEventController extends FastifyController {
         const { requesterContext } = request;
 
         const shoppingEvent =
-          await this.shoppingEventService.getShoppingEventById(
+          await this.shoppingEventManager.getShoppingEventById(
             requesterContext,
             {
               shoppingEventId,

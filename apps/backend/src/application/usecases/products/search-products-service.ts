@@ -14,8 +14,8 @@ export class SearchProductsService {
     private readonly productIdentityRepository: ProductIdentityRepository,
     @inject(infra.canonicalProductRepositories)
     private readonly canonicalProductRepository: AddCanonicalProductRepository,
-    @inject(infra.compositeProductClient)
-    private readonly externalProductClient: ExternalProductClient,
+    @inject(infra.compositeProductService)
+    private readonly externalProductService: ExternalProductClient,
   ) {}
 
   async search(barcode: string): Promise<CanonicalProduct | null> {
@@ -31,7 +31,7 @@ export class SearchProductsService {
 
     // 2. Call External API if not found
     try {
-      const result = await this.externalProductClient.fetchByBarcode(barcode);
+      const result = await this.externalProductService.fetchByBarcode(barcode);
       if (result) {
         // 3. Populate local database
         const cp = CanonicalProduct.create({

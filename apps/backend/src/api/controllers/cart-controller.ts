@@ -13,7 +13,7 @@ import {
   scanProductResponseSchema,
   updateProductInCartRequestSchema,
 } from '../helpers';
-import { getPossibleExceptionsSchemas, type ICartService } from '@/domain';
+import { getPossibleExceptionsSchemas, type ICartManager } from '@/domain';
 import {
   ProductNotFoundException,
   ShoppingEventAlreadyEndedException,
@@ -31,8 +31,8 @@ const { usecases } = injection;
 @injectable()
 export class CartController extends FastifyController {
   constructor(
-    @inject(usecases.cartService)
-    private readonly cartService: ICartService,
+    @inject(usecases.cartManager)
+    private readonly cartManager: ICartManager,
   ) {
     super();
   }
@@ -59,7 +59,7 @@ export class CartController extends FastifyController {
       async (request, reply) => {
         const { barcode } = request.params;
 
-        const result = await this.cartService.scanProduct({ barcode });
+        const result = await this.cartManager.scanProduct({ barcode });
         return reply.send(productMapper.toScanResponse(result));
       },
     );
@@ -82,27 +82,16 @@ export class CartController extends FastifyController {
       async (request, reply) => {
         const { searchQuery } = request.query;
 
-        const result = await this.cartService.manualSearch(
+        const result = await this.cartManager.manualSearch(
           request.requesterContext,
           {
             query: searchQuery,
+            pageIndex: 0,
+            pageSize: 10,
           },
         );
-        const hasNextPage = result.items.length === 10;
 
-        return reply.send(
-          productMapper.toSearchResponse({
-            products: result.items.map((item) => ({
-              id: item.id,
-              name: item.name ?? 'Unknown',
-              brand: item.brand,
-              imageUrl: item.imageUrl,
-              canonicalProductId: 0, // TODO: This is not right. This should be the canonical product id.
-            })),
-            total: result.items.length, // TODO: This is not right. This should be the total number of items in the cart, not the number of items returned in the current page.
-            nextPageIndex: hasNextPage ? 1 : undefined,
-          }),
-        );
+        return reply.send(productMapper.toSearchResponse(result));
       },
     );
 
@@ -131,7 +120,7 @@ export class CartController extends FastifyController {
         const { name, amount, price, wholesaleMinAmount, wholesalePrice } =
           request.body;
 
-        const product = await this.cartService.addProductToCart(
+        const product = await this.cartManager.addProductToCart(
           requesterContext,
           {
             shoppingEventId,
@@ -176,7 +165,7 @@ export class CartController extends FastifyController {
         const { name, amount, price, wholesaleMinAmount, wholesalePrice } =
           request.body;
 
-        await this.cartService.updateProductInCart(requesterContext, {
+        await this.cartManager.updateProductInCart(requesterContext, {
           shoppingEventId,
           productId,
           name,
@@ -213,7 +202,7 @@ export class CartController extends FastifyController {
         const { shoppingEventId, productId } = request.params;
         const { requesterContext } = request;
 
-        await this.cartService.removeProductFromCart(requesterContext, {
+        await this.cartManager.removeProductFromCart(requesterContext, {
           shoppingEventId,
           productId,
         });
