@@ -21,10 +21,10 @@
 
 **Purpose**: Aligning project naming with the "Exception" convention (System Architect directive).
 
-- [ ] T001 Rename `apps/backend/src/domain/core/exceptions/base-error.ts` to `base-exception.ts` and update class name to `BaseException`.
-- [ ] T002 Update all imports of `BaseError` to `BaseException` across the backend workspace.
-- [ ] T003 Rename `apps/backend/src/domain/exceptions/` contents to follow kebab-case and the "Exception" suffix if missing.
-- [ ] T004 [P] Configure linting rule to prefer "Exception" over "Error" for internal classes (if applicable).
+- [x] T001 Rename `apps/backend/src/domain/core/exceptions/base-error.ts` to `base-exception.ts` and update class name to `BaseException`.
+- [x] T002 Update all imports of `BaseError` to `BaseException` across the backend workspace.
+- [x] T003 Rename `apps/backend/src/domain/exceptions/` contents to follow kebab-case and the "Exception" suffix if missing.
+- [x] T004 [P] Configure linting rule to prefer "Exception" over "Error" for internal classes (if applicable).
 
 ---
 
@@ -34,10 +34,10 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T005 [P] Implement `HttpStatusCode` enum or constant if not robustly available in `apps/backend/src/domain/core/enums/http-status-code.ts`.
-- [ ] T006 Refactor `BaseException` in `apps/backend/src/domain/core/exceptions/base-exception.ts` to support standard properties through the constructor and provide a `static standardSchema`.
-- [ ] T007 [P] Create `ExceptionMappingHelper` in `apps/backend/src/api/helpers/exception-mapping-helper.ts` with basic single-exception mapping.
-- [ ] T008 [P] Add unit tests for `BaseException` and `ExceptionMappingHelper` in `apps/backend/tests/unit/core/exceptions/base-exception.test.ts` (Mandatory failure scenarios, detailed descriptions).
+- [x] T005 [P] Implement `HttpStatusCode` enum or constant if not robustly available in `apps/backend/src/domain/core/enums/http-status-code.ts`.
+- [x] T006 Refactor `BaseException` in `apps/backend/src/domain/core/exceptions/base-exception.ts` to support standard properties through the constructor and provide a `static standardSchema`.
+- [x] T007 [P] Create `ExceptionMappingHelper` in `apps/backend/src/api/helpers/exception-mapping-helper.ts` with basic single-exception mapping.
+- [x] T008 [P] Add unit tests for `BaseException` and `ExceptionMappingHelper` in `apps/backend/tests/unit/core/exceptions/base-exception.test.ts` (Mandatory failure scenarios, detailed descriptions).
 
 **Checkpoint**: Foundation ready - user story implementation can now begin.
 
@@ -51,13 +51,13 @@
 
 ### Tests for User Story 1
 
-- [ ] T009 [P] [US1] Create unit tests for initial batch of domain exceptions in `apps/backend/tests/unit/domain/exceptions/user-exceptions.test.ts`.
+- [x] T009 [P] [US1] Create unit tests for initial batch of domain exceptions in `apps/backend/tests/unit/domain/exceptions/user-exceptions.test.ts`.
 
 ### Implementation for User Story 1
 
-- [ ] T010 [P] [US1] Update `apps/backend/src/domain/exceptions/user-exceptions.ts` to the new **Schema-First Inference pattern** (schema -> type -> class).
-- [ ] T011 [P] [US1] Update `apps/backend/src/domain/exceptions/group-exceptions.ts` to the new pattern.
-- [ ] T012 [P] [US1] Update all other files in `apps/backend/src/domain/exceptions/` to the new pattern.
+- [x] T010 [P] [US1] Update `apps/backend/src/domain/exceptions/user-exceptions.ts` to the new **Schema-First Inference pattern** (schema -> type -> class).
+- [x] T011 [P] [US1] Update `apps/backend/src/domain/exceptions/group-exceptions.ts` to the new pattern.
+- [x] T012 [P] [US1] Update all other files in `apps/backend/src/domain/exceptions/` to the new pattern.
 
 **Checkpoint**: All domain exceptions standardized.
 
@@ -71,10 +71,10 @@
 
 ### Implementation for User Story 2
 
-- [ ] T013 [US2] Enhance `ExceptionMappingHelper` to automatically merge `BaseException.standardSchema` with subclass `static contextSchema` and inject literal codes.
-- [ ] T014 [US2] Update `apps/backend/src/api/controllers/group-controller.ts` to use the new `ExceptionMappingHelper`.
-- [ ] T015 [US2] Update `apps/backend/src/api/controllers/user-controller.ts` to use the new `ExceptionMappingHelper`.
-- [ ] T016 [US2] Update all remaining controllers to use the new `ExceptionMappingHelper`.
+- [x] T013 [US2] Enhance `ExceptionMappingHelper` to automatically merge `BaseException.standardSchema` with subclass `static contextSchema` and inject literal codes.
+- [x] T014 [US2] Update `apps/backend/src/api/controllers/group-controller.ts` to use the new `ExceptionMappingHelper`.
+- [x] T015 [US2] [SKIP] Update `apps/backend/src/api/controllers/user-controller.ts` (Merged into AuthController).
+- [x] T016 [US2] Update all remaining controllers to use the new `ExceptionMappingHelper`.
 
 ---
 
@@ -86,8 +86,8 @@
 
 ### Tasks for User Story 3
 
-- [ ] T017 [US3] Run `pnpm run generate:api` (or equivalent Orval command) in the frontend/root.
-- [ ] T018 [US3] Verify generated types for exceptions in the frontend source code.
+- [x] T017 [US3] Run `pnpm run generate:api` (or equivalent Orval command) in the frontend/root.
+- [x] T018 [US3] Verify generated types for exceptions in the frontend source code.
 
 ---
 
@@ -95,13 +95,13 @@
 
 **Purpose**: Final integration and cleanup.
 
-- [ ] T019 Update global error handler in `apps/backend/src/main/fastify/setup/error-handler.ts` to use the new `BaseException` properties.
-- [ ] T020 [P] [US1] Implement **PII Sanitization layer** (FR-008) in the global exception handler using a sensitive field blacklist.
-- [ ] T021 [P] [US1] Integrate **Structured Logging** in the global handler to report all `BaseException` occurrences with full context.
-- [ ] T022 [P] Implement/Update "Unexpected Exception" handler to ensure safe sanitization of internal errors.
-- [ ] T023 [P] Documentation update: Finalize `quickstart.md` with real examples from the implementation.
-- [ ] T024 Final run of `pnpm lint`, `pnpm test`, and `pnpm --filter backend typecheck`.
-- [ ] T025 **Governance Update**: Register the standardized exception pattern (FR-009) in the project's global developer guidelines.
+- [x] T019 Update global error handler in `apps/backend/src/main/fastify/setup/error-handler.ts` to use the new `BaseException` properties.
+- [x] T020 [P] [US1] Implement **PII Sanitization layer** (FR-008) in the global exception handler using a sensitive field blacklist.
+- [x] T021 [P] [US1] Integrate **Structured Logging** in the global handler to report all `BaseException` occurrences with full context.
+- [x] T022 [P] Implement/Update "Unexpected Exception" handler to ensure safe sanitization of internal errors.
+- [x] T023 [P] Documentation update: Finalize `quickstart.md` with real examples from the implementation.
+- [x] T024 Final run of `pnpm lint`, `pnpm test`, and `pnpm --filter backend typecheck`.
+- [x] T025 **Governance Update**: Register the standardized exception pattern (FR-009) in the project's global developer guidelines.
 
 ---
 
