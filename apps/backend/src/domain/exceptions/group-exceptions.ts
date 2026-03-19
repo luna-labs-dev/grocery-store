@@ -1,58 +1,91 @@
-import { BaseException } from '../core';
-import { HttpStatusCode } from '../core/enums';
+import { z } from 'zod';
+import { HttpStatusCode } from '../core/enums/http-status-code';
+import { BaseException } from '../core/exceptions/base-exception';
 
-export class GroupNotFoundException extends BaseException {
-  statusCode = HttpStatusCode.NotFound;
+export const groupNotFoundSchema = z.object({
+  groupId: z.string().uuid().optional(),
+});
 
-  constructor() {
-    super('O grupo não foi encontrado');
+export class GroupNotFoundException extends BaseException<
+  z.infer<typeof groupNotFoundSchema>
+> {
+  static statusCode = HttpStatusCode.NotFound;
+  static contextSchema = groupNotFoundSchema;
+
+  constructor(context?: z.infer<typeof groupNotFoundSchema>) {
+    super('O grupo não foi encontrado', {
+      statusCode: GroupNotFoundException.statusCode,
+      context,
+      schema: GroupNotFoundException.contextSchema,
+    });
   }
 }
 
-export class InvalidGroupInvitationCodeException extends BaseException {
-  statusCode = HttpStatusCode.BadRequest;
+export const invalidGroupInvitationCodeSchema = z.object({
+  code: z.string().optional(),
+});
 
-  constructor() {
-    super('O código de convite do grupo é inválido');
+export class InvalidGroupInvitationCodeException extends BaseException<
+  z.infer<typeof invalidGroupInvitationCodeSchema>
+> {
+  static statusCode = HttpStatusCode.BadRequest;
+  static contextSchema = invalidGroupInvitationCodeSchema;
+
+  constructor(context?: z.infer<typeof invalidGroupInvitationCodeSchema>) {
+    super('O código de convite do grupo é inválido', {
+      statusCode: InvalidGroupInvitationCodeException.statusCode,
+      context,
+      schema: InvalidGroupInvitationCodeException.contextSchema,
+    });
   }
 }
 
 export class UserAlreadyInGroupException extends BaseException {
-  statusCode = HttpStatusCode.Conflict;
+  static statusCode = HttpStatusCode.Conflict;
 
   constructor() {
-    super('O usuário já é membro deste grupo');
+    super('O usuário já é membro deste grupo', {
+      statusCode: UserAlreadyInGroupException.statusCode,
+    });
   }
 }
 
 export class UserNotInGroupException extends BaseException {
-  statusCode = HttpStatusCode.Forbidden;
+  static statusCode = HttpStatusCode.Forbidden;
 
   constructor() {
-    super('O usuário não é membro deste grupo');
+    super('O usuário não é membro deste grupo', {
+      statusCode: UserNotInGroupException.statusCode,
+    });
   }
 }
 
 export class UnauthorizedGroupOperationException extends BaseException {
-  statusCode = HttpStatusCode.Forbidden;
+  static statusCode = HttpStatusCode.Forbidden;
 
   constructor() {
-    super('O usuário não tem permissão para realizar esta operação no grupo');
+    super('O usuário não tem permissão para realizar esta operação no grupo', {
+      statusCode: UnauthorizedGroupOperationException.statusCode,
+    });
   }
 }
 
 export class LastOwnerCannotLeaveException extends BaseException {
-  statusCode = HttpStatusCode.BadRequest;
+  static statusCode = HttpStatusCode.BadRequest;
 
   constructor() {
-    super('O último dono não pode sair do grupo sem promover outro membro');
+    super('O último dono não pode sair do grupo sem promover outro membro', {
+      statusCode: LastOwnerCannotLeaveException.statusCode,
+    });
   }
 }
 
 export class UserNotMemberOfAnyGroupBarrierException extends BaseException {
-  statusCode = HttpStatusCode.Unauthorized;
+  static statusCode = HttpStatusCode.Unauthorized;
 
   constructor() {
-    super('O usuário não é membro de nenhum grupo de colaboração');
+    super('O usuário não é membro de nenhum grupo de colaboração', {
+      statusCode: UserNotMemberOfAnyGroupBarrierException.statusCode,
+    });
   }
 }

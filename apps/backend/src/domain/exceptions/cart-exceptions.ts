@@ -1,10 +1,3 @@
-import { BaseException } from '../core';
-import { HttpStatusCode } from '../core/enums';
-
-export class ProductNotFoundException extends BaseException {
-  statusCode = HttpStatusCode.NotFound;
-
-  constructor() {
-    super('O produto não foi encontrado');
-  }
-}
+// Empty cart exceptions or other cart-specific ones can go here.
+// Currently, standard cart errors are handled via domain logic or other files.
+export {};

@@ -1,10 +1,22 @@
-import { BaseException } from '../core';
-import { HttpStatusCode } from '../core/enums';
+import { z } from 'zod';
+import { HttpStatusCode } from '../core/enums/http-status-code';
+import { BaseException } from '../core/exceptions/base-exception';
 
-export class MarketNotFoundException extends BaseException {
-  statusCode = HttpStatusCode.NotFound;
+export const marketNotFoundSchema = z.object({
+  marketId: z.string().uuid().optional(),
+});
 
-  constructor() {
-    super('O mercado não foi encontrado');
+export class MarketNotFoundException extends BaseException<
+  z.infer<typeof marketNotFoundSchema>
+> {
+  static statusCode = HttpStatusCode.NotFound;
+  static contextSchema = marketNotFoundSchema;
+
+  constructor(context?: z.infer<typeof marketNotFoundSchema>) {
+    super('O mercado não foi encontrado', {
+      statusCode: MarketNotFoundException.statusCode,
+      context,
+      schema: MarketNotFoundException.contextSchema,
+    });
   }
 }
