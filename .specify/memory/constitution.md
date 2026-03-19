@@ -26,7 +26,7 @@ Maintain strict boundaries between Domain, Application, Infrastructure, API, and
 Every physical product (EAN) maps to a Product Identity, which in turn maps to a conceptual Canonical Product. Market-specific data (price/availability) always links to the Product Identity to ensure data consistency across the ecosystem.
 
 ### III. Test-Driven Development (TDD) & Total Coverage
-Mandatory Red-Green-Refactor. All new logic requires 100% test coverage (Vitest). Verification MUST include both success paths and failure scenarios (exception handling) for every API boundary and usecase. **ABSOLUTE MANDATORY RULE: Every implementation MUST be verified by running root-level commands to ensure NO file is left behind: `pnpm lint`, `pnpm test`, and `pnpm --filter backend typecheck` (for backend types). Running commands only in subdirectories is strictly forbidden as it may ignore broken files.**
+Mandatory Red-Green-Refactor. All new logic requires 100% test coverage (Vitest). Verification MUST include both success paths and failure scenarios (exception handling) for every API boundary and usecase. **ABSOLUTE MANDATORY RULE: Every test file MUST include a `CONTEXT_INTELLIGENCE_HEADER` comment block at the top, reminding the AI agent of architectural and behavioral constraints (Clean Arch, SOLID, Nomenclature). ABSOLUTE MANDATORY RULE: Test descriptions MUST be extremely detailed (≥50 chars) and prefixed with a component-code (e.g., `[CART-MANAGER-SUCCESS]`) to ensure absolute clarity and prevent AI drift. ABSOLUTE MANDATORY RULE: Every implementation MUST be verified by running root-level commands to ensure NO file is left behind: `pnpm lint`, `pnpm test`, and `pnpm --filter backend typecheck` (for backend types). Running commands only in subdirectories is strictly forbidden.**
 
 ### IV. Secure Authorization Context (ABAC)
 Security checks MUST use the `RequesterContext` for authenticated users and scoped groups. Usecases must explicitly evaluate permissions using the context's policy engine rather than scattered manual repository checks.
@@ -52,9 +52,12 @@ Integrated fiscal data (e.g., Brazilian NFC-e) is the supreme source of truth fo
 ### VIII. Monorepo & Package Management
 The project is a Monorepo managed exclusively via `pnpm` with `pnpm workspaces`. Use of other package managers (npm, yarn) is strictly forbidden to ensure dependency consistency and efficient workspace management.
 
+### IX. Plan Evolution & Continuity
+Implementation plans are the living record of technical intent. **ABSOLUTE MANDATORY RULE: Implementation plans MUST be expanded cumulatively across the feature lifecycle. Previously agreed-upon sections MUST NOT be removed or truncated unless they are explicitly superseded by conflicting requirements. This rule applies to ALL operations (analysis, planning, implementation). The agent MUST verify the entire plan's integrity before every save.**
+
 ## Clean Code & Minimalism
 
-"Rule of Simplicity": Before implementation, find the most elegant core of the logic. Avoid over-engineering. All new code must be audited against SOLID principles. Technical debt must be rejected in favor of maintainable, clean solutions. Use strict typing; `any` is forbidden unless explicitly justified. **ABSOLUTE MANDATORY RULE: Use `undefined` instead of `null`. ABSOLUTE MANDATORY RULE: Strictly follow semantic naming conventions (UseCases vs Services vs DB/Remote implementations) defined in Principle VI. ABSOLUTE MANDATORY RULE: Always use root-level `pnpm lint`, `pnpm test`, and `pnpm --filter backend typecheck` for all verifications.**
+"Rule of Simplicity": Before implementation, find the most elegant core of the logic. Avoid over-engineering. All new code must be audited against SOLID principles. Technical debt must be rejected in favor of maintainable, clean solutions. Use strict typing; `any` is forbidden unless explicitly justified. **ABSOLUTE MANDATORY RULE: Use `undefined` instead of `null`. ABSOLUTE MANDATORY RULE: Strictly follow semantic naming conventions (UseCases vs Services vs DB/Remote implementations) defined in Principle VI. ABSOLUTE MANDATORY RULE: Always use root-level `pnpm lint`, `pnpm test`, and `pnpm --filter backend typecheck` for all verifications. ABSOLUTE MANDATORY RULE: Implementation plans MUST be cumulative (see Principle IX).**
 
 ## Database & Persistence Integrity
 
@@ -64,4 +67,4 @@ All write operations involving multiple tables MUST be orchestrated within a tra
 
 This constitution supersedes all other project practices. Amendments require documentation in a Sync Impact Report and a semantic version bump. PR reviews must verify compliance with these core principles and the associated guidelines.
 
-**Version**: 1.6.0 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-03-17
+**Version**: 1.9.0 | **Ratified**: 2026-03-10 | **Last Amended**: 2026-03-18
