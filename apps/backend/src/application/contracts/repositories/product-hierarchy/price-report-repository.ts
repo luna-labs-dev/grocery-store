@@ -15,6 +15,20 @@ export interface GetRegionalAveragePriceRepository {
   ): Promise<number | null>;
 }
 
+export interface GetActivePriceReportsRepository {
+  getReportsInWindow(
+    marketId: string,
+    productIdentityId: string,
+    windowHours: number,
+  ): Promise<PriceReport[]>;
+}
+
+export interface UpdatePriceReportOutlierStatusRepository {
+  updateIsOutlier(id: string, isOutlier: boolean): Promise<void>;
+}
+
 export type PriceReportRepository = AddPriceReportRepository &
   GetPriceReportsByProductIdentityRepository &
-  GetRegionalAveragePriceRepository;
+  GetRegionalAveragePriceRepository &
+  GetActivePriceReportsRepository &
+  UpdatePriceReportOutlierStatusRepository;

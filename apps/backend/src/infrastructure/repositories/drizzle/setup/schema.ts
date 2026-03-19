@@ -247,6 +247,55 @@ export const settingsTable = pgTable(
   (table) => [primaryKey({ columns: [table.groupId, table.key] })],
 );
 
+export const priceReportTable = pgTable('price_report', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: text('userId')
+    .notNull()
+    .references(() => userTable.id),
+  marketId: varchar('marketId', { length: 320 })
+    .notNull()
+    .references(() => marketTable.id),
+  productIdentityId: uuid('productIdentityId')
+    .notNull()
+    .references(() => productIdentityTable.id),
+  price: money('price').notNull(),
+  reportedAt: timestamp('reportedAt', { precision: 6 }).defaultNow().notNull(),
+  isOutlier: boolean('isOutlier').default(false).notNull(),
+});
+
+export const marketProductPriceTable = pgTable(
+  'market_product_price',
+  {
+    marketId: varchar('marketId', { length: 320 })
+      .notNull()
+      .references(() => marketTable.id),
+    productIdentityId: uuid('productIdentityId')
+      .notNull()
+      .references(() => productIdentityTable.id),
+    price: money('price').notNull(),
+    lastVerifiedAt: timestamp('lastVerifiedAt', { precision: 6 })
+      .defaultNow()
+      .notNull(),
+    isVerified: boolean('isVerified').default(false).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.marketId, table.productIdentityId] }),
+  ],
+);
+
+export const priceHistoryTable = pgTable('price_history', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  marketId: varchar('marketId', { length: 320 })
+    .notNull()
+    .references(() => marketTable.id),
+  productIdentityId: uuid('productIdentityId')
+    .notNull()
+    .references(() => productIdentityTable.id),
+  price: money('price').notNull(),
+  verifiedAt: timestamp('verifiedAt', { precision: 6 }).defaultNow().notNull(),
+  consensusId: uuid('consensusId').notNull(),
+});
+
 export const groupRelations = relations(groupTable, ({ many }) => ({
   members: many(groupMemberTable),
   shoppingEvents: many(shoppingEventTable),
