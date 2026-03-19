@@ -23,6 +23,9 @@ export const injection = {
     configService: 'config-service',
     settingsRepository: 'settings-repository',
     permissionService: 'permission-service',
+    priceReportRepository: 'price-report-repository',
+    marketProductPriceRepository: 'market-product-price-repository',
+    priceHistoryRepository: 'price-history-repository',
   },
   usecases: {
     cartManager: 'cart-manager',
@@ -31,7 +34,6 @@ export const injection = {
     marketManager: 'market-manager',
     userManager: 'user-manager',
     priceConsensusEngine: 'price-consensus-engine',
-    searchProductsService: 'search-products-service',
     productHydrator: 'product-hydrator',
     productHydratorJob: 'product-hydrator-job',
 

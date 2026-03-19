@@ -29,6 +29,9 @@ import type {
   GetCanonicalProductByIdRepository,
   UpdateCanonicalProductRepository,
 } from '@/application/contracts/repositories/product-hierarchy';
+import type { MarketProductPriceRepository } from '@/application/contracts/repositories/product-hierarchy/market-product-price-repository';
+import type { PriceHistoryRepository } from '@/application/contracts/repositories/product-hierarchy/price-history-repository';
+import type { PriceReportRepository } from '@/application/contracts/repositories/product-hierarchy/price-report-repository';
 import type { ProductIdentityRepository } from '@/application/contracts/repositories/product-identity-repository';
 import type { ProductRepository } from '@/application/contracts/repositories/product-repository';
 import type { SettingsRepository } from '@/application/contracts/repositories/settings-repository';
@@ -53,8 +56,11 @@ import {
   DrizzleCanonicalProductRepository,
   DrizzleExternalFetchLogRepository,
   DrizzleGroupRepository,
+  DrizzleMarketProductPriceRepository,
   DrizzleMarketRepository,
   DrizzleOutboxEventRepository,
+  DrizzlePriceHistoryRepository,
+  DrizzlePriceReportRepository,
   DrizzleProductIdentityRepository,
   DrizzleProductRepository,
   DrizzleSettingsRepository,
@@ -108,6 +114,18 @@ export const registerInjections = (app: FastifyTypedInstance): void => {
   container.register<ProductRepository>(
     infra.externalFetchLogRepository,
     DrizzleExternalFetchLogRepository,
+  );
+  container.register<PriceReportRepository>(
+    infra.priceReportRepository,
+    DrizzlePriceReportRepository,
+  );
+  container.register<MarketProductPriceRepository>(
+    infra.marketProductPriceRepository,
+    DrizzleMarketProductPriceRepository,
+  );
+  container.register<PriceHistoryRepository>(
+    infra.priceHistoryRepository,
+    DrizzlePriceHistoryRepository,
   );
 
   // Services
