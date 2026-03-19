@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { GetInviteInfo500Code } from './get-invite-info500-code';
 
 export type GetInviteInfo500 = {
-  code: string;
+  code: GetInviteInfo500Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

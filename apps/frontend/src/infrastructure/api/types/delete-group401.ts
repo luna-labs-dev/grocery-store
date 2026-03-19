@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { DeleteGroup401Code } from './delete-group401-code';
 
 export type DeleteGroup401 = {
-  code: string;
+  code: DeleteGroup401Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

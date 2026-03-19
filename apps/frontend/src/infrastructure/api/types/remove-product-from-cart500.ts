@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { RemoveProductFromCart500Code } from './remove-product-from-cart500-code';
 
 export type RemoveProductFromCart500 = {
-  code: string;
+  code: RemoveProductFromCart500Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

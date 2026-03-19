@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { RegenerateInviteCode500Code } from './regenerate-invite-code500-code';
 
 export type RegenerateInviteCode500 = {
-  code: string;
+  code: RegenerateInviteCode500Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

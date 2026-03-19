@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdateGroup500Code } from './update-group500-code';
 
 export type UpdateGroup500 = {
-  code: string;
+  code: UpdateGroup500Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

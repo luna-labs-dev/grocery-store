@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { GetShoppingEventList500Code } from './get-shopping-event-list500-code';
 
 export type GetShoppingEventList500 = {
-  code: string;
+  code: GetShoppingEventList500Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

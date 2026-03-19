@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { RegenerateInviteCode401Code } from './regenerate-invite-code401-code';
 
 export type RegenerateInviteCode401 = {
-  code: string;
+  code: RegenerateInviteCode401Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

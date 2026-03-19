@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateGroup401Code } from './create-group401-code';
 
 export type CreateGroup401 = {
-  code: string;
+  code: CreateGroup401Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

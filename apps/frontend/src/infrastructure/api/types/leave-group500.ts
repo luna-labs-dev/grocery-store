@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { LeaveGroup500Code } from './leave-group500-code';
 
 export type LeaveGroup500 = {
-  code: string;
+  code: LeaveGroup500Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

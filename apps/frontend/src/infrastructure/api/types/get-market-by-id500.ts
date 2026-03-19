@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { GetMarketById500Code } from './get-market-by-id500-code';
 
 export type GetMarketById500 = {
-  code: string;
+  code: GetMarketById500Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

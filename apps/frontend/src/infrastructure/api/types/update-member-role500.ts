@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdateMemberRole500Code } from './update-member-role500-code';
 
 export type UpdateMemberRole500 = {
-  code: string;
+  code: UpdateMemberRole500Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

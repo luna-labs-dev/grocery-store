@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { RemoveMember401Code } from './remove-member401-code';
 
 export type RemoveMember401 = {
-  code: string;
+  code: RemoveMember401Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

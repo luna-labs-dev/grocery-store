@@ -5,9 +5,12 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { EndShoppingEvent404Code } from './end-shopping-event404-code';
 
 export type EndShoppingEvent404 = {
-  code: string;
+  code: EndShoppingEvent404Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
+  /** @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$ */
+  shoppingEventId?: string;
 };

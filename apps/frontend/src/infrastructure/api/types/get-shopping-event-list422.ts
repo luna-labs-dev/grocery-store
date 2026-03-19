@@ -7,7 +7,11 @@
  */
 
 export type GetShoppingEventList422 = {
-  code: string;
+  code: 'SHOPPING_EVENT_ALREADY_ENDED_EXCEPTION';
+  /** Human readable error message */
   message: string;
-  stack?: string;
+} | {
+  code: 'SHOPPING_EVENT_EMPTY_CART_EXCEPTION';
+  /** Human readable error message */
+  message: string;
 };

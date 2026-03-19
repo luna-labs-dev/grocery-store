@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { RemoveMember500Code } from './remove-member500-code';
 
 export type RemoveMember500 = {
-  code: string;
+  code: RemoveMember500Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

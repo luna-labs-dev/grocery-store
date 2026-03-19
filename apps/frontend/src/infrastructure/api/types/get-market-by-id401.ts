@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { GetMarketById401Code } from './get-market-by-id401-code';
 
 export type GetMarketById401 = {
-  code: string;
+  code: GetMarketById401Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

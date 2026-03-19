@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { GetShoppingEventById401Code } from './get-shopping-event-by-id401-code';
 
 export type GetShoppingEventById401 = {
-  code: string;
+  code: GetShoppingEventById401Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

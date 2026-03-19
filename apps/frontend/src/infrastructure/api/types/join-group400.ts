@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { JoinGroup400Code } from './join-group400-code';
 
 export type JoinGroup400 = {
-  code: string;
+  code: JoinGroup400Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

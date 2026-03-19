@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { LeaveGroup403Code } from './leave-group403-code';
 
 export type LeaveGroup403 = {
-  code: string;
+  code: LeaveGroup403Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

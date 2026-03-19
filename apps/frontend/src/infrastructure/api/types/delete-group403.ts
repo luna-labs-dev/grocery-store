@@ -7,7 +7,11 @@
  */
 
 export type DeleteGroup403 = {
-  code: string;
+  code: 'UNAUTHORIZED_GROUP_OPERATION_EXCEPTION';
+  /** Human readable error message */
   message: string;
-  stack?: string;
+} | {
+  code: 'USER_NOT_IN_GROUP_EXCEPTION';
+  /** Human readable error message */
+  message: string;
 };

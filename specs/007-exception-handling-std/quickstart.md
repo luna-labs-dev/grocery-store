@@ -4,25 +4,17 @@ Follow these steps to define and use exceptions in the Grocery Store project.
 
 ## 1. Implement BaseException (Core)
 
-The core `BaseException` provides the foundation for all other exceptions. It uses a generic `TContext` to enforce type safety on additional data.
+The core `BaseException` provides the foundation for all other exceptions. It uses Schema-First Inference to derive context data types from Zod schemas.
 
 ```typescript
-export interface BaseExceptionOptions<T = void> {
-  statusCode: number;
-  code: string;
-  context?: T;
-}
+export abstract class BaseException<T = unknown> extends Error {
+  public readonly statusCode: HttpStatusCode;
+  public readonly code: string;
+  public readonly extras?: T;
 
-export abstract class BaseException<TContext = void> extends Error {
-  static standardSchema = z.object({
-    code: z.string(),
-    message: z.string(),
-    stack: z.string().optional(),
-  });
-
-  constructor(message: string, options: BaseExceptionOptions<TContext>) {
+  constructor(message: string, props: IBaseExceptionProps<T>) {
     super(message);
-    // ... logic to spread context into root
+    // ... initialization logic
   }
 }
 ```
@@ -32,23 +24,25 @@ export abstract class BaseException<TContext = void> extends Error {
 Define your domain-specific exceptions in `src/domain/exceptions/`.
 
 ```typescript
-import { BaseException } from '../core/exceptions';
-import { HttpStatusCode } from '../core/enums';
 import { z } from 'zod';
+import { BaseException } from '../core/exceptions/base-exception';
+import { HttpStatusCode } from '../core/enums/http-status-code';
 
-const userNotFoundSchema = z.object({ userId: z.string().uuid() });
-type UserNotFoundContext = z.infer<typeof userNotFoundSchema>;
+export const userNotFoundContextSchema = z.object({
+  userId: z.string().uuid(),
+});
+
+export type UserNotFoundContext = z.infer<typeof userNotFoundContextSchema>;
 
 export class UserNotFoundException extends BaseException<UserNotFoundContext> {
   static statusCode = HttpStatusCode.NotFound;
-  static code = 'USER_NOT_FOUND';
-  static contextSchema = userNotFoundSchema;
+  static contextSchema = userNotFoundContextSchema;
 
   constructor(context: UserNotFoundContext) {
-    super('User not found', {
+    super('Usuário não encontrado', {
       statusCode: UserNotFoundException.statusCode,
-      code: UserNotFoundException.code,
-      context
+      schema: UserNotFoundException.contextSchema,
+      context,
     });
   }
 }
@@ -56,14 +50,17 @@ export class UserNotFoundException extends BaseException<UserNotFoundContext> {
 
 ## 3. Map Exceptions in Controller
 
-Use the `ExceptionMappingHelper` to automatically document exceptions in Swagger/Scalar.
+Use `getPossibleExceptionsSchemas` to consolidate multiple exceptions into a Fastify-compatible response schema.
 
 ```typescript
+import { getPossibleExceptionsSchemas } from '@/domain';
+import { UserNotFoundException } from '@/domain/exceptions';
+
 app.get('/:id', {
   schema: {
     response: {
       [HttpStatusCode.Ok]: userSchema,
-      ...ExceptionMappingHelper.map([UserNotFoundException, UnauthorizedException])
+      ...getPossibleExceptionsSchemas([UserNotFoundException])
     }
   }
 }, async (request, reply) => {
@@ -79,3 +76,8 @@ pnpm lint
 pnpm test
 pnpm --filter backend typecheck
 ```
+
+## 5. Security & Observability
+
+- **PII Sanitization**: The global error handler automatically removes fields like `email`, `password`, and `token` from public responses.
+- **Structured Logging**: All standardized exceptions are logged with full context (`code`, `statusCode`, `extras`) for internal observability.

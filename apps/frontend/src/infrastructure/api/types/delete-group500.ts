@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { DeleteGroup500Code } from './delete-group500-code';
 
 export type DeleteGroup500 = {
-  code: string;
+  code: DeleteGroup500Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

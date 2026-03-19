@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateGroup500Code } from './create-group500-code';
 
 export type CreateGroup500 = {
-  code: string;
+  code: CreateGroup500Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

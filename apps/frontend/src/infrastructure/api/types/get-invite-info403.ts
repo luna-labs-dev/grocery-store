@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { GetInviteInfo403Code } from './get-invite-info403-code';
 
 export type GetInviteInfo403 = {
-  code: string;
+  code: GetInviteInfo403Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

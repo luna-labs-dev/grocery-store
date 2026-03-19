@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdateGroup401Code } from './update-group401-code';
 
 export type UpdateGroup401 = {
-  code: string;
+  code: UpdateGroup401Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

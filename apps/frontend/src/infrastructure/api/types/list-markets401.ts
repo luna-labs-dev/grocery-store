@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { ListMarkets401Code } from './list-markets401-code';
 
 export type ListMarkets401 = {
-  code: string;
+  code: ListMarkets401Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdateMemberRole401Code } from './update-member-role401-code';
 
 export type UpdateMemberRole401 = {
-  code: string;
+  code: UpdateMemberRole401Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };

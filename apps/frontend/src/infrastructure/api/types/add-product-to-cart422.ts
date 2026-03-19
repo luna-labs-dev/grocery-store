@@ -5,9 +5,10 @@
  * API de gerenciamento de compras
  * OpenAPI spec version: 1.0.0
  */
+import type { AddProductToCart422Code } from './add-product-to-cart422-code';
 
 export type AddProductToCart422 = {
-  code: string;
+  code: AddProductToCart422Code;
+  /** Human readable error message */
   message: string;
-  stack?: string;
 };
