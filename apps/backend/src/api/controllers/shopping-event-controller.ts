@@ -10,10 +10,8 @@ import {
   startShoppingEventRequestSchema,
   startShoppingEventResponseSchema,
 } from '../helpers';
-import {
-  getPossibleExceptionsSchemas,
-  type IShoppingEventManager,
-} from '@/domain';
+import { getPossibleExceptionsSchemas } from '@/api/helpers/exception-mapping-helper';
+import type { IShoppingEventManager } from '@/domain';
 import {
   MarketNotFoundException,
   ShoppingEventAlreadyEndedException,
@@ -53,7 +51,7 @@ export class ShoppingEventController extends FastifyController {
           body: startShoppingEventRequestSchema,
           response: {
             200: startShoppingEventResponseSchema,
-            ...getPossibleExceptionsSchemas([new MarketNotFoundException()]),
+            ...getPossibleExceptionsSchemas([MarketNotFoundException]),
           },
         },
       },
@@ -89,9 +87,9 @@ export class ShoppingEventController extends FastifyController {
           response: {
             200: shoppingEventSummaryDtoSchema,
             ...getPossibleExceptionsSchemas([
-              new ShoppingEventNotFoundException(),
-              new ShoppingEventAlreadyEndedException(),
-              new ShoppingEventEmptyCartException(),
+              ShoppingEventNotFoundException,
+              ShoppingEventAlreadyEndedException,
+              ShoppingEventEmptyCartException,
             ]),
           },
         },
@@ -125,9 +123,9 @@ export class ShoppingEventController extends FastifyController {
           response: {
             200: getShoppingEventListResponseSchema,
             ...getPossibleExceptionsSchemas([
-              new ShoppingEventNotFoundException(),
-              new ShoppingEventAlreadyEndedException(),
-              new ShoppingEventEmptyCartException(),
+              ShoppingEventNotFoundException,
+              ShoppingEventAlreadyEndedException,
+              ShoppingEventEmptyCartException,
             ]),
           },
         },
@@ -185,9 +183,7 @@ export class ShoppingEventController extends FastifyController {
           params: shoppingEventParamSchema,
           response: {
             200: shoppingEventSummaryDtoSchema,
-            ...getPossibleExceptionsSchemas([
-              new ShoppingEventNotFoundException(),
-            ]),
+            ...getPossibleExceptionsSchemas([ShoppingEventNotFoundException]),
           },
         },
       },

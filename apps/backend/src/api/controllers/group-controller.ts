@@ -11,11 +11,8 @@ import {
   removeMemberParamsSchema,
   updateMemberRoleRequestSchema,
 } from '../helpers';
-import {
-  type GroupRole,
-  getPossibleExceptionsSchemas,
-  type IGroupManager,
-} from '@/domain';
+import { getPossibleExceptionsSchemas } from '@/api/helpers/exception-mapping-helper';
+import type { GroupRole, IGroupManager } from '@/domain';
 import { HttpStatusCode } from '@/domain/core/enums';
 import {
   InvalidGroupInvitationCodeException,
@@ -76,7 +73,7 @@ export class GroupController extends FastifyController {
           operationId: 'createGroup',
           body: createGroupRequestSchema,
           response: {
-            ...getPossibleExceptionsSchemas([new UserNotFoundException()]),
+            ...getPossibleExceptionsSchemas([UserNotFoundException]),
             [HttpStatusCode.Created]: groupResponseSchema,
           },
         },
@@ -107,8 +104,8 @@ export class GroupController extends FastifyController {
           body: joinGroupRequestSchema,
           response: {
             ...getPossibleExceptionsSchemas([
-              new UserNotFoundException(),
-              new InvalidGroupInvitationCodeException(),
+              UserNotFoundException,
+              InvalidGroupInvitationCodeException,
             ]),
             [HttpStatusCode.NoContent]: z
               .never()
@@ -137,8 +134,8 @@ export class GroupController extends FastifyController {
           params: groupParamsSchema,
           response: {
             ...getPossibleExceptionsSchemas([
-              new UserNotInGroupException(),
-              new LastOwnerCannotLeaveException(),
+              UserNotInGroupException,
+              LastOwnerCannotLeaveException,
             ]),
             [HttpStatusCode.NoContent]: z
               .never()
@@ -166,8 +163,8 @@ export class GroupController extends FastifyController {
           params: removeMemberParamsSchema.merge(groupParamsSchema),
           response: {
             ...getPossibleExceptionsSchemas([
-              new UnauthorizedGroupOperationException(),
-              new UserNotInGroupException(),
+              UnauthorizedGroupOperationException,
+              UserNotInGroupException,
             ]),
             [HttpStatusCode.NoContent]: z
               .never()
@@ -199,8 +196,8 @@ export class GroupController extends FastifyController {
           body: updateMemberRoleRequestSchema,
           response: {
             ...getPossibleExceptionsSchemas([
-              new UnauthorizedGroupOperationException(),
-              new UserNotInGroupException(),
+              UnauthorizedGroupOperationException,
+              UserNotInGroupException,
             ]),
             [HttpStatusCode.NoContent]: z
               .never()
@@ -232,7 +229,7 @@ export class GroupController extends FastifyController {
           operationId: 'getInviteInfo',
           params: groupParamsSchema,
           response: {
-            ...getPossibleExceptionsSchemas([new UserNotInGroupException()]),
+            ...getPossibleExceptionsSchemas([UserNotInGroupException]),
             [HttpStatusCode.Ok]: groupInviteResponseSchema,
           },
         },
@@ -260,8 +257,8 @@ export class GroupController extends FastifyController {
           params: groupParamsSchema,
           response: {
             ...getPossibleExceptionsSchemas([
-              new UnauthorizedGroupOperationException(),
-              new UserNotInGroupException(),
+              UnauthorizedGroupOperationException,
+              UserNotInGroupException,
             ]),
             [HttpStatusCode.Ok]: groupInviteResponseSchema,
           },
@@ -291,8 +288,8 @@ export class GroupController extends FastifyController {
           body: createGroupRequestSchema.partial(),
           response: {
             ...getPossibleExceptionsSchemas([
-              new UnauthorizedGroupOperationException(),
-              new UserNotInGroupException(),
+              UnauthorizedGroupOperationException,
+              UserNotInGroupException,
             ]),
             [HttpStatusCode.Ok]: groupResponseSchema,
           },
@@ -324,8 +321,8 @@ export class GroupController extends FastifyController {
           params: groupParamsSchema,
           response: {
             ...getPossibleExceptionsSchemas([
-              new UnauthorizedGroupOperationException(),
-              new UserNotInGroupException(),
+              UnauthorizedGroupOperationException,
+              UserNotInGroupException,
             ]),
             [HttpStatusCode.NoContent]: z
               .never()

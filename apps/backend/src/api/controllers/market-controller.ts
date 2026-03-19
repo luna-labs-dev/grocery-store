@@ -8,7 +8,8 @@ import {
   marketListResponseSchema,
   marketMapper,
 } from '../helpers';
-import { getPossibleExceptionsSchemas, type IMarketManager } from '@/domain';
+import { getPossibleExceptionsSchemas } from '@/api/helpers/exception-mapping-helper';
+import type { IMarketManager } from '@/domain';
 import { MarketNotFoundException } from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 import {
@@ -89,7 +90,7 @@ export class MarketController extends FastifyController {
           params: getMarketByIdRequestSchema,
           querystring: getMarketByIdQuerystringSchema,
           response: {
-            ...getPossibleExceptionsSchemas([new MarketNotFoundException()]),
+            ...getPossibleExceptionsSchemas([MarketNotFoundException]),
             200: marketItemResponseSchema,
           },
         },

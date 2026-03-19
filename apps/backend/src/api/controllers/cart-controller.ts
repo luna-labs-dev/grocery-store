@@ -13,7 +13,8 @@ import {
   scanProductResponseSchema,
   updateProductInCartRequestSchema,
 } from '../helpers';
-import { getPossibleExceptionsSchemas, type ICartManager } from '@/domain';
+import { getPossibleExceptionsSchemas } from '@/api/helpers/exception-mapping-helper';
+import type { ICartManager } from '@/domain';
 import {
   ProductNotFoundException,
   ShoppingEventAlreadyEndedException,
@@ -52,7 +53,7 @@ export class CartController extends FastifyController {
           params: scanProductParamsSchema,
           response: {
             200: scanProductResponseSchema,
-            ...getPossibleExceptionsSchemas([new ProductNotFoundException()]),
+            ...getPossibleExceptionsSchemas([ProductNotFoundException]),
           },
         },
       },
@@ -75,7 +76,7 @@ export class CartController extends FastifyController {
           querystring: manualSearchQuerySchema,
           response: {
             200: manualSearchResponseSchema,
-            ...getPossibleExceptionsSchemas([new ProductNotFoundException()]),
+            ...getPossibleExceptionsSchemas([ProductNotFoundException]),
           },
         },
       },
@@ -108,8 +109,8 @@ export class CartController extends FastifyController {
           response: {
             200: addProductToCartResponseSchema,
             ...getPossibleExceptionsSchemas([
-              new ShoppingEventNotFoundException(),
-              new ShoppingEventAlreadyEndedException(),
+              ShoppingEventNotFoundException,
+              ShoppingEventAlreadyEndedException,
             ]),
           },
         },
@@ -152,9 +153,9 @@ export class CartController extends FastifyController {
           response: {
             204: z.void().describe('No Content'),
             ...getPossibleExceptionsSchemas([
-              new ShoppingEventNotFoundException(),
-              new ShoppingEventAlreadyEndedException(),
-              new ProductNotFoundException(),
+              ShoppingEventNotFoundException,
+              ShoppingEventAlreadyEndedException,
+              ProductNotFoundException,
             ]),
           },
         },
@@ -191,9 +192,9 @@ export class CartController extends FastifyController {
           response: {
             204: z.void().describe('No Content'),
             ...getPossibleExceptionsSchemas([
-              new ShoppingEventNotFoundException(),
-              new ShoppingEventAlreadyEndedException(),
-              new ProductNotFoundException(),
+              ShoppingEventNotFoundException,
+              ShoppingEventAlreadyEndedException,
+              ProductNotFoundException,
             ]),
           },
         },
