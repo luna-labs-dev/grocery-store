@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DbUserManager } from '@/application/usecases/db-user-manager';
+import { UserNotFoundException } from '@/domain/exceptions';
 
 function makeUserRepository(
   overrides: Partial<{ getById: ReturnType<typeof vi.fn> }> = {},
@@ -41,7 +42,7 @@ describe('DbUserManager', () => {
 
       await expect(
         userManager.getUser({ externalId: 'ghost-user' }),
-      ).rejects.toThrow('User with externalId ghost-user not found');
+      ).rejects.toThrow(UserNotFoundException);
     });
   });
 });

@@ -10,6 +10,7 @@ import {
   type OutboxEvent,
   ProductIdentity,
 } from '@/domain/entities';
+import { ProductNotFoundException } from '@/domain/exceptions';
 import type { IHydrateProductJob } from '@/domain/usecases/product-hydrator';
 import { injection } from '@/main/di/injection-tokens';
 
@@ -59,7 +60,7 @@ export class JobProductHydrator implements IHydrateProductJob {
     // 2. Fetch external data
     const externalProduct = await this.externalService.fetchByBarcode(barcode);
     if (!externalProduct) {
-      throw new Error(`External data not found for barcode: ${barcode}`);
+      throw new ProductNotFoundException({ barcode });
     }
 
     // 3. Create Canonical Product

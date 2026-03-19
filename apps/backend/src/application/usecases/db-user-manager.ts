@@ -1,6 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import type { UserRepositories } from '@/application/contracts';
 import type { GetUserParams, IUserManager, User } from '@/domain';
+import { UserNotFoundException } from '@/domain/exceptions';
 import { injection } from '@/main/di/injection-tokens';
 
 const { infra } = injection;
@@ -17,7 +18,7 @@ export class DbUserManager implements IUserManager {
 
     if (!user) {
       // In Better Auth, the user should always exist in our DB if they have a session
-      throw new Error(`User with externalId ${externalId} not found`);
+      throw new UserNotFoundException({ externalId });
     }
 
     return user;

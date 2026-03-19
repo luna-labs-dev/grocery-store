@@ -4,6 +4,8 @@ export enum CircuitBreakerState {
   HalfOpen = 'HALF_OPEN',
 }
 
+import { ServiceUnavailableException } from './exceptions/generic-exceptions';
+
 export interface CircuitBreakerOptions {
   failureThreshold: number;
   resetTimeoutMs: number;
@@ -24,7 +26,7 @@ export class CircuitBreaker {
       ) {
         this.state = CircuitBreakerState.HalfOpen;
       } else {
-        throw new Error('Circuit breaker is OPEN');
+        throw new ServiceUnavailableException('Circuit breaker is OPEN');
       }
     }
 

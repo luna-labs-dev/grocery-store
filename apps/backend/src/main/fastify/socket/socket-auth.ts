@@ -1,11 +1,12 @@
 import type { Socket } from 'socket.io';
+import { UnauthorizedException } from '@/domain/core/exceptions/generic-exceptions';
 import { auth } from '@/main/auth/auth';
 
 export const socketAuthMiddleware = async (socket: Socket) => {
   try {
     const cookie = socket.handshake.headers.cookie;
     if (!cookie) {
-      throw new Error('Authentication required: No cookie found');
+      throw new UnauthorizedException();
     }
 
     const session = await auth.api.getSession({
@@ -15,7 +16,7 @@ export const socketAuthMiddleware = async (socket: Socket) => {
     });
 
     if (!session) {
-      throw new Error('Authentication failed: Invalid session');
+      throw new UnauthorizedException();
     }
 
     // Attach user to socket for downstream use
