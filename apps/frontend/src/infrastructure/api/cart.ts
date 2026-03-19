@@ -41,7 +41,13 @@ import type {
   RemoveProductFromCart422,
   RemoveProductFromCart500,
   ScanProduct200,
+  ScanProduct401,
+  ScanProduct404,
+  ScanProduct500,
   SearchProduct200,
+  SearchProduct401,
+  SearchProduct404,
+  SearchProduct500,
   SearchProductParams,
   UpdateProductInCart401,
   UpdateProductInCart404,
@@ -85,7 +91,7 @@ export const getScanProductQueryKey = (barcode: string,) => {
     }
 
     
-export const getScanProductQueryOptions = <TData = Awaited<ReturnType<typeof scanProduct>>, TError = ErrorType<unknown>>(barcode: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof scanProduct>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getScanProductQueryOptions = <TData = Awaited<ReturnType<typeof scanProduct>>, TError = ErrorType<ScanProduct401 | ScanProduct404 | ScanProduct500>>(barcode: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof scanProduct>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -104,10 +110,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type ScanProductQueryResult = NonNullable<Awaited<ReturnType<typeof scanProduct>>>
-export type ScanProductQueryError = ErrorType<unknown>
+export type ScanProductQueryError = ErrorType<ScanProduct401 | ScanProduct404 | ScanProduct500>
 
 
-export function useScanProduct<TData = Awaited<ReturnType<typeof scanProduct>>, TError = ErrorType<unknown>>(
+export function useScanProduct<TData = Awaited<ReturnType<typeof scanProduct>>, TError = ErrorType<ScanProduct401 | ScanProduct404 | ScanProduct500>>(
  barcode: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof scanProduct>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof scanProduct>>,
@@ -117,7 +123,7 @@ export function useScanProduct<TData = Awaited<ReturnType<typeof scanProduct>>, 
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useScanProduct<TData = Awaited<ReturnType<typeof scanProduct>>, TError = ErrorType<unknown>>(
+export function useScanProduct<TData = Awaited<ReturnType<typeof scanProduct>>, TError = ErrorType<ScanProduct401 | ScanProduct404 | ScanProduct500>>(
  barcode: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof scanProduct>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof scanProduct>>,
@@ -127,7 +133,7 @@ export function useScanProduct<TData = Awaited<ReturnType<typeof scanProduct>>, 
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useScanProduct<TData = Awaited<ReturnType<typeof scanProduct>>, TError = ErrorType<unknown>>(
+export function useScanProduct<TData = Awaited<ReturnType<typeof scanProduct>>, TError = ErrorType<ScanProduct401 | ScanProduct404 | ScanProduct500>>(
  barcode: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof scanProduct>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -135,7 +141,7 @@ export function useScanProduct<TData = Awaited<ReturnType<typeof scanProduct>>, 
  * @summary Escanear produto
  */
 
-export function useScanProduct<TData = Awaited<ReturnType<typeof scanProduct>>, TError = ErrorType<unknown>>(
+export function useScanProduct<TData = Awaited<ReturnType<typeof scanProduct>>, TError = ErrorType<ScanProduct401 | ScanProduct404 | ScanProduct500>>(
  barcode: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof scanProduct>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -183,7 +189,7 @@ export const getSearchProductQueryKey = (params?: SearchProductParams,) => {
     }
 
     
-export const getSearchProductInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof searchProduct>>, SearchProductParams['pageIndex']>, TError = ErrorType<unknown>>(params: SearchProductParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchProduct>>, TError, TData, QueryKey, SearchProductParams['pageIndex']>>, request?: SecondParameter<typeof customInstance>}
+export const getSearchProductInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof searchProduct>>, SearchProductParams['pageIndex']>, TError = ErrorType<SearchProduct401 | SearchProduct404 | SearchProduct500>>(params: SearchProductParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchProduct>>, TError, TData, QueryKey, SearchProductParams['pageIndex']>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -202,10 +208,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type SearchProductInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof searchProduct>>>
-export type SearchProductInfiniteQueryError = ErrorType<unknown>
+export type SearchProductInfiniteQueryError = ErrorType<SearchProduct401 | SearchProduct404 | SearchProduct500>
 
 
-export function useSearchProductInfinite<TData = InfiniteData<Awaited<ReturnType<typeof searchProduct>>, SearchProductParams['pageIndex']>, TError = ErrorType<unknown>>(
+export function useSearchProductInfinite<TData = InfiniteData<Awaited<ReturnType<typeof searchProduct>>, SearchProductParams['pageIndex']>, TError = ErrorType<SearchProduct401 | SearchProduct404 | SearchProduct500>>(
  params: SearchProductParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchProduct>>, TError, TData, QueryKey, SearchProductParams['pageIndex']>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof searchProduct>>,
@@ -215,7 +221,7 @@ export function useSearchProductInfinite<TData = InfiniteData<Awaited<ReturnType
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSearchProductInfinite<TData = InfiniteData<Awaited<ReturnType<typeof searchProduct>>, SearchProductParams['pageIndex']>, TError = ErrorType<unknown>>(
+export function useSearchProductInfinite<TData = InfiniteData<Awaited<ReturnType<typeof searchProduct>>, SearchProductParams['pageIndex']>, TError = ErrorType<SearchProduct401 | SearchProduct404 | SearchProduct500>>(
  params: SearchProductParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchProduct>>, TError, TData, QueryKey, SearchProductParams['pageIndex']>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof searchProduct>>,
@@ -225,7 +231,7 @@ export function useSearchProductInfinite<TData = InfiniteData<Awaited<ReturnType
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSearchProductInfinite<TData = InfiniteData<Awaited<ReturnType<typeof searchProduct>>, SearchProductParams['pageIndex']>, TError = ErrorType<unknown>>(
+export function useSearchProductInfinite<TData = InfiniteData<Awaited<ReturnType<typeof searchProduct>>, SearchProductParams['pageIndex']>, TError = ErrorType<SearchProduct401 | SearchProduct404 | SearchProduct500>>(
  params: SearchProductParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchProduct>>, TError, TData, QueryKey, SearchProductParams['pageIndex']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -233,7 +239,7 @@ export function useSearchProductInfinite<TData = InfiniteData<Awaited<ReturnType
  * @summary Pesquisar produtos
  */
 
-export function useSearchProductInfinite<TData = InfiniteData<Awaited<ReturnType<typeof searchProduct>>, SearchProductParams['pageIndex']>, TError = ErrorType<unknown>>(
+export function useSearchProductInfinite<TData = InfiniteData<Awaited<ReturnType<typeof searchProduct>>, SearchProductParams['pageIndex']>, TError = ErrorType<SearchProduct401 | SearchProduct404 | SearchProduct500>>(
  params: SearchProductParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchProduct>>, TError, TData, QueryKey, SearchProductParams['pageIndex']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -248,7 +254,7 @@ export function useSearchProductInfinite<TData = InfiniteData<Awaited<ReturnType
 
 
 
-export const getSearchProductQueryOptions = <TData = Awaited<ReturnType<typeof searchProduct>>, TError = ErrorType<unknown>>(params: SearchProductParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchProduct>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getSearchProductQueryOptions = <TData = Awaited<ReturnType<typeof searchProduct>>, TError = ErrorType<SearchProduct401 | SearchProduct404 | SearchProduct500>>(params: SearchProductParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchProduct>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -267,10 +273,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type SearchProductQueryResult = NonNullable<Awaited<ReturnType<typeof searchProduct>>>
-export type SearchProductQueryError = ErrorType<unknown>
+export type SearchProductQueryError = ErrorType<SearchProduct401 | SearchProduct404 | SearchProduct500>
 
 
-export function useSearchProduct<TData = Awaited<ReturnType<typeof searchProduct>>, TError = ErrorType<unknown>>(
+export function useSearchProduct<TData = Awaited<ReturnType<typeof searchProduct>>, TError = ErrorType<SearchProduct401 | SearchProduct404 | SearchProduct500>>(
  params: SearchProductParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchProduct>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof searchProduct>>,
@@ -280,7 +286,7 @@ export function useSearchProduct<TData = Awaited<ReturnType<typeof searchProduct
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSearchProduct<TData = Awaited<ReturnType<typeof searchProduct>>, TError = ErrorType<unknown>>(
+export function useSearchProduct<TData = Awaited<ReturnType<typeof searchProduct>>, TError = ErrorType<SearchProduct401 | SearchProduct404 | SearchProduct500>>(
  params: SearchProductParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchProduct>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof searchProduct>>,
@@ -290,7 +296,7 @@ export function useSearchProduct<TData = Awaited<ReturnType<typeof searchProduct
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSearchProduct<TData = Awaited<ReturnType<typeof searchProduct>>, TError = ErrorType<unknown>>(
+export function useSearchProduct<TData = Awaited<ReturnType<typeof searchProduct>>, TError = ErrorType<SearchProduct401 | SearchProduct404 | SearchProduct500>>(
  params: SearchProductParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchProduct>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -298,7 +304,7 @@ export function useSearchProduct<TData = Awaited<ReturnType<typeof searchProduct
  * @summary Pesquisar produtos
  */
 
-export function useSearchProduct<TData = Awaited<ReturnType<typeof searchProduct>>, TError = ErrorType<unknown>>(
+export function useSearchProduct<TData = Awaited<ReturnType<typeof searchProduct>>, TError = ErrorType<SearchProduct401 | SearchProduct404 | SearchProduct500>>(
  params: SearchProductParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchProduct>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
