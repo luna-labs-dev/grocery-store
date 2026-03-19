@@ -113,6 +113,13 @@
       "when": 1773728856410,
       "tag": "0015_fearless_wonder_man",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1773881235197,
+      "tag": "0016_fixed_luke_cage",
+      "breakpoints": true
     }
   ]
 }
